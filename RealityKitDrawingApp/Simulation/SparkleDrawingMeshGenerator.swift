@@ -122,6 +122,14 @@ final class SparkleDrawingMeshGenerator {
         lastTracedPoint = nextTracedPoint
     }
     
+    
+    func traceSingular(point centre: SparkleBrushCurvePoint) {
+        // Spawn particles
+        while particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount {
+            spawnParticle(at: centre)
+        }
+    }
+    
     /// Ends the currently-active stroke, if any.
     func endStroke() {
         distanceToNextSample = 0
@@ -129,13 +137,13 @@ final class SparkleDrawingMeshGenerator {
     }
     
     private func spawnParticle(at point: SparkleBrushCurvePoint) {
-        // Place a hard limit of 2048 particles per frame, to mitigate frame hitches.
-        guard particlesToSpawn.count < 2048 else { return }
+        guard particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount else { return }
         
         let attributes = SparkleBrushAttributes(position: point.position.packed3,
                                                 color: SIMD3<Float16>(point.color).packed3,
                                                 curveDistance: curveDistanceForNextSample,
-                                                size: point.size)
+                                                size: point.size,
+                                                initialPosition: point.position.packed3)
         particlesToSpawn.append(SparkleBrushParticle(attributes: attributes,
                                                      velocity: (randomDirection() * point.initialSpeed).packed3))
     }
@@ -149,7 +157,7 @@ final class SparkleDrawingMeshGenerator {
         }
         
         // Double the particle capacity until it exceeds `newParticleCount`, or set to a minimum capacity of 1024.
-        var newParticleCapacity = max(1024, particleCapacity)
+        var newParticleCapacity = max(AppConstants.Spawn.minSpawnCount, particleCapacity)
         while newParticleCapacity < newParticleCount {
             newParticleCapacity *= 2
         }
@@ -215,12 +223,12 @@ final class SparkleDrawingMeshGenerator {
         // Simulate the particles that already exist in the simulation buffer.
         if particleCount > 0, let oldBuffer {
             let parameters = SparkleBrushSimulationParams(particleCount: UInt32(particleCount),
-                                                          deltaTime: deltaTime, dragCoefficient: 500)
+                                                          deltaTime: deltaTime, dragCoefficient: 100)
             try Self.simulate(input: oldBuffer, output: simulationBuffer!,
                               particleCount: particleCount, parameters: parameters, encoder: computeEncoder)
         }
         
-        // Add any new particles to the simulation.
+        // Add any new particles to the simulation.x
         if !particlesToSpawn.isEmpty {
             try particlesToSpawn.withUnsafeBufferPointer { bufferPointer in
                 try Self.addParticlesToSimulation(input: bufferPointer, output: simulationBuffer!,

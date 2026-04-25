@@ -26,7 +26,7 @@ struct SplashScreenView: View {
                 
                 Button {
                     Task {
-                        await setMode(.chooseWorkVolume)
+                        await setMode(.drawing)
                     }
                 } label: {
                     Text("Start").frame(minWidth: Self.startButtonWidth)

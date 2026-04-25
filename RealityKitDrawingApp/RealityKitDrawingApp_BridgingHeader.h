@@ -6,6 +6,4 @@ A bridging header to allow structures defined in C or Metal Shading Language to 
 */
 
 #pragma once
-
-#import "Brushes/Solid/SolidBrushVertex.h"
-#import "Brushes/Sparkle/SparkleBrushVertex.h"
+#import "Simulation/SparkleBrushVertex.h"

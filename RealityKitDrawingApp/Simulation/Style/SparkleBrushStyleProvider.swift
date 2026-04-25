@@ -10,9 +10,9 @@ A structure that receives input events and uses them to style points for the spa
 /// "Drawing Styles" can modify attributes such as color as the curve is drawn.
 struct SparkleBrushStyleProvider {
     struct Settings: Equatable, Hashable {
-        var initialSpeed: Float = 0.012
-        var size: Float = 0.0002
-        var color: SIMD3<Float> = [1, 1, 1]
+        var initialSpeed: Float = AppConstants.Particle.initialSpeed
+        var size: Float = AppConstants.Particle.size
+        var color: SIMD3<Float> = AppConstants.Particle.color
     }
     
     func styleInput(position: SIMD3<Float>, speed: Float, settings: Settings) -> SparkleBrushCurvePoint {

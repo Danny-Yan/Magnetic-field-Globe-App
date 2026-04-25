@@ -34,7 +34,7 @@ extension SparkleDrawingMeshGenerator {
 
         // The bounding box is used to occlude parts of your mesh when it isn't seen.
         // The drawing app should display all brush strokes, so use an arbitrarily large bounds.
-        let bounds = BoundingBox(min: [-100, -100, -100], max: [100, 100, 100])
+        let bounds = BoundingBox(min: AppConstants.Sim.MeshBounds.lower, max: AppConstants.Sim.MeshBounds.upper)
         mesh.parts.append(LowLevelMesh.Part(indexOffset: 0, indexCount: 6 * particleCount,
                                             topology: .triangle, materialIndex: 0,
                                             bounds: bounds))

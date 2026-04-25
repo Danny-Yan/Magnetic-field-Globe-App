@@ -29,47 +29,17 @@ private extension Collection where Element: FloatingPoint {
 
 public struct DrawingSource {
     private let rootEntity: Entity
-    private var solidMaterial: RealityKit.Material
     private var sparkleMaterial: RealityKit.Material
-    
-    private var solidMeshGenerator: SolidDrawingMeshGenerator
-    private var smoothCurveSampler: SmoothCurveSampler
     
     private var sparkleMeshGenerator: SparkleDrawingMeshGenerator
     
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
     
-    private var solidProvider = SolidBrushStyleProvider()
     private var sparkleProvider = SparkleBrushStyleProvider()
     
-    private mutating func trace(position: SIMD3<Float>, speed: Float, state: BrushState) {
-        switch state.brushType {
-        case .uniform:
-            let styled = solidProvider.styleInput(position: position, speed: speed,
-                                                  settings: state.uniformStyleSettings)
-            smoothCurveSampler.trace(point: styled)
-        case .calligraphic:
-            let styled = solidProvider.styleInput(position: position, speed: speed,
-                                                  settings: state.calligraphicStyleSettings)
-            smoothCurveSampler.trace(point: styled)
-        case .sparkle:
-            let styled = sparkleProvider.styleInput(position: position, speed: speed,
-                                                    settings: state.sparkleStyleSettings)
-            sparkleMeshGenerator.trace(point: styled)
-        }
-    }
-    
     @MainActor
-    init(rootEntity: Entity, solidMaterial: Material? = nil, sparkleMaterial: Material? = nil) async {
+    init(rootEntity: Entity, sparkleMaterial: Material? = nil) async {
         self.rootEntity = rootEntity
-        
-        let solidMeshEntity = Entity()
-        rootEntity.addChild(solidMeshEntity)
-        self.solidMaterial = solidMaterial ?? SimpleMaterial()
-        solidMeshGenerator = SolidDrawingMeshGenerator(rootEntity: solidMeshEntity,
-                                                       material: self.solidMaterial)
-        smoothCurveSampler = SmoothCurveSampler(flatness: 0.001, generator: self.solidMeshGenerator)
-        
         let sparkleMeshEntity = Entity()
         rootEntity.addChild(sparkleMeshEntity)
         self.sparkleMaterial = sparkleMaterial ?? SimpleMaterial()
@@ -79,46 +49,47 @@ public struct DrawingSource {
     
     @MainActor
     mutating func receiveSynthetic(position: SIMD3<Float>, speed: Float, state: BrushState) {
-        trace(position: position, speed: speed, state: state)
+        let styled = sparkleProvider.styleInput(position: position, speed: speed,
+                                                settings: state.sparkleStyleSettings)
+        
+        sparkleMeshGenerator.traceSingular(point: styled)
     }
     
-    @MainActor
-    mutating func receive(input: InputData?, time: TimeInterval, state: BrushState) {
-        while let (_, headTime) = inputsOverTime.first, time - headTime > 0.1 {
-            inputsOverTime.removeFirst()
-        }
-        
-        if let brushTip = input?.brushTip {
-            let lastInputPosition = inputsOverTime.last?.0
-            inputsOverTime.append((brushTip, time))
-            
-            if let lastInputPosition, lastInputPosition == brushTip {
-                return
-            }
-        }
-        
-        let speedsOverTime = inputsOverTime.adjacentPairs().map { input0, input1 in
-            let (point0, time0) = input0
-            let (point1, time1) = input1
-            let distance = distance(point0, point1)
-            let time = abs(time0 - time1)
-            return distance / Float(time)
-        }
-        
-        let smoothSpeed = speedsOverTime.truncatedMean(truncation: 2)
-        
-        if let input, input.isDrawing {
-            trace(position: input.brushTip, speed: smoothSpeed, state: state)
-        } else {
-            if !smoothCurveSampler.isEmpty {
-                inputsOverTime.removeAll()
-                smoothCurveSampler.beginNewStroke()
-            }
-            
-            if sparkleMeshGenerator.isDrawing {
-                sparkleMeshGenerator.endStroke()
-            }
-        }
-    }
+    
+    
+//    @MainActor
+//    mutating func receive(input: InputData?, time: TimeInterval, state: BrushState) {
+//        while let (_, headTime) = inputsOverTime.first, time - headTime > 0.1 {
+//            inputsOverTime.removeFirst()
+//        }
+//        
+//        if let brushTip = input?.brushTip {
+//            let lastInputPosition = inputsOverTime.last?.0
+//            inputsOverTime.append((brushTip, time))
+//            
+//            if let lastInputPosition, lastInputPosition == brushTip {
+//                return
+//            }
+//        }
+//        
+//        let speedsOverTime = inputsOverTime.adjacentPairs().map { input0, input1 in
+//            let (point0, time0) = input0
+//            let (point1, time1) = input1
+//            let distance = distance(point0, point1)
+//            let time = abs(time0 - time1)
+//            return distance / Float(time)
+//        }
+//        
+//        let smoothSpeed = speedsOverTime.truncatedMean(truncation: 2)
+//        
+//        if let input, input.isDrawing {
+//            trace(position: input.brushTip, speed: smoothSpeed, state: state)
+//        } else {
+//            
+//            if sparkleMeshGenerator.isDrawing {
+//                sparkleMeshGenerator.endStroke()
+//            }
+//        }
+//    }
 }
 

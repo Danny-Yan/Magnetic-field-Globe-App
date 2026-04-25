@@ -9,6 +9,8 @@ A compute kernel written in Metal Shading Language to simulate the particles in 
 #include <metal_stdlib>
 
 #include "SparkleBrushVertex.h"
+#define PI 3.14159265358979323846
+
 
 using namespace metal;
 
@@ -46,13 +48,19 @@ void sparkleBrushSimulate(device const SparkleBrushParticle *particles [[buffer(
     const float speed2 = length_squared(particle.velocity);
     const float dragForce = -speed2 * (params.dragCoefficient * params.deltaTime);
     const float speed = sqrt(speed2);
-    const float newSpeed = max(0.f, speed + dragForce);
+    const float newSpeed = speed;
+//    const float newSpeed = max(0.0f, speed - dragForce);
     
-    if (min(newSpeed, speed) > 0.0001) {
-        particle.velocity = particle.velocity / speed * newSpeed;
-    } else {
-        particle.velocity = 0;
-    }
+//    if (min(newSpeed, speed) > 0.0001) {
+//        particle.velocity = particle.velocity / speed * newSpeed;
+//    } else {
+//        particle.velocity = 0;
+//    }
+    
+    const float3 acceleration = - 5 * (particle.attributes.position - particle.attributes.initialPosition);
+
+    particle.velocity += acceleration * params.deltaTime;
+//    particle.velocity = particle.velocity / speed * newSpeed;
     particle.attributes.position += particle.velocity * params.deltaTime;
 
     // Write to output.

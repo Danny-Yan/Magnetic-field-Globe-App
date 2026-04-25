@@ -11,14 +11,12 @@ import SwiftUI
 @main
 struct RealityKitDrawingApp: App {
     private static let paletteWindowId: String = "Palette"
-    private static let configureCanvasWindowId: String = "ConfigureCanvas"
     private static let splashScreenWindowId: String = "SplashScreen"
     private static let immersiveSpaceWindowId: String = "ImmersiveSpace"
     
     /// The mode of the app determines which windows and immersive spaces should be open.
     enum Mode: Equatable {
         case splashScreen
-        case chooseWorkVolume
         case drawing
         
         var needsImmersiveSpace: Bool {
@@ -32,7 +30,6 @@ struct RealityKitDrawingApp: App {
         fileprivate var windowId: String {
             switch self {
             case .splashScreen: return splashScreenWindowId
-            case .chooseWorkVolume: return configureCanvasWindowId
             case .drawing: return paletteWindowId
             }
         }
@@ -56,15 +53,20 @@ struct RealityKitDrawingApp: App {
         guard newMode != oldMode else { return }
         mode = newMode
         
-        if !immersiveSpacePresented && newMode.needsImmersiveSpace {
-            immersiveSpacePresented = true
-            await openImmersiveSpace(id: Self.immersiveSpaceWindowId)
-        } else if immersiveSpacePresented && !newMode.needsImmersiveSpace {
-            immersiveSpacePresented = false
-            await dismissImmersiveSpace()
-        }
+//        if !immersiveSpacePresented && newMode.needsImmersiveSpace {
+//            immersiveSpacePresented = true
+//            await openImmersiveSpace(id: Self.immersiveSpaceWindowId)
+//        } else if immersiveSpacePresented && !newMode.needsImmersiveSpace {
+//            immersiveSpacePresented = false
+//            await dismissImmersiveSpace()
+//        }
         
-        openWindow(id: newMode.windowId)
+        if newMode.windowId == Mode.drawing.windowId {
+            await openImmersiveSpace(id: newMode.windowId)
+        } else {
+            openWindow(id: newMode.windowId)
+        }
+
         dismissWindow(id: oldMode.windowId)
     }
 
@@ -79,36 +81,29 @@ struct RealityKitDrawingApp: App {
             .windowResizability(.contentSize)
             .windowStyle(.plain)
             
-            WindowGroup(id: Self.configureCanvasWindowId) {
-                DrawingCanvasConfigurationView(settings: canvas)
-                    .environment(\.setMode, setMode)
-                    .frame(width: 300, height: 300)
-                    .fixedSize()
-            }
-            .windowResizability(.contentSize)
-            
-            WindowGroup(id: Self.paletteWindowId) {
-                PaletteView(brushState: $brushState)
-                    .frame(width: 400, height: 550, alignment: .top)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-            .windowResizability(.contentSize)
-
-            ImmersiveSpace(id: Self.immersiveSpaceWindowId) {
-                ZStack {
-                    if mode == .chooseWorkVolume || mode == .drawing {
-                        DrawingCanvasVisualizationView(settings: canvas)
-                    }
-                    
-                    if mode == .chooseWorkVolume {
-                        DrawingCanvasPlacementView(settings: canvas)
-                    } else if mode == .drawing {
-                        DrawingMeshView(canvas: canvas, brushState: $brushState)
-                    }
-                }
-                .frame(width: 0, height: 0).frame(depth: 0)
+//            
+//            WindowGroup(id: Self.paletteWindowId) {
+//                PresetBrushSelectorView(brushState: $brushState)
+//            }
+//            .windowStyle(.volumetric)
+//            .windowStyle(.plain)
+//            .persistentSystemOverlays(.hidden)
+//
+            ImmersiveSpace(id: Self.paletteWindowId){
+                PresetBrushSelectorView(brushState: $brushState)
             }
             .immersionStyle(selection: $immersionStyle, in: .mixed)
+
+//            ImmersiveSpace(id: Self.immersiveSpaceWindowId) {
+//                ZStack {
+//                    if mode == .drawing {
+//                        DrawingCanvasVisualizationView(settings: canvas)
+//                        DrawingMeshView(canvas: canvas, brushState: $brushState)
+//                    }
+//                }
+//                .frame(width: 0, height: 0).frame(depth: 0)
+//            }
+//            .immersionStyle(selection: $immersionStyle, in: .mixed)
         }
     }
 }
