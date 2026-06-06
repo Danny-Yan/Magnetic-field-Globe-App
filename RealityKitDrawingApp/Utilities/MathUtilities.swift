@@ -120,6 +120,18 @@ func randomDirection() -> SIMD3<Float> {
     }
 }
 
+/// Returns a uniformly random position within a sphere of radius 1
+func randomUniformDistribute() -> SIMD3<Float> {
+    // Use rejection sampling to guarantee a uniform probability
+    while true {
+        let randomVector = SIMD3<Float>(Float.random(in: -1...1), Float.random(in: -1...1), Float.random(in: -1...1))
+        let randomVectorLength = length(randomVector)
+        if randomVectorLength > 1e-8 && randomVectorLength < 1 {
+            return randomVector
+        }
+    }
+}
+
 /// Linearly interpolates between `value0` and `value1` based on the parameter `parameter`.
 ///
 /// `parameter = 0` corresponds with `value0` and `parameter = 1` corresponds with `value1`.
