@@ -1,9 +1,11 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ ImmersiveContentView.swift
+ 
+ Abstract:
+ A view to display a preview of a brush preset, and a view to display a collection of these presets.
 
-Abstract:
-A view to display a preview of a brush preset, and a view to display a collection of these presets.
-*/
+ Created by: Danny Yan
+ */
 
 import SwiftUI
 import RealityKit

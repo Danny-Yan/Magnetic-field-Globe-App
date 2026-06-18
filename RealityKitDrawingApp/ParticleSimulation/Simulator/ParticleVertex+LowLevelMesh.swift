@@ -1,14 +1,16 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ ParticleVertex+LowLevelMesh.swift
 
-Abstract:
-A listing of the `LowLevelMesh` attributes that correspond with the structure,
-  `particleBrushVertex`, in the Metal Shading Language.
-*/
+ Abstract:
+ A listing of the `LowLevelMesh` attributes that correspond with the structure,
+ `ParticleVertex`, in the Metal Shading Language.
+ 
+ Created by: Danny Yan
+ */
 
 import RealityKit
 
-extension particleBrushVertex {
+extension ParticleVertex {
     static var vertexAttributes: [LowLevelMesh.Attribute] {
         typealias Attribute = LowLevelMesh.Attribute
 

@@ -1,14 +1,16 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Facilitates the GPU particle simulation, used to generate meshes of the particle brush.
-*/
+ ParticleMeshGeneration+Simulation.swift
+ 
+ Abstract:
+ Facilitates the GPU particle simulation, used to generate meshes of the particle brush.
+ 
+ Created by: Danny Yan
+ */
 
 import RealityKit
 import Metal
 
-extension particleDrawingMeshGenerator {
+extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushSimulate`.
     ///
     /// See `particleBrushGeneration.metal`.
@@ -18,7 +20,7 @@ extension particleDrawingMeshGenerator {
                          output: MTLBuffer,
                          particleOffsetInOutput: Int = 0,
                          particleCount: Int,
-                         parameters: particleBrushSimulationParams,
+                         parameters: ParticleSimulationParams,
                          encoder: MTLComputeCommandEncoder) throws {
         precondition(particleCount > 0)
         
@@ -26,8 +28,8 @@ extension particleDrawingMeshGenerator {
             throw particleBrushGenerationError.unableToCreateComputePipeline
         }
         
-        let particleStride = MemoryLayout<particleBrushParticle>.stride
-        let paramSize = MemoryLayout<particleBrushSimulationParams>.size
+        let particleStride = MemoryLayout<ParticleBrushParticle>.stride
+        let paramSize = MemoryLayout<ParticleSimulationParams>.size
         precondition(input.length >= particleCount * particleStride)
         precondition(output.length >= (particleCount + particleOffsetInOutput) * particleStride)
         
@@ -46,7 +48,7 @@ extension particleDrawingMeshGenerator {
                                      threadsPerThreadgroup: MTLSizeMake(groupSize, 1, 1))
     }
     
-    static func addParticlesToSimulation(input: UnsafeBufferPointer<particleBrushParticle>,
+    static func addParticlesToSimulation(input: UnsafeBufferPointer<ParticleBrushParticle>,
                                          output: MTLBuffer,
                                          particleOffsetInOutput: Int = 0,
                                          encoder: MTLComputeCommandEncoder) throws {
@@ -57,8 +59,8 @@ extension particleDrawingMeshGenerator {
             throw particleBrushGenerationError.unableToCreateComputePipeline
         }
         
-        let particleStride = MemoryLayout<particleBrushParticle>.stride
-        precondition(MemoryLayout<particleBrushParticle>.alignment % 4 == 0, "ensure alignment")
+        let particleStride = MemoryLayout<ParticleBrushParticle>.stride
+        precondition(MemoryLayout<ParticleBrushParticle>.alignment % 4 == 0, "ensure alignment")
         precondition(output.length >= (particleOffsetInOutput + particleCount) * particleStride)
         
         let groupSize = simulatePipeline.maxTotalThreadsPerThreadgroup
@@ -82,10 +84,10 @@ extension particleDrawingMeshGenerator {
             
             // Set `particleCount` to the number of particles being added this batch.
             // Set `deltaTime` and `dragCoefficient` to zero, because you don't yet want to simulate the particles.
-            var currentParameters = particleBrushSimulationParams(particleCount: UInt32(length),
+            var currentParameters = ParticleSimulationParams(particleCount: UInt32(length),
                                                                  deltaTime: 0,
                                                                  dragCoefficient: 0)
-            encoder.setBytes(&currentParameters, length: MemoryLayout<particleBrushSimulationParams>.size, index: 2)
+            encoder.setBytes(&currentParameters, length: MemoryLayout<ParticleSimulationParams>.size, index: 2)
             
             let numGroups = (length + groupSize - 1) / groupSize
             encoder.dispatchThreadgroups(MTLSizeMake(numGroups, 1, 1),

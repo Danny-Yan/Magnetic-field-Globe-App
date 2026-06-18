@@ -1,11 +1,13 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-A view to be used for the background of the app's splash screen.
-  The splash screen background is a RealityKit entity that updates a
-  `LowLevelTexture` every frame and displays it using a `ShaderGraphMaterial`.
-*/
+ SplashScreenBackgroundView.swift
+ 
+ Abstract:
+ A view to be used for the background of the app's splash screen.
+    The splash screen background is a RealityKit entity that updates a
+    `LowLevelTexture` every frame and displays it using a `ShaderGraphMaterial`.
+ 
+ Created by: Danny Yan
+ */
 
 import SwiftUI
 import RealityKit

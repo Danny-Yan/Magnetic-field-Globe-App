@@ -1,20 +1,22 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-A RealityKit component and system to facilitate the generation of particle brush strokes.
-*/
+ ParticleComponent.swift
+ 
+ Abstract:
+ A RealityKit component and system to facilitate the generation of particle brush strokes.
+ 
+ Created by: Danny Yan
+ */
 
 import Foundation
 import RealityKit
 
-struct particleBrushComponent: Component {
-    var generator: particleDrawingMeshGenerator
+struct ParticleComponent: Component {
+    var generator: ParticleMeshGenerator
     var material: Material
 }
 
-class particleBrushSystem: System {
-    private static let query = EntityQuery(where: .has(particleBrushComponent.self))
+class ParticleBrushSystem: System {
+    private static let query = EntityQuery(where: .has(ParticleComponent.self))
     
     required init(scene: RealityKit.Scene) { }
     
@@ -26,7 +28,7 @@ class particleBrushSystem: System {
         lastUpdateTime = now
         
         for entity in context.entities(matching: Self.query, updatingSystemWhen: .rendering) {
-            let brushComponent: particleBrushComponent = entity.components[particleBrushComponent.self]!
+            let brushComponent: ParticleComponent = entity.components[ParticleComponent.self]!
             let generator = brushComponent.generator
             
             // Calls `update` on the generator.

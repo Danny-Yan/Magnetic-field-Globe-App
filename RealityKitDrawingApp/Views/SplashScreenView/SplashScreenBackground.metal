@@ -1,9 +1,11 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ SplashScreenBackground.metal
+ 
+ Abstract:
+ A compute kernel written in Metal Shading Language which is displayed on the splash screen when launching the app.
 
-Abstract:
-A compute kernel written in Metal Shading Language which is displayed on the splash screen when launching the app.
-*/
+ Created by: Danny Yan
+ */
 
 #include <metal_stdlib>
 

@@ -6,4 +6,4 @@ A bridging header to allow structures defined in C or Metal Shading Language to 
 */
 
 #pragma once
-#import "./ParticleSimulation/Simulator/ParticleBrushVertex.h"
+#import "./ParticleSimulation/Simulator/ParticleVertex.h"

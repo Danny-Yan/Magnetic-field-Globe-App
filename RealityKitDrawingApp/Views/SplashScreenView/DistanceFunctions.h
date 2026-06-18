@@ -1,9 +1,9 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-2D signed distance functions, used for the splash screen background.
-*/
+ DistanceFunctions.h
+ 
+ Abstract:
+ 2D signed distance functions, used for the splash screen background.
+ */
 
 /*
  * Copyright 2024 Inigo Quilez

@@ -1,12 +1,14 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Functions and SwiftUI views to build the foreground of the splash screen.
-  The foreground contains a logotype and a logomark.
-  The logotype is 3D text of "RealityKit Drawing App".
-  The logomark is a customized 3D shape.
-*/
+ SplashScreenForeground.swift
+ 
+ Abstract:
+ Functions and SwiftUI views to build the foreground of the splash screen.
+    The foreground contains a logotype and a logomark.
+    The logotype is 3D text of "RealityKit Drawing App".
+    The logomark is a customized 3D shape.
+ 
+ Created by: Danny Yan
+ */
 
 import SwiftUI
 import RealityKit

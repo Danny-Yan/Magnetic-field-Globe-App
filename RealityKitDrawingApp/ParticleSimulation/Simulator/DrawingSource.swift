@@ -1,9 +1,11 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ DrawingSource.swift
+ 
+ Abstract:
+ Evaluates and stores information about strokes based on someone's inputs and style parameters.
 
-Abstract:
-Evaluates and stores information about strokes based on someone's inputs and style parameters.
-*/
+ Created by: Danny Yan
+ */
 
 import Algorithms
 import Collections
@@ -31,11 +33,11 @@ public struct DrawingSource {
     private let rootEntity: Entity
     private var particleMaterial: RealityKit.Material
     
-    private var particleMeshGenerator: particleDrawingMeshGenerator
+    private var ParticleMeshGen: ParticleMeshGenerator
     
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
     
-    private var particleProvider = particleBrushStyleProvider()
+    private var particleProvider = ParticleStyleProvider()
     
     @MainActor
     init(rootEntity: Entity, particleMaterial: Material? = nil) async {
@@ -43,7 +45,7 @@ public struct DrawingSource {
         let particleMeshEntity = Entity()
         rootEntity.addChild(particleMeshEntity)
         self.particleMaterial = particleMaterial ?? SimpleMaterial()
-        particleMeshGenerator = particleDrawingMeshGenerator(rootEntity: particleMeshEntity,
+        ParticleMeshGen = ParticleMeshGenerator(rootEntity: particleMeshEntity,
                                                            material: self.particleMaterial)
     }
     
@@ -52,7 +54,7 @@ public struct DrawingSource {
         let styled = particleProvider.styleInput(position: position, speed: speed,
                                                 settings: state.particleStyleSettings)
         
-        particleMeshGenerator.traceSingular(point: styled)
+        ParticleMeshGen.traceSingular(point: styled)
     }
     
     
@@ -86,8 +88,8 @@ public struct DrawingSource {
 //            trace(position: input.brushTip, speed: smoothSpeed, state: state)
 //        } else {
 //            
-//            if particleMeshGenerator.isDrawing {
-//                particleMeshGenerator.endStroke()
+//            if ParticleMeshGen.isDrawing {
+//                ParticleMeshGen.endStroke()
 //            }
 //        }
 //    }

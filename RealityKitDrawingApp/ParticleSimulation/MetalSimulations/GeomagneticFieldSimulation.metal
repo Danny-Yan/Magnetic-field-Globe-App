@@ -1,30 +1,32 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ GeomagneticFieldSimulation.metal
+ 
+ Abstract:
+    A compute kernel written in Metal Shading Language to simulate the particles in a particle brush stroke,
+    and also to populate the mesh of a particle brush with the result of the simulation.
 
-Abstract:
-A compute kernel written in Metal Shading Language to simulate the particles in a particle brush stroke, 
-  and also to populate the mesh of a particle brush with the result of the simulation.
-*/
+ Created by: Danny Yan
+ */
 
 #include <metal_stdlib>
 
-#include "../Simulator/ParticleBrushVertex.h"
+#include "../Simulator/ParticleVertex.h"
 #define PI 3.14159265358979323846
 
 
 using namespace metal;
 
 [[kernel]]
-void geoMagneticFieldSimulate(device const particleBrushParticle *particles [[buffer(0)]],
-                          device particleBrushParticle *output [[buffer(1)]],
-                          constant particleBrushSimulationParams &params [[buffer(2)]],
+void geoMagneticFieldSimulate(device const ParticleBrushParticle *particles [[buffer(0)]],
+                          device ParticleBrushParticle *output [[buffer(1)]],
+                          constant ParticleSimulationParams &params [[buffer(2)]],
                           uint particleIdx [[thread_position_in_grid]])
 {
     if (particleIdx >= params.particleCount) {
         return;
     }
     
-    particleBrushParticle particle = particles[particleIdx];
+    ParticleBrushParticle particle = particles[particleIdx];
 
     const float speed2 = length_squared(particle.velocity);
 //    const float dragForce = -speed2 * (params.dragCoefficient * params.deltaTime);

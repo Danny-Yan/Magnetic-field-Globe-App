@@ -1,12 +1,14 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ SplashScreenBackgroundComponent.swift
+ 
+ Abstract:
+    A RealityKit component and system used to facilitate the background of the
+    splash screen. The splash screen background is a RealityKit entity that
+    updates a `LowLevelTexture` every frame and displays it using
+    a `ShaderGraphMaterial`.
 
-Abstract:
-A RealityKit component and system used to facilitate the background of the
-  splash screen. The splash screen background is a RealityKit entity that
-  updates a `LowLevelTexture` every frame and displays it using
-  a `ShaderGraphMaterial`.
-*/
+ Created by: Danny Yan
+ */
 
 import RealityKit
 import RealityKitContent

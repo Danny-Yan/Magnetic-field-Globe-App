@@ -1,9 +1,11 @@
-//
-//  constants.swift
-//  RealityKitDrawingApp
-//
-//  Created by DY on 25/4/2026.
-//  Copyright © 2026 Apple. All rights reserved.
+/*
+ constants.swift
+
+ Abstract:
+ All constants for the entire app
+ 
+ Created by: Danny Yan
+*/
 import Foundation
 
 enum AppConstants {

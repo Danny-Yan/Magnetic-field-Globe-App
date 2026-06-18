@@ -1,12 +1,14 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-App state to describe the current state of the brush.
-*/
+ BrushState.swift
+ 
+ Abstract:
+ App state to describe the current state of the brush.
+ 
+ Created by: Danny Yan
+ */
 
 enum BrushPreset: Equatable {
-    case particle(settings: particleBrushStyleProvider.Settings)
+    case particle(settings: ParticleStyleProvider.Settings)
 }
 
 enum BrushType: Hashable, Equatable, CaseIterable, Identifiable {
@@ -25,7 +27,7 @@ class BrushState {
     var brushType: BrushType = .particle
 
     /// Style settings for the particle brush type.
-    var particleStyleSettings = particleBrushStyleProvider.Settings()
+    var particleStyleSettings = ParticleStyleProvider.Settings()
     
     init() {}
     

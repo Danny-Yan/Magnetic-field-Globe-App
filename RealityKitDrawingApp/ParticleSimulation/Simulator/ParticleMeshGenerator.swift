@@ -1,16 +1,20 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ ParticleMeshGenerator.swift
+ 
+ Abstract:
+ A class that manages the generation of meshes for the particle brush, using `LowLevelMesh` and a GPU particle simulation.
 
-Abstract:
-A class that manages the generation of meshes for the particle brush, using `LowLevelMesh` and a GPU particle simulation.
-*/
+ Created by: Danny Yan
+ */
 
 import Foundation
 import Collections
 import RealityKit
 import Metal
 
-final class particleDrawingMeshGenerator {
+final class ParticleMeshGenerator {
+    
+    /// The GPU command queue to store incoming GPU commands
     private static let commandQueue: MTLCommandQueue? = {
         if let metalDevice, let queue = metalDevice.makeCommandQueue() {
             queue.label = "particle Brush Command Queue"
@@ -47,10 +51,10 @@ final class particleDrawingMeshGenerator {
     private var curveDistanceForNextSample: Float = 0
     
     /// List of particles that must spawn into the scene when calling `populate`.
-    private var particlesToSpawn: ContiguousArray<particleBrushParticle> = []
+    private var particlesToSpawn: ContiguousArray<ParticleBrushParticle> = []
     
     /// If there is an active stroke, contains the most recently-traced point.  Else, contains `nil`.
-    private var lastTracedPoint: particleBrushCurvePoint?
+    private var lastTracedPoint: ParticlePoint?
     
     /// True if a command buffer is currently in flight.  Concurrent updates aren't permitted due to contention
     /// over `lowLevelMesh` and `simulationBuffer`.
@@ -75,14 +79,14 @@ final class particleDrawingMeshGenerator {
         self.rootEntity = rootEntity
         
         rootEntity.position = .zero
-        let particleBrushComponent = particleBrushComponent(generator: self, material: material)
-        rootEntity.components.set(particleBrushComponent)
+        let ParticleComponent = ParticleComponent(generator: self, material: material)
+        rootEntity.components.set(ParticleComponent)
     }
     
     /// Call this function to trace the current brush stroke to `nextTracedPoint`.
     ///
     /// Begins a new stroke if there was no currently-active stroke.
-    func trace(point nextTracedPoint: particleBrushCurvePoint) {
+    func trace(point nextTracedPoint: ParticlePoint) {
         // This routine marches a point along the line segment `lastTracedPoint` -> `nextTracedPoint`.
         // Particles always spawn at a point on this line segment, and given a random velocity.
         //
@@ -123,7 +127,7 @@ final class particleDrawingMeshGenerator {
     }
     
     
-    func traceSingular(point centre: particleBrushCurvePoint) {
+    func traceSingular(point centre: ParticlePoint) {
         // Spawn particles
         while particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount {
             spawnParticle(at: centre)
@@ -136,20 +140,20 @@ final class particleDrawingMeshGenerator {
         lastTracedPoint = nil
     }
     
-    private func spawnParticle(at point: particleBrushCurvePoint) {
+    private func spawnParticle(at point: ParticlePoint) {
         guard particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount else { return }
         
         // Generate random position within a sphere
         let randPosition: SIMD3<Float> = AppConstants.Spawn.radius * randomUniformDistribute() * 2 + point.position
         let polarRandPosition: SIMD3<Float> = point.position
         
-        let attributes = particleBrushAttributes(position: randPosition.packed3,
+        let attributes = ParticleBrushAttributes(position: randPosition.packed3,
                                                  polarCoordinate: polarRandPosition.packed3,
                                                 color: SIMD3<Float16>(point.color).packed3,
                                                 curveDistance: curveDistanceForNextSample,
                                                 size: point.size,
                                                 initialPosition: randPosition.packed3)
-        particlesToSpawn.append(particleBrushParticle(attributes: attributes,
+        particlesToSpawn.append(ParticleBrushParticle(attributes: attributes,
                                                      velocity: (randomDirection() * point.initialSpeed).packed3))
     }
     
@@ -168,7 +172,7 @@ final class particleDrawingMeshGenerator {
         }
         
         // Allocate a new simulation buffer with room for `newParticleCapacity` particles.
-        let simBufferLength = newParticleCapacity * MemoryLayout<particleBrushParticle>.stride
+        let simBufferLength = newParticleCapacity * MemoryLayout<ParticleBrushParticle>.stride
         guard let metalDevice = metalDevice,
               let newBuffer = metalDevice.makeBuffer(length: simBufferLength, options: .storageModePrivate) else {
             throw particleBrushGenerationError.unableToCreateBuffer
@@ -227,7 +231,7 @@ final class particleDrawingMeshGenerator {
         
         // Simulate the particles that already exist in the simulation buffer.
         if particleCount > 0, let oldBuffer {
-            let parameters = particleBrushSimulationParams(particleCount: UInt32(particleCount),
+            let parameters = ParticleSimulationParams(particleCount: UInt32(particleCount),
                                                           deltaTime: deltaTime, dragCoefficient: 100)
             try Self.simulate(input: oldBuffer, output: simulationBuffer!,
                               particleCount: particleCount, parameters: parameters, encoder: computeEncoder)

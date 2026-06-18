@@ -1,22 +1,28 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ SimpleParticleSimulation.metal
+ 
+ Abstract:
+    A compute kernel written in Metal Shading Language to simulate the particles in a particle brush stroke,
+    and also to populate the mesh of a particle brush with the result of the simulation.
 
-Abstract:
-A compute kernel written in Metal Shading Language to simulate the particles in a particle brush stroke, 
-  and also to populate the mesh of a particle brush with the result of the simulation.
-*/
+ Created by: Danny Yan
+ */
 
 #include <metal_stdlib>
 
-#include "../Simulator/ParticleBrushVertex.h"
+#include "../Simulator/ParticleVertex.h"
 #define PI 3.14159265358979323846
 
 
 using namespace metal;
 
+/*
+ 
+ 
+ */
 [[kernel]]
-void particleBrushPopulate(device const particleBrushParticle *particles [[buffer(0)]],
-                          device particleBrushVertex *output [[buffer(1)]],
+void particleBrushPopulate(device const ParticleBrushParticle *particles [[buffer(0)]],
+                          device ParticleVertex *output [[buffer(1)]],
                           constant const uint32_t &particleCount [[buffer(2)]],
                           uint particleIdx [[thread_position_in_grid]])
 {
@@ -24,26 +30,32 @@ void particleBrushPopulate(device const particleBrushParticle *particles [[buffe
         return;
     }
     
-    particleBrushParticle particle = particles[particleIdx];
+    ParticleBrushParticle particle = particles[particleIdx];
     
     const uint startIndex = particleIdx * 4;
-    output[startIndex + 0] = particleBrushVertex { .attributes = particle.attributes, .uv = { 0, 0 }};
-    output[startIndex + 1] = particleBrushVertex { .attributes = particle.attributes, .uv = { 0, 1 }};
-    output[startIndex + 2] = particleBrushVertex { .attributes = particle.attributes, .uv = { 1, 1 }};
-    output[startIndex + 3] = particleBrushVertex { .attributes = particle.attributes, .uv = { 1, 0 }};
+    output[startIndex + 0] = ParticleVertex { .attributes = particle.attributes, .uv = { 0, 0 }};
+    output[startIndex + 1] = ParticleVertex { .attributes = particle.attributes, .uv = { 0, 1 }};
+    output[startIndex + 2] = ParticleVertex { .attributes = particle.attributes, .uv = { 1, 1 }};
+    output[startIndex + 3] = ParticleVertex { .attributes = particle.attributes, .uv = { 1, 0 }};
 }
 
+
+
+/*
+ Template particle simulator code
+ Particles oscillate in random directions
+ */
 [[kernel]]
-void particleBrushSimulate(device const particleBrushParticle *particles [[buffer(0)]],
-                          device particleBrushParticle *output [[buffer(1)]],
-                          constant particleBrushSimulationParams &params [[buffer(2)]],
+void particleBrushSimulate(device const ParticleBrushParticle *particles [[buffer(0)]],
+                          device ParticleBrushParticle *output [[buffer(1)]],
+                          constant ParticleSimulationParams &params [[buffer(2)]],
                           uint particleIdx [[thread_position_in_grid]])
 {
     if (particleIdx >= params.particleCount) {
         return;
     }
     
-    particleBrushParticle particle = particles[particleIdx];
+    ParticleBrushParticle particle = particles[particleIdx];
 
     const float speed2 = length_squared(particle.velocity);
 //    const float dragForce = -speed2 * (params.dragCoefficient * params.deltaTime);

@@ -1,15 +1,17 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-The SwiftUI `App` structure, which acts as the entry point of the app.
-  Defines the windows and spaces used by the app as well as global state.
-*/
+ ParticleSimulatorApp.swift
+ 
+ Abstract:
+ The SwiftUI `App` structure, which acts as the entry point of the app.
+ Defines the windows and spaces used by the app as well as global state.
+ 
+ Created by: Danny Yan
+ */
 
 import SwiftUI
 
 @main
-struct RealityKitDrawingApp: App {
+struct ParticleSimulatorApp: App {
     private static let ImmersiveGlobeSpace: String = "ImmersiveGlobeSpace"
     private static let splashScreenWindowId: String = "SplashScreen"
     
@@ -80,7 +82,7 @@ struct RealityKitDrawingApp: App {
 }
 
 struct SetModeKey: EnvironmentKey {
-    typealias Value = (RealityKitDrawingApp.Mode) async -> Void
+    typealias Value = (ParticleSimulatorApp.Mode) async -> Void
     static let defaultValue: Value = { _ in }
 }
 

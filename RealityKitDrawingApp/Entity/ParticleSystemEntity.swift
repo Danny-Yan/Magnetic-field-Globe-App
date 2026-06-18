@@ -1,6 +1,6 @@
 //
 //  ParticleSystemEntity.swift
-//  RealityKitDrawingApp
+//  ParticleSimulatorApp
 //
 //  Created by DY on 26/4/2026.
 //  Copyright © 2026 Apple. All rights reserved.
@@ -21,7 +21,7 @@ struct ParticleSystemEntity {
     private let ParticleSystemEntity = Entity()
     
     private func instantiateParticleSystemEntity (to content: RealityViewContent) {
-        particleBrushSystem.registerSystem()
+        ParticleBrushSystem.registerSystem()
         
         ParticleSystemEntity.name = "Brush Preset"
         content.add(ParticleSystemEntity)

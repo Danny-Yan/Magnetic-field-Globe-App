@@ -1,14 +1,17 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
+ ParticleMeshGenerator+LowLevelMesh.swift
+ 
+ Abstract:
+ Facilitates the generation of the mesh of the particle brush given the result of the brush's GPU particle simulation.
+ 
+ Created by: Danny Yan
+ */
 
-Abstract:
-Facilitates the generation of the mesh of the particle brush given the result of the brush's GPU particle simulation.
-*/
 
 import RealityKit
 import Metal
 
-extension particleDrawingMeshGenerator {
+extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushPopulate`.
     ///
     /// See `particleBrushSimulation.metal`.
@@ -25,9 +28,9 @@ extension particleDrawingMeshGenerator {
 
         descriptor.vertexCapacity = 4 * particleCapacity
         descriptor.indexCapacity = 6 * particleCapacity
-        descriptor.vertexAttributes = particleBrushVertex.vertexAttributes
+        descriptor.vertexAttributes = ParticleVertex.vertexAttributes
 
-        let stride = MemoryLayout<particleBrushVertex>.stride
+        let stride = MemoryLayout<ParticleVertex>.stride
         descriptor.vertexLayouts = [.init(bufferIndex: 0, bufferStride: stride)]
 
         let mesh = try LowLevelMesh(descriptor: descriptor)
@@ -77,7 +80,7 @@ extension particleDrawingMeshGenerator {
             throw particleBrushGenerationError.unableToCreateComputePipeline
         }
         
-        let particleStride = MemoryLayout<particleBrushParticle>.stride
+        let particleStride = MemoryLayout<ParticleBrushParticle>.stride
         precondition(input.length >= particleCount * particleStride)
         
         // 4 Vertices per particle.
