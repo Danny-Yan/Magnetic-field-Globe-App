@@ -56,3 +56,16 @@ func mix(_ point0: ParticlePoint, _ point1: ParticlePoint, t blend: Float) -> Pa
                                   size: mix(point0.size, point1.size, t: blend),
                                   color: mix(point0.color, point1.color, t: blend))
 }
+
+struct ParticleSettingProvider {
+    var initialSpeed: Float
+    var size: Float
+    var color: SIMD3<Float>
+    
+    func styleInput(position: SIMD3<Float>) -> ParticlePoint {
+        return ParticlePoint(position: position,
+                             initialSpeed: self.initialSpeed,
+                                       size: self.size,
+                                       color: self.color)
+    }
+}

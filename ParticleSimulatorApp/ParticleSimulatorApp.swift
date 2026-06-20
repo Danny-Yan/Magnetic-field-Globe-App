@@ -38,7 +38,6 @@ struct ParticleSimulatorApp: App {
         
     @State private var mode: Mode = .splashScreen
     @State private var canvas = DrawingCanvasSettings()
-    @State private var brushState = BrushState()
     
     @State private var immersiveSpacePresented: Bool = false
     @State private var immersionStyle: ImmersionStyle = .mixed
@@ -74,7 +73,7 @@ struct ParticleSimulatorApp: App {
             .windowStyle(.plain)
             
             ImmersiveSpace(id: Self.ImmersiveGlobeSpace){
-                ImmersiveContentViewMemoryManager(brushState: $brushState)
+                ImmersiveContentView()
             }
             .immersionStyle(selection: $immersionStyle, in: .mixed)
         }

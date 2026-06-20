@@ -1,5 +1,5 @@
 /*
- DrawingSource.swift
+ ParticleDrawingSource.swift
  
  Abstract:
  Evaluates and stores information about strokes based on someone's inputs and style parameters.
@@ -29,16 +29,15 @@ private extension Collection where Element: FloatingPoint {
     }
 }
 
-public struct DrawingSource {
+/// Instantiates `ParticleMeshGenerator`, draws particles to the screen
+public struct ParticleDrawingSource {
     private let rootEntity: Entity
     private var particleMaterial: RealityKit.Material
     
     private var ParticleMeshGen: ParticleMeshGenerator
     
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
-    
-    private var particleProvider = ParticleStyleProvider()
-    
+        
     @MainActor
     init(rootEntity: Entity, particleMaterial: Material? = nil) async {
         self.rootEntity = rootEntity
@@ -50,11 +49,8 @@ public struct DrawingSource {
     }
     
     @MainActor
-    mutating func receiveSynthetic(position: SIMD3<Float>, speed: Float, state: BrushState) {
-        let styled = particleProvider.styleInput(position: position, speed: speed,
-                                                settings: state.particleStyleSettings)
-        
-        ParticleMeshGen.traceSingular(point: styled)
+    mutating func drawParticlePointSynthetic(point: ParticlePoint) {
+        ParticleMeshGen.traceSingular(point: point)
     }
     
     

@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3A7686DA2AB263DA00762DDF"
-               BuildableName = "RealityKitDrawingApp.app"
-               BlueprintName = "RealityKitDrawingApp"
+               BuildableName = "ParticleSimulatorApp.app"
+               BlueprintName = "ParticleSimulatorApp"
                ReferencedContainer = "container:ParticleSimulatorApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A7686DA2AB263DA00762DDF"
-            BuildableName = "RealityKitDrawingApp.app"
-            BlueprintName = "RealityKitDrawingApp"
+            BuildableName = "ParticleSimulatorApp.app"
+            BlueprintName = "ParticleSimulatorApp"
             ReferencedContainer = "container:ParticleSimulatorApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A7686DA2AB263DA00762DDF"
-            BuildableName = "RealityKitDrawingApp.app"
-            BlueprintName = "RealityKitDrawingApp"
+            BuildableName = "ParticleSimulatorApp.app"
+            BlueprintName = "ParticleSimulatorApp"
             ReferencedContainer = "container:ParticleSimulatorApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
