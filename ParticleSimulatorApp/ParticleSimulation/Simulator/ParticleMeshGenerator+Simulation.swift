@@ -21,6 +21,7 @@ extension ParticleMeshGenerator {
                          particleOffsetInOutput: Int = 0,
                          particleCount: Int,
                          parameters: ParticleSimulationParams,
+                         modelBuffer: MTLBuffer,
                          encoder: MTLComputeCommandEncoder) throws {
         precondition(particleCount > 0)
         
@@ -28,7 +29,7 @@ extension ParticleMeshGenerator {
             throw particleBrushGenerationError.unableToCreateComputePipeline
         }
         
-        let particleStride = MemoryLayout<ParticleBrushParticle>.stride
+        let particleStride = MemoryLayout<ParticleAttributes>.stride
         let paramSize = MemoryLayout<ParticleSimulationParams>.size
         precondition(input.length >= particleCount * particleStride)
         precondition(output.length >= (particleCount + particleOffsetInOutput) * particleStride)
@@ -43,15 +44,18 @@ extension ParticleMeshGenerator {
             encoder.setBytes(parametersPtr, length: paramSize, index: 2)
         }
         
+        encoder.setBuffer(modelBuffer, offset: 0, index: 3)
+        
         let numGroups = (particleCount + groupSize - 1) / groupSize
         encoder.dispatchThreadgroups(MTLSizeMake(numGroups, 1, 1),
                                      threadsPerThreadgroup: MTLSizeMake(groupSize, 1, 1))
     }
     
-    static func addParticlesToSimulation(input: UnsafeBufferPointer<ParticleBrushParticle>,
+    static func addParticlesToSimulation(input: UnsafeBufferPointer<ParticleAttributes>,
                                          output: MTLBuffer,
                                          particleOffsetInOutput: Int = 0,
-                                         encoder: MTLComputeCommandEncoder) throws {
+                                         encoder: MTLComputeCommandEncoder,
+                                         modelBuffer: MTLBuffer) throws {
         let particleCount = input.count
         precondition(particleCount > 0)
         
@@ -59,8 +63,8 @@ extension ParticleMeshGenerator {
             throw particleBrushGenerationError.unableToCreateComputePipeline
         }
         
-        let particleStride = MemoryLayout<ParticleBrushParticle>.stride
-        precondition(MemoryLayout<ParticleBrushParticle>.alignment % 4 == 0, "ensure alignment")
+        let particleStride = MemoryLayout<ParticleAttributes>.stride
+        precondition(MemoryLayout<ParticleAttributes>.alignment % 4 == 0, "ensure alignment")
         precondition(output.length >= (particleOffsetInOutput + particleCount) * particleStride)
         
         let groupSize = simulatePipeline.maxTotalThreadsPerThreadgroup
@@ -75,6 +79,8 @@ extension ParticleMeshGenerator {
             let byteLength = length * particleStride
             
             let inputSlice = UnsafeBufferPointer(rebasing: input[particleStartIndex..<particleEndIndex])
+            
+            let paramSize = MemoryLayout<ParticleSimulationParams>.size
             precondition(inputSlice.count == length)
             
             encoder.setComputePipelineState(simulatePipeline)
@@ -84,14 +90,18 @@ extension ParticleMeshGenerator {
             
             // Set `particleCount` to the number of particles being added this batch.
             // Set `deltaTime` and `dragCoefficient` to zero, because you don't yet want to simulate the particles.
-            var currentParameters = ParticleSimulationParams(particleCount: UInt32(length),
-                                                                 deltaTime: 0,
-                                                                 dragCoefficient: 0)
-            encoder.setBytes(&currentParameters, length: MemoryLayout<ParticleSimulationParams>.size, index: 2)
             
+            var currentParameters = ParticleSimulationParams(particleCount: UInt32(length),
+                                                             deltaTime: 0)
+            encoder.setBytes(&currentParameters, length: paramSize, index: 2)
+            
+                              
+            encoder.setBuffer(modelBuffer, offset: 0, index: 3)
+                              
             let numGroups = (length + groupSize - 1) / groupSize
             encoder.dispatchThreadgroups(MTLSizeMake(numGroups, 1, 1),
                                          threadsPerThreadgroup: MTLSizeMake(groupSize, 1, 1))
+            
         }
     }
 }

@@ -23,12 +23,22 @@ final class ParticleMeshGenerator {
             return nil
         }
     }()
+    var coefficientBuffer: MTLBuffer
+    
+    var coefficientBufferLength: Int
+    var coefficientBufferIndices: MTLBuffer
+    var magneticModelBuffer: MTLBuffer
+    
+    // Direct pointer access to the magneticModel struct
+    var modelPointer: UnsafeMutablePointer<MagneticFieldModel> {
+        magneticModelBuffer.contents().bindMemory(to: MagneticFieldModel.self, capacity: 1)
+    }
     
     /// The `LowLevelMesh` currently being written to.  Contains capacity for `particleCapacity` particles.
     private var lowLevelMesh: LowLevelMesh?
     
     /// The particle simulation buffer.  Contains capacity for `particleCapacity` articles.
-    private var simulationBuffer: MTLBuffer?
+    internal var simulationBuffer: MTLBuffer?
     
     /// The number of particles supported by `lowLevelMesh` and `simulationBuffer` without reallocation.
     private var particleCapacity: Int = 0
@@ -51,7 +61,7 @@ final class ParticleMeshGenerator {
     private var curveDistanceForNextSample: Float = 0
     
     /// List of particles that must spawn into the scene when calling `populate`.
-    private var particlesToSpawn: ContiguousArray<ParticleBrushParticle> = []
+    private var particlesToSpawn: ContiguousArray<ParticleAttributes> = []
     
     /// If there is an active stroke, contains the most recently-traced point.  Else, contains `nil`.
     private var lastTracedPoint: ParticlePoint?
@@ -75,14 +85,97 @@ final class ParticleMeshGenerator {
         case unableToCreateBuffer
     }
     
-    init(rootEntity: Entity, material: Material) {
+    @MainActor
+    init(rootEntity: Entity, material: Material, modelCoefficientString: [String]) {
         self.rootEntity = rootEntity
         
+        let (modelIndices, modelCoefficients): ([SIMD2<Float>], [SIMD4<Float>]) = Self.createModelCoefficientArray(modelCoefficients: modelCoefficientString)
+        
+        // Safely unwrap metalDevice and create buffer
+        guard let metalDevice = metalDevice,
+                let coefficientsBuffer = metalDevice.makeBuffer(
+                  bytes: modelCoefficients,
+                  length: modelCoefficients.count * MemoryLayout<SIMD4<Float>>.stride,
+                  options: .storageModeShared
+              ),
+              let coefficientsBufferIndices = metalDevice.makeBuffer(
+                bytes: modelIndices,
+                length: modelIndices.count * MemoryLayout<SIMD2<Float>>.stride,
+                options: .storageModeShared
+            ),
+                let magneticModelBuffer = metalDevice.makeBuffer(
+                  length: MemoryLayout<MagneticFieldModel>.stride,
+                  options: .storageModeShared  // shared so CPU can read it back
+              )
+        else {
+            fatalError("Failed to create magnetic model coefficient buffer")
+        }
+        
+        self.coefficientBuffer = coefficientsBuffer
+        self.coefficientBufferIndices = coefficientsBufferIndices
+        self.magneticModelBuffer = magneticModelBuffer
+        self.coefficientBufferLength = modelCoefficients.count
+
+
+        // Sets ParticleComponent as its new root
         rootEntity.position = .zero
-        let ParticleComponent = ParticleComponent(generator: self, material: material)
-        rootEntity.components.set(ParticleComponent)
+        let particleComponent = ParticleComponent(generator: self, material: material)
+        rootEntity.components.set(particleComponent)
+        
+        try? initModelClass()
     }
-    
+
+    static func createModelCoefficientArray(modelCoefficients: [String]) -> ([SIMD2<Float>], [SIMD4<Float>]){
+        var coeffIndexSIMD: [SIMD2<Float>] = []
+        
+        let coeffFloatArray = modelCoefficients.enumerated().compactMap { (rowIndex: Int, row: String) -> SIMD4<Float>? in
+            var indexRow: [Float] = []
+            guard rowIndex != 0 else {return nil}
+            let components = row.components(separatedBy: " ").filter { !$0.isEmpty }
+            let arrRow = components.enumerated().compactMap{ (colIndex: Int, entry: String) -> Float? in
+                if let e = Float(entry) {
+                    if (colIndex <= 1) {
+                        indexRow.append(e)
+                        return nil
+                    }
+                    return e
+                }
+                return nil
+            }
+            coeffIndexSIMD.append(SIMD2<Float>(indexRow[0], indexRow[1]))
+            return SIMD4<Float>(arrRow[0], arrRow[1], arrRow[2], arrRow[3])
+        }
+        
+        return (coeffIndexSIMD, coeffFloatArray)
+    }
+
+    /// Called to  initialise magnetic model class with the parsed coefficients
+    @MainActor
+    func initModelClass() throws {
+        // Create a Metal command buffer and compute command encoder to execute GPU work.
+        guard let commandBuffer = Self.commandQueue?.makeCommandBuffer(),
+              let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            throw particleBrushGenerationError.unableToCreateComputeEncoder
+        }
+        commandBuffer.enqueue()
+
+        // Initialise Magnetic Model Class
+        try Self.initialiseMagneticModelClass(
+            coefficientBuffer:          self.coefficientBuffer,
+            coefficientBufferIndices:   self.coefficientBufferIndices,
+            coefficientBufferLength:    self.coefficientBufferLength,
+            outputModel:                self.magneticModelBuffer,
+            encoder:                    computeEncoder
+        )
+
+        computeEncoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+
+        print("WGS84_A: \(self.modelPointer.pointee.WGS84_A)")
+        print("WGS84_B: \(self.modelPointer.pointee.WGS84_B)")
+    }
+
     /// Call this function to trace the current brush stroke to `nextTracedPoint`.
     ///
     /// Begins a new stroke if there was no currently-active stroke.
@@ -145,15 +238,18 @@ final class ParticleMeshGenerator {
         
         // Generate random position within a sphere
         let randPosition: SIMD3<Float> = AppConstants.Spawn.radius * randomUniformDistribute() * 2 + point.position
-        let polarRandPosition: SIMD3<Float> = point.position
-        
-        let attributes = ParticleBrushAttributes(position: randPosition.packed3,
+        let polarRandPosition: SIMD3<Float> = point.polarPosition
+        let coordSpace: CoordSpace = point.coordSpace;
+        let magField = MagneticField()
+        let attributes = ParticlePointAttributes(position: randPosition.packed3,
                                                  polarCoordinate: polarRandPosition.packed3,
                                                 color: SIMD3<Float16>(point.color).packed3,
                                                 curveDistance: curveDistanceForNextSample,
                                                 size: point.size,
-                                                initialPosition: randPosition.packed3)
-        particlesToSpawn.append(ParticleBrushParticle(attributes: attributes,
+                                                 initialPosition: randPosition.packed3,
+                                                 coordSpace: coordSpace,
+                                                 magField: magField)
+        particlesToSpawn.append(ParticleAttributes(attributes: attributes,
                                                      velocity: (randomDirection() * point.initialSpeed).packed3))
     }
     
@@ -172,7 +268,7 @@ final class ParticleMeshGenerator {
         }
         
         // Allocate a new simulation buffer with room for `newParticleCapacity` particles.
-        let simBufferLength = newParticleCapacity * MemoryLayout<ParticleBrushParticle>.stride
+        let simBufferLength = newParticleCapacity * MemoryLayout<ParticleAttributes>.stride
         guard let metalDevice = metalDevice,
               let newBuffer = metalDevice.makeBuffer(length: simBufferLength, options: .storageModePrivate) else {
             throw particleBrushGenerationError.unableToCreateBuffer
@@ -232,20 +328,30 @@ final class ParticleMeshGenerator {
         // Simulate the particles that already exist in the simulation buffer.
         if particleCount > 0, let oldBuffer {
             let parameters = ParticleSimulationParams(particleCount: UInt32(particleCount),
-                                                          deltaTime: deltaTime, dragCoefficient: 100)
-            try Self.simulate(input: oldBuffer, output: simulationBuffer!,
-                              particleCount: particleCount, parameters: parameters, encoder: computeEncoder)
+                                                      deltaTime: deltaTime)
+            
+            try Self.simulate(input: oldBuffer,
+                              output: simulationBuffer!,
+                              particleCount: particleCount,
+                              parameters: parameters,
+                              modelBuffer: self.magneticModelBuffer,
+                              encoder: computeEncoder)
         }
         
         // Add any new particles to the simulation.
         if !particlesToSpawn.isEmpty {
             try particlesToSpawn.withUnsafeBufferPointer { bufferPointer in
-                try Self.addParticlesToSimulation(input: bufferPointer, output: simulationBuffer!,
-                                                  particleOffsetInOutput: particleCount, encoder: computeEncoder)
+                try Self.addParticlesToSimulation(input: bufferPointer,
+                                                  output: simulationBuffer!,
+                                                  particleOffsetInOutput: particleCount,
+                                                  encoder: computeEncoder,
+                                                  modelBuffer: self.magneticModelBuffer
+                )
             }
             particleCount += particlesToSpawn.count
             particlesToSpawn.removeAll()
         }
+    
         
         // Populate the `LowLevelMesh` with the result of the particle simulation.
         // WHERE THE APP UPDATES THE LOW LEVEL MESH WITH PARTICLES

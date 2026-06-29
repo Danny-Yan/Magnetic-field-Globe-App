@@ -80,7 +80,7 @@ extension ParticleMeshGenerator {
             throw particleBrushGenerationError.unableToCreateComputePipeline
         }
         
-        let particleStride = MemoryLayout<ParticleBrushParticle>.stride
+        let particleStride = MemoryLayout<ParticleAttributes>.stride
         precondition(input.length >= particleCount * particleStride)
         
         // 4 Vertices per particle.

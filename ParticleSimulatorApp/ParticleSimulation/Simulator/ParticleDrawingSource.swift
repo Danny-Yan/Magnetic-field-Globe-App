@@ -31,12 +31,13 @@ private extension Collection where Element: FloatingPoint {
 
 /// Instantiates `ParticleMeshGenerator`, draws particles to the screen
 public struct ParticleDrawingSource {
+    
     private let rootEntity: Entity
     private var particleMaterial: RealityKit.Material
-    
     private var ParticleMeshGen: ParticleMeshGenerator
-    
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
+    
+    private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrfCoefficients
         
     @MainActor
     init(rootEntity: Entity, particleMaterial: Material? = nil) async {
@@ -45,15 +46,14 @@ public struct ParticleDrawingSource {
         rootEntity.addChild(particleMeshEntity)
         self.particleMaterial = particleMaterial ?? SimpleMaterial()
         ParticleMeshGen = ParticleMeshGenerator(rootEntity: particleMeshEntity,
-                                                           material: self.particleMaterial)
+                                                material: self.particleMaterial,
+                                                modelCoefficientString: modelCoefficients)
     }
     
     @MainActor
     mutating func drawParticlePointSynthetic(point: ParticlePoint) {
         ParticleMeshGen.traceSingular(point: point)
     }
-    
-    
     
 //    @MainActor
 //    mutating func receive(input: InputData?, time: TimeInterval, state: BrushState) {

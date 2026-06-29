@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,7 @@
 		0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */; };
 		005203532F9E3779002FE1ED /* GeomagneticFieldSimulation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005203522F9E3779002FE1ED /* GeomagneticFieldSimulation.metal */; };
 		0052036B2F9E388C002FE1ED /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0052036A2F9E388C002FE1ED /* Error.swift */; };
+		0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */; };
 		006248312F9F12A9006BA4B8 /* ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248302F9F12A9006BA4B8 /* ResourceLoader.swift */; };
 		006248332F9F1319006BA4B8 /* Globe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248322F9F1319006BA4B8 /* Globe.swift */; };
 		00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */; };
@@ -41,12 +42,24 @@
 		3AECFF342C00709600176926 /* DrawingCanvasVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AECFF332C00709100176926 /* DrawingCanvasVisualizationView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		00619B002FEFE839002DFAEC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A7686D32AB263DA00762DDF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A7686DA2AB263DA00762DDF;
+			remoteInfo = ParticleSimulatorApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		004F852E2F9F459800F90CD7 /* GlobeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeEntity.swift; sourceTree = "<group>"; };
 		005024D92F9CCA8C0033597A /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constants.swift; sourceTree = "<group>"; };
 		0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleSystemEntity.swift; sourceTree = "<group>"; };
 		005203522F9E3779002FE1ED /* GeomagneticFieldSimulation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GeomagneticFieldSimulation.metal; sourceTree = "<group>"; };
 		0052036A2F9E388C002FE1ED /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+InitialiseClass.swift"; sourceTree = "<group>"; };
+		00619AFC2FEFE839002DFAEC /* ParticleSimulatorAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ParticleSimulatorAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		006248302F9F12A9006BA4B8 /* ResourceLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceLoader.swift; sourceTree = "<group>"; };
 		006248322F9F1319006BA4B8 /* Globe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globe.swift; sourceTree = "<group>"; };
 		00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleDrawingSource.swift; sourceTree = "<group>"; };
@@ -83,7 +96,18 @@
 		CE6D6D139AF68682151B497F /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		00619AFD2FEFE839002DFAEC /* ParticleSimulatorAppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ParticleSimulatorAppTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		00619AF92FEFE839002DFAEC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A7686D82AB263DA00762DDF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -109,6 +133,7 @@
 		005203492F9E2B7D002FE1ED /* Simulator */ = {
 			isa = PBXGroup;
 			children = (
+				0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */,
 				0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */,
 				3AB6DB4E2BF3F37000DE837B /* ParticleMeshGenerator+LowLevelMesh.swift */,
 				3AB6DB4C2BF3D27C00DE837B /* ParticleMeshGenerator+Simulation.swift */,
@@ -171,6 +196,7 @@
 				8A319A4AB7527C79477470F5 /* README.md */,
 				3A7686DD2AB263DA00762DDF /* ParticleSimulatorApp */,
 				3A7686DE2AB263DA00762DDF /* Packages */,
+				00619AFD2FEFE839002DFAEC /* ParticleSimulatorAppTests */,
 				3A7686DC2AB263DA00762DDF /* Products */,
 				69429742D829035C8A119720 /* Configuration */,
 				863C3AA37ABE4C1E22073B90 /* LICENSE */,
@@ -181,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				3A7686DB2AB263DA00762DDF /* ParticleSimulatorApp.app */,
+				00619AFC2FEFE839002DFAEC /* ParticleSimulatorAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -259,6 +286,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		00619AFB2FEFE839002DFAEC /* ParticleSimulatorAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00619B022FEFE839002DFAEC /* Build configuration list for PBXNativeTarget "ParticleSimulatorAppTests" */;
+			buildPhases = (
+				00619AF82FEFE839002DFAEC /* Sources */,
+				00619AF92FEFE839002DFAEC /* Frameworks */,
+				00619AFA2FEFE839002DFAEC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00619B012FEFE839002DFAEC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				00619AFD2FEFE839002DFAEC /* ParticleSimulatorAppTests */,
+			);
+			name = ParticleSimulatorAppTests;
+			packageProductDependencies = (
+			);
+			productName = ParticleSimulatorAppTests;
+			productReference = 00619AFC2FEFE839002DFAEC /* ParticleSimulatorAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3A7686DA2AB263DA00762DDF /* ParticleSimulatorApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3A7686F82AB263DC00762DDF /* Build configuration list for PBXNativeTarget "ParticleSimulatorApp" */;
@@ -288,13 +338,17 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 1600;
 				ORGANIZATIONNAME = Apple;
 				TargetAttributes = {
+					00619AFB2FEFE839002DFAEC = {
+						CreatedOnToolsVersion = 26.4.1;
+						TestTargetID = 3A7686DA2AB263DA00762DDF;
+					};
 					3A7686DA2AB263DA00762DDF = {
 						CreatedOnToolsVersion = 15.0;
-						LastSwiftMigration = 1500;
+						LastSwiftMigration = 2640;
 					};
 				};
 			};
@@ -316,11 +370,19 @@
 			projectRoot = "";
 			targets = (
 				3A7686DA2AB263DA00762DDF /* ParticleSimulatorApp */,
+				00619AFB2FEFE839002DFAEC /* ParticleSimulatorAppTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		00619AFA2FEFE839002DFAEC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A7686D92AB263DA00762DDF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -333,6 +395,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		00619AF82FEFE839002DFAEC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A7686D72AB263DA00762DDF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -348,6 +417,7 @@
 				3A5192C42C003C7C00EF1D14 /* ParticleVertex+LowLevelMesh.swift in Sources */,
 				004F852F2F9F459C00F90CD7 /* GlobeEntity.swift in Sources */,
 				3AECFF2C2C004C7D00176926 /* SplashScreenBackgroundView.swift in Sources */,
+				0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */,
 				3AB6DB4D2BF3D2AC00DE837B /* ParticleMeshGenerator+Simulation.swift in Sources */,
 				3A357C942BF1C6F30067B0CB /* ParticleComponent.swift in Sources */,
 				3A7B00552BCB51A50068302D /* CurveProcessing.swift in Sources */,
@@ -369,7 +439,63 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		00619B012FEFE839002DFAEC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A7686DA2AB263DA00762DDF /* ParticleSimulatorApp */;
+			targetProxy = 00619B002FEFE839002DFAEC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		00619B032FEFE839002DFAEC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4SJ8R6649F;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = test.ParticleSimulatorAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ParticleSimulatorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ParticleSimulatorApp";
+				XROS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Debug;
+		};
+		00619B042FEFE839002DFAEC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4SJ8R6649F;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = test.ParticleSimulatorAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ParticleSimulatorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ParticleSimulatorApp";
+				XROS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Release;
+		};
 		3A7686F62AB263DC00762DDF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CE6D6D139AF68682151B497F /* SampleCode.xcconfig */;
@@ -551,6 +677,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		00619B022FEFE839002DFAEC /* Build configuration list for PBXNativeTarget "ParticleSimulatorAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00619B032FEFE839002DFAEC /* Debug */,
+				00619B042FEFE839002DFAEC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3A7686D62AB263DA00762DDF /* Build configuration list for PBXProject "ParticleSimulatorApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -21,7 +21,7 @@ using namespace metal;
  
  */
 [[kernel]]
-void particleBrushPopulate(device const ParticleBrushParticle *particles [[buffer(0)]],
+void particleBrushPopulate(device const ParticleAttributes *particles [[buffer(0)]],
                           device ParticleVertex *output [[buffer(1)]],
                           constant const uint32_t &particleCount [[buffer(2)]],
                           uint particleIdx [[thread_position_in_grid]])
@@ -30,7 +30,7 @@ void particleBrushPopulate(device const ParticleBrushParticle *particles [[buffe
         return;
     }
     
-    ParticleBrushParticle particle = particles[particleIdx];
+    ParticleAttributes particle = particles[particleIdx];
     
     const uint startIndex = particleIdx * 4;
     output[startIndex + 0] = ParticleVertex { .attributes = particle.attributes, .uv = { 0, 0 }};
@@ -46,8 +46,8 @@ void particleBrushPopulate(device const ParticleBrushParticle *particles [[buffe
  Particles oscillate in random directions
  */
 [[kernel]]
-void particleBrushSimulate(device const ParticleBrushParticle *particles [[buffer(0)]],
-                          device ParticleBrushParticle *output [[buffer(1)]],
+void particleBrushSimulate(device const ParticleAttributes *particles [[buffer(0)]],
+                          device ParticleAttributes *output [[buffer(1)]],
                           constant ParticleSimulationParams &params [[buffer(2)]],
                           uint particleIdx [[thread_position_in_grid]])
 {
@@ -55,7 +55,7 @@ void particleBrushSimulate(device const ParticleBrushParticle *particles [[buffe
         return;
     }
     
-    ParticleBrushParticle particle = particles[particleIdx];
+    ParticleAttributes particle = particles[particleIdx];
 
     const float speed2 = length_squared(particle.velocity);
 //    const float dragForce = -speed2 * (params.dragCoefficient * params.deltaTime);

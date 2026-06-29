@@ -18,7 +18,7 @@ struct ParticleComponent: Component {
 class ParticleBrushSystem: System {
     private static let query = EntityQuery(where: .has(ParticleComponent.self))
     
-    required init(scene: RealityKit.Scene) { }
+    required init(scene: RealityKit.Scene) {}
     
     private var lastUpdateTime: Date?
     
@@ -28,8 +28,8 @@ class ParticleBrushSystem: System {
         lastUpdateTime = now
         
         for entity in context.entities(matching: Self.query, updatingSystemWhen: .rendering) {
-            let brushComponent: ParticleComponent = entity.components[ParticleComponent.self]!
-            let generator = brushComponent.generator
+            let particleComponent: ParticleComponent = entity.components[ParticleComponent.self]!
+            let generator = particleComponent.generator
             
             // Calls `update` on the generator.
             // This returns a non-nil `LowLevelMesh` if a new mesh had to be allocated.
@@ -43,7 +43,7 @@ class ParticleBrushSystem: System {
                 if entity.components.has(ModelComponent.self) {
                     entity.components[ModelComponent.self]!.mesh = resource
                 } else {
-                    let modelComponent = ModelComponent(mesh: resource, materials: [brushComponent.material])
+                    let modelComponent = ModelComponent(mesh: resource, materials: [particleComponent.material])
                     entity.components.set(modelComponent)
                 }
             }

@@ -24,7 +24,7 @@ struct ParticleSystemEntity {
         color: AppConstants.Particle.color,
     )
     
-    private func instantiateParticleSystemEntity (to content: RealityViewContent) {
+     internal func instantiateParticleSystemEntity (to content: RealityViewContent) {
         ParticleBrushSystem.registerSystem()
         
         ParticleSystemEntity.name = "Particle System"
@@ -47,7 +47,7 @@ struct ParticleSystemEntity {
         // As generated the stroke fills a 1 x 1 x 1 meter box. Scale down the entity to fit.
         ParticleSystemEntity.scale = SIMD3<Float>(repeating: entityScale)
     }
-    private func instantiateParticleMaterial(to content: RealityViewContent) async -> ShaderGraphMaterial? {
+    static internal func instantiateParticleMaterial() async -> ShaderGraphMaterial? {
         var particleMaterial = try? await ShaderGraphMaterial(named: "/Root/SparklePresetBrushMaterial",
                                                              from: "PresetBrushMaterial",
                                                              in: realityKitContentBundle)
@@ -60,7 +60,7 @@ struct ParticleSystemEntity {
     func addParticles(to content: RealityViewContent) async {
         // Initialise Particle
         instantiateParticleSystemEntity(to: content)
-        let particleMaterial = await instantiateParticleMaterial(to: content)
+        let particleMaterial = await Self.instantiateParticleMaterial()
         var source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, particleMaterial: particleMaterial)
         
         // Create Particle
@@ -89,20 +89,17 @@ struct ParticlePoint {
     /// Color of particles emitted from this point.
     var color: SIMD3<Float>
     
+    var coordSpace: CoordSpace = CoordSpace(
+        northVector: SIMD3<Float>(repeating: 0.0).packed3,
+        eastVector:  SIMD3<Float>(repeating: 0.0).packed3,
+        verticalVector: SIMD3<Float>(repeating: 0.0).packed3,
+    )
+    
     init(position: SIMD3<Float>, initialSpeed: Float, size: Float, color: SIMD3<Float>) {
         self.position = position
         self.initialSpeed = initialSpeed
         self.size = size
         self.color = color
-        self.polarPosition = convertToPolar(position: position)
-    }
-    
-    private mutating func convertToPolar(position: SIMD3<Float>) -> SIMD3<Float>{
-        return SIMD3<Float>(
-            atan(position.x + position.y),
-            sin(position.x),
-            cos(position.z)
-        )
     }
 }
 

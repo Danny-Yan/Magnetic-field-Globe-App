@@ -52,7 +52,7 @@ struct ParticleSimulatorApp: App {
         let oldMode = mode
         guard newMode != oldMode else { return }
         
-        if newMode.windowId == Mode.drawing.windowId {
+        if (newMode.windowId == Mode.drawing.windowId) {
             await openImmersiveSpace(id: newMode.windowId)
         } else {
             openWindow(id: newMode.windowId)
@@ -64,10 +64,22 @@ struct ParticleSimulatorApp: App {
     var body: some Scene {
         Group {
             WindowGroup(id: Self.splashScreenWindowId) {
-                SplashScreenView()
-                    .environment(\.setMode, setMode)
-                    .frame(width: 1000, height: 700)
-                    .fixedSize()
+                
+                if AppConstants.Sim.skipSplashScreen {
+                    Text("Loading...").task {
+                        do {
+                            await setMode(.drawing)
+                        }
+                    }
+                } else {
+                    ZStack{
+                        SplashScreenView()
+                            .environment(\.setMode, setMode)
+                            .frame(width: 1000, height: 700)
+                            .fixedSize()
+                    }
+                }
+                
             }
             .windowResizability(.contentSize)
             .windowStyle(.plain)

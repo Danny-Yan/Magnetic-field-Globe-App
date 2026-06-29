@@ -18,16 +18,19 @@ struct ImmersiveContentView: View {
     var body: some View {
         RealityView { content in
             
-            let particleSystemEntity = ParticleSystemEntity()
-            let globeEntity = GlobeEntity()
-            
-            do{
-                try await globeEntity.addEarthGeometry(to: content)
-            } catch {
-                print("Unable to load earth geometry")
+            if (AppConstants.Sim.showSim){
+                let particleSystemEntity = ParticleSystemEntity()
+                await particleSystemEntity.addParticles(to: content)
             }
-            
-            await particleSystemEntity.addParticles(to: content)
+            if (AppConstants.Earth.showEarth) {
+                let globeEntity = GlobeEntity()
+                
+                do{
+                    try await globeEntity.addEarthGeometry(to: content)
+                } catch {
+                    print("Unable to load earth geometry")
+                }
+            }
         }
             .frame(depth: 0)
     }
