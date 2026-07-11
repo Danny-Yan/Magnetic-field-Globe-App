@@ -33,3 +33,50 @@ extension SIMD3 where Scalar == Float16 {
     /// Convert a `SIMD3<Float16>` to a `packed_half3`.
     var packed3: packed_half3 { return .init(x: x, y: y, z: z) }
 }
+
+/// Function for creating a buffer of a single type, non array type
+func createSingleTypeBuffer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> MTLBuffer {
+    guard let metalDevice = metalDevice,
+        let outputBuffer = metalDevice.makeBuffer(
+            length: MemoryLayout<T>.stride,
+            options: .storageModeShared  // shared so CPU can read it back
+        )
+    else {
+        fatalError("Failed to create magnetic model coefficient buffer")
+    }
+    return outputBuffer
+}
+
+/// Creates a buffer pointer to an inputted pointer
+func createSingleTypeBufPointer<T>(buf: inout MTLBuffer, of type: T.Type) -> UnsafeMutablePointer<T> {
+    // Direct pointer access to the magneticModel struct
+    var modelPointer: UnsafeMutablePointer<T>{
+        buf.contents().bindMemory(
+            to: type.self,
+            capacity: 1
+        )
+    }
+    
+    return modelPointer
+}
+
+
+func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> (MTLBuffer, UnsafeMutablePointer<T>) {
+    
+    var buffer = try await createSingleTypeBuffer(metalDevice: metalDevice, of: T.self)
+    var pointer = createSingleTypeBufPointer(buf: &buffer, of: T.self)
+    
+    return (buffer, pointer)
+}
+
+func printClassEntries(headline: String = "", for target: Any){
+    // Print out all elements in the output
+    
+    print(" ---------------------- \(headline) ---------------------- \n")
+    let outputMirror = Mirror(reflecting: target)
+    for child in outputMirror.children{
+        if let propertyName = child.label{
+            print("\(propertyName): \(child.value)")
+        }
+    }
+}

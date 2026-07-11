@@ -38,6 +38,7 @@ struct ParticlePointAttributes {
     packed_float3 initialPosition;
     struct CoordSpace coordSpace;
     struct MagneticField magField;
+    float yearFraction;
 };
 
 struct ParticleAttributes {
@@ -55,6 +56,10 @@ struct ParticleSimulationParams {
     float deltaTime;
 };
 
+struct SchmidtScalingWrapper {
+    float inner[169];
+};
+
 // Magnetic Model Struct
 // Input:
 // Longitude, Latitude, Altitude, Time
@@ -69,43 +74,52 @@ struct MagneticFieldModel {
     
     // Max degree of model
     float MAX_DEG;
-   
+    
+    // Global epoch of the simulation
+    float epoch;
+
     // Main Model coefficients
-    float c[13 * 13];
+    float c[169];
     // Secular coefficients
-    float cd[13 * 13];
-    // Time Adjusted coefficients
-    float tc[13 * 13];
-    // Theta derivative of p(n, m) (unnormalised)
-    float dp[13 * 13];
-    // Schmidt normalisation factors
-    float snorm[169];
-    // Sine of longitude
-    float sp[13];
-    // Cosine of longitude
-    float cp[13];
+    float cd[169];
     
     float fn[13];
     float fm[13];
     
-    // Associated Legendre polynomials for m = 1
-    float pp[13];
-    float k[13 * 13];
+    struct SchmidtScalingWrapper snorm;
     
-    // Old time and position values
+    // Associated Legendre polynomials for m = 1
+    float k[169];
+};
+
+
+struct MagneticFieldPerParticleVariables {
+    
+    float ct;
+    float st;
+    float r;
+    float d;
+    float ca;
+    float sa;
+    
     float otime;
     float oalt;
     float olat;
     float olon;
     
-    // Global epoch of the simulation
-    float epoch;
-    float r;
-    float d;
-    float ca;
-    float sa;
-    float ct;
-    float st;
+    // Time adjusted coefficients
+    float tc[169];
+    // Theta derivative of p(n, m) (unnormalised)
+    float dp[169];
+    // Schmidt normalisation factors
+    struct SchmidtScalingWrapper snorm;
+    // Sine of longitude
+    float sp[13];
+    // Cosine of longitude
+    float cp[13];
+    
+    float pp[13];
+ 
 };
 
 #pragma pack(pop)

@@ -37,7 +37,7 @@ public struct ParticleDrawingSource {
     private var ParticleMeshGen: ParticleMeshGenerator
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
     
-    private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrfCoefficients
+    private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrf
         
     @MainActor
     init(rootEntity: Entity, particleMaterial: Material? = nil) async {

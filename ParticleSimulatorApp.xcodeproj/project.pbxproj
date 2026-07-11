@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		004CD5D72FFE86D400453CAA /* DateUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004CD5D62FFE86CF00453CAA /* DateUtilities.swift */; };
 		004F852F2F9F459C00F90CD7 /* GlobeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004F852E2F9F459800F90CD7 /* GlobeEntity.swift */; };
 		005024DA2F9CCA8F0033597A /* constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005024D92F9CCA8C0033597A /* constants.swift */; };
 		0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */; };
@@ -15,6 +16,7 @@
 		0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */; };
 		006248312F9F12A9006BA4B8 /* ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248302F9F12A9006BA4B8 /* ResourceLoader.swift */; };
 		006248332F9F1319006BA4B8 /* Globe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248322F9F1319006BA4B8 /* Globe.swift */; };
+		0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */; };
 		00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */; };
 		3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */; };
 		3A0BFF772BE22AEA00BF194C /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */; };
@@ -53,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		004CD5D62FFE86CF00453CAA /* DateUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtilities.swift; sourceTree = "<group>"; };
 		004F852E2F9F459800F90CD7 /* GlobeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeEntity.swift; sourceTree = "<group>"; };
 		005024D92F9CCA8C0033597A /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constants.swift; sourceTree = "<group>"; };
 		0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleSystemEntity.swift; sourceTree = "<group>"; };
@@ -62,6 +65,7 @@
 		00619AFC2FEFE839002DFAEC /* ParticleSimulatorAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ParticleSimulatorAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		006248302F9F12A9006BA4B8 /* ResourceLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceLoader.swift; sourceTree = "<group>"; };
 		006248322F9F1319006BA4B8 /* Globe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globe.swift; sourceTree = "<group>"; };
+		0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+Util.swift"; sourceTree = "<group>"; };
 		00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleDrawingSource.swift; sourceTree = "<group>"; };
 		3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalUtilities.swift; sourceTree = "<group>"; };
@@ -133,6 +137,7 @@
 		005203492F9E2B7D002FE1ED /* Simulator */ = {
 			isa = PBXGroup;
 			children = (
+				0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */,
 				0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */,
 				0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */,
 				3AB6DB4E2BF3F37000DE837B /* ParticleMeshGenerator+LowLevelMesh.swift */,
@@ -170,8 +175,8 @@
 			children = (
 				3AECFF2D2C004CAA00176926 /* SplashScreenForeground.swift */,
 				3AECFF2B2C004C7800176926 /* SplashScreenBackgroundView.swift */,
-				3AECFF292C004C3800176926 /* SplashScreenBackgroundComponent.swift */,
 				3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */,
+				3AECFF292C004C3800176926 /* SplashScreenBackgroundComponent.swift */,
 				3AFFD30E2BF176F000935A95 /* DistanceFunctions.h */,
 				3A0BFF782BE22F4A00BF194C /* SplashScreenBackground.metal */,
 			);
@@ -181,6 +186,7 @@
 		3A0BFF732BE22A0100BF194C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				004CD5D62FFE86CF00453CAA /* DateUtilities.swift */,
 				0052036A2F9E388C002FE1ED /* Error.swift */,
 				3A958F502BFFAC3800D2BF2D /* MetalPacking.h */,
 				3A7B00532BCB51A50068302D /* CurveProcessing.swift */,
@@ -413,6 +419,7 @@
 				3A0BFF792BE22F4A00BF194C /* SplashScreenBackground.metal in Sources */,
 				006248312F9F12A9006BA4B8 /* ResourceLoader.swift in Sources */,
 				3A4AEF802BDDC301005534FE /* ImmersiveContentView.swift in Sources */,
+				0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */,
 				3A7686E32AB263DA00762DDF /* ParticleSimulatorApp.swift in Sources */,
 				3A5192C42C003C7C00EF1D14 /* ParticleVertex+LowLevelMesh.swift in Sources */,
 				004F852F2F9F459C00F90CD7 /* GlobeEntity.swift in Sources */,
@@ -423,6 +430,7 @@
 				3A7B00552BCB51A50068302D /* CurveProcessing.swift in Sources */,
 				3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */,
 				3AECFF342C00709600176926 /* DrawingCanvasVisualizationView.swift in Sources */,
+				004CD5D72FFE86D400453CAA /* DateUtilities.swift in Sources */,
 				3A5BF7452BE6F3C6000A6CA1 /* DrawingCanvas.swift in Sources */,
 				00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */,
 				3A6323C72BE0C61D00D82EC6 /* SimpleParticleSimulation.metal in Sources */,
