@@ -17,6 +17,7 @@
 		006248312F9F12A9006BA4B8 /* ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248302F9F12A9006BA4B8 /* ResourceLoader.swift */; };
 		006248332F9F1319006BA4B8 /* Globe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248322F9F1319006BA4B8 /* Globe.swift */; };
 		0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */; };
+		00641B3D300BAE2700ED2A5F /* Geomagnetism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */; };
 		00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */; };
 		3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */; };
 		3A0BFF772BE22AEA00BF194C /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */; };
@@ -66,6 +67,7 @@
 		006248302F9F12A9006BA4B8 /* ResourceLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceLoader.swift; sourceTree = "<group>"; };
 		006248322F9F1319006BA4B8 /* Globe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globe.swift; sourceTree = "<group>"; };
 		0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+Util.swift"; sourceTree = "<group>"; };
+		00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geomagnetism.swift; sourceTree = "<group>"; };
 		00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleDrawingSource.swift; sourceTree = "<group>"; };
 		3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalUtilities.swift; sourceTree = "<group>"; };
@@ -170,6 +172,14 @@
 			path = Globe;
 			sourceTree = "<group>";
 		};
+		00641B3B300BADE900ED2A5F /* External */ = {
+			isa = PBXGroup;
+			children = (
+				00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */,
+			);
+			path = External;
+			sourceTree = "<group>";
+		};
 		3A0BFF712BE223C300BF194C /* SplashScreenView */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +231,7 @@
 		3A7686DD2AB263DA00762DDF /* ParticleSimulatorApp */ = {
 			isa = PBXGroup;
 			children = (
+				00641B3B300BADE900ED2A5F /* External */,
 				0052034F2F9E35CD002FE1ED /* Globe */,
 				3ADB78A42AB3A8BB000BD147 /* ParticleSimulatorApp_BridgingHeader.h */,
 				3A7686EB2AB263DC00762DDF /* Info.plist */,
@@ -432,6 +443,7 @@
 				3AECFF342C00709600176926 /* DrawingCanvasVisualizationView.swift in Sources */,
 				004CD5D72FFE86D400453CAA /* DateUtilities.swift in Sources */,
 				3A5BF7452BE6F3C6000A6CA1 /* DrawingCanvas.swift in Sources */,
+				00641B3D300BAE2700ED2A5F /* Geomagnetism.swift in Sources */,
 				00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */,
 				3A6323C72BE0C61D00D82EC6 /* SimpleParticleSimulation.metal in Sources */,
 				3AECFF322C006F5C00176926 /* DrawingCanvasPlacementView.swift in Sources */,
@@ -476,7 +488,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ParticleSimulatorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ParticleSimulatorApp";
-				XROS_DEPLOYMENT_TARGET = 26.4;
+				XROS_DEPLOYMENT_TARGET = 26.5;
 			};
 			name = Debug;
 		};
@@ -500,7 +512,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ParticleSimulatorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ParticleSimulatorApp";
-				XROS_DEPLOYMENT_TARGET = 26.4;
+				XROS_DEPLOYMENT_TARGET = 26.5;
 			};
 			name = Release;
 		};

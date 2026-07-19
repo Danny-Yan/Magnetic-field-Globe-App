@@ -342,5 +342,7 @@ void testCalculateMagneticField(device packed_float3 &polarCoordinate [[buffer(0
     thread packed_float3 polarCoord = polarCoordinate;
     thread MagneticFieldPerParticleVariables localVar = localVariables;
     output = calculateMagneticField(magneticFieldModel, localVar, yearFraction, polarCoord);
+    
+    localVariables = localVar; // write back to local variables to be readable on swift
 }
 

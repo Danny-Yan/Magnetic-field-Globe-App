@@ -80,3 +80,20 @@ func printClassEntries(headline: String = "", for target: Any){
         }
     }
 }
+
+
+func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder) -> Void) async throws {
+    
+    guard let queue = mtlDevice?.makeCommandQueue(),
+          let commandBuffer = queue.makeCommandBuffer(),
+          let encoder = commandBuffer.makeComputeCommandEncoder()
+    else {
+        fatalError("Failed to create command buffer/encoder for test dispatch")
+    }
+
+    gpuFunction(encoder)
+    
+    encoder.endEncoding()
+    commandBuffer.commit()
+    await commandBuffer.completed()
+}

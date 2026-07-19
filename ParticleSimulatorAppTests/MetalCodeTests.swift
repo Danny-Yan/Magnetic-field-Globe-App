@@ -14,26 +14,29 @@ import SwiftUI
 import Testing
 
 @testable import ParticleSimulatorApp
-
 struct MetalCodeTests {
     
-    var coefficientBuffers: CoefficientBuffers
-    var magneticModelBuffer: MTLBuffer
-    let magneticModelPointer: UnsafeMutablePointer<MagneticFieldModel>
-    var computeEncoder: MTLComputeCommandEncoder
-    var commandBuffer: MTLCommandBuffer
-
+    var coefficientBuffers: CoefficientBuffers? = nil
+    var magneticModelBuffer: MTLBuffer? = nil
+    var magneticModelPointer: UnsafeMutablePointer<MagneticFieldModel>? = nil
+    var computeEncoder: MTLComputeCommandEncoder? = nil
+    var commandBuffer: MTLCommandBuffer? = nil
+        
     //    private var testParticleGen: ParticleMeshGenerator
     init() async throws {
+        try await initParticleSimulatorApp()
+    }
+    
+    private mutating func initParticleSimulatorApp() async throws {
         AppConstants.Spawn.maxSpawnCount = 1
         AppConstants.Spawn.minSpawnCount = 1
-
+        
         AppConstants.Spawn.centre = [-0.5, 1.5, -1]
         AppConstants.Spawn.radius = 0  // Remove Randomness from sphere position
-
+        
         AppConstants.Particle.initialSpeed = 0
         AppConstants.Particle.size = 0.3
-
+        
         AppConstants.Earth.showEarth = false
         AppConstants.Sim.skipSplashScreen = true
         AppConstants.Sim.showSim = true
@@ -47,15 +50,15 @@ struct MetalCodeTests {
                 return nil
             }
         }()
-
-        (coefficientBuffers, magneticModelBuffer) =
-            ParticleMeshGenerator.createModelBuffers(
-                modelCoefficients: AppConstants.modelCoefficients.igrf,
-                metalDevice: metalDevice
-            )
         
-        magneticModelPointer = createSingleTypeBufPointer(buf: &magneticModelBuffer, of: MagneticFieldModel.self)
-
+        (coefficientBuffers, magneticModelBuffer) =
+        ParticleMeshGenerator.createModelBuffers(
+            modelCoefficients: AppConstants.modelCoefficients.igrf,
+            metalDevice: metalDevice
+        )
+        
+        magneticModelPointer = createSingleTypeBufPointer(buf: &magneticModelBuffer!, of: MagneticFieldModel.self)
+        
         guard let commandBuf = commandQueue?.makeCommandBuffer(),
               let compute = commandBuf.makeComputeCommandEncoder()
         else {
@@ -64,121 +67,17 @@ struct MetalCodeTests {
         
         computeEncoder = compute
         commandBuffer = commandBuf
+        commandBuffer!.enqueue()
         
-        commandBuffer.enqueue()
-
         try? ParticleMeshGenerator.initialiseMagneticModelClass(
-            coefficientBuffers: coefficientBuffers,
-            outputModel: magneticModelBuffer,
-            encoder: computeEncoder
+            coefficientBuffers: coefficientBuffers!,
+            outputModel: magneticModelBuffer!,
+            encoder: computeEncoder!
         )
-
-        computeEncoder.endEncoding()
-        commandBuffer.commit()
-        await commandBuffer.completed()
-
-
-        // Create Material
-        //        let particleMaterial = await ParticleSystemEntity.instantiateParticleMaterial()
-        //        let material: RealityKit.Material = particleMaterial ?? SimpleMaterial()
-
-        //        let rootEntity = Entity()
-        //        testParticleGen = ParticleMeshGenerator(rootEntity: rootEntity,
-        //                                                    material: material,
-        //                                                    modelCoefficientString: AppConstants.modelCoefficients.igrf)
-    }
-
-    //    @Test @MainActor func testGeomagneticFieldSimulation() async throws {
-    //        // Add particle point to sim
-    //        let particlePoint = ParticlePoint(position: AppConstants.Spawn.centre,
-    //                                          initialSpeed: AppConstants.Particle.initialSpeed,
-    //                                          size: AppConstants.Particle.size,
-    //                                          color: AppConstants.Particle.color)
-    //
-    //        testParticleGen.traceSingular(point: particlePoint)
-    //
-    //        // Drive the simulation. Each call enqueues GPU work asynchronously, so we wait for the
-    //        // most recently-submitted command buffer to finish before issuing the next one and before
-    //        // reading results back - otherwise the readback below races the GPU.
-    //        for _ in 0...1 {
-    //            try testParticleGen.update(deltaTime: 0.1) { _ in }
-    //            testParticleGen.waitUntilSimulationComplete()
-    //        }
-    //
-    //        // Direct pointer access to the particleBuffer struct.
-    //        // `simulationBuffer` now uses `.storageModeShared`, so `.contents()` is safe to read from the CPU.
-    //        // Bind directly to `ParticleAttributes` (the buffer's actual element type) - binding to
-    //        // `[ParticleAttributes]` (a Swift Array) was reinterpreting raw GPU bytes as if they were an
-    //        // Array's internal object representation, which is meaningless.
-    //        guard let simulationBuffer = testParticleGen.simulationBuffer else {
-    //            Issue.record("simulationBuffer was nil after update")
-    //            return
-    //        }
-    //        let count = testParticleGen.particleCapacity
-    //        let particlesPtr = simulationBuffer.contents().bindMemory(to: ParticleAttributes.self, capacity: count)
-    //        let bufferPtr = UnsafeBufferPointer(start: particlesPtr, count: count)
-    //        let particles = Array(bufferPtr)
-    //
-    //        let numberOfParticles = particles.count
-    //        /// Show number of particles
-    //        print("number of particles: \(numberOfParticles)")
-    //
-    //        // Test First particle
-    //        let particle = particles[0]
-    //        let magField = particle.attributes.magField
-    //
-    //        /* Magnetic Components */
-    //        let magComp = magField.components
-    //        let magCompArray = [magComp.x, magComp.y, magComp.z]
-    //        /// Show component array
-    //        print("magComponents: \(magCompArray)")
-    //
-    //        /* Position */
-    //        let position = particle.attributes.position
-    //        let positionArray = [position.x, position.y, position.z]
-    //        /// Show particle position
-    //        print("Position: \(positionArray)")
-    //
-    //
-    //        /* Polar position */
-    //        let polarPos = particle.attributes.polarCoordinate
-    //        let polarPosArray = [polarPos.x, polarPos.y, polarPos.z]
-    //        /// Show polar particle position
-    //        print("Polar Position: \(polarPosArray)")
-    //
-    //
-    //        /* Test position */
-    //        let testPositionArray = [AppConstants.Spawn.centre.x, AppConstants.Spawn.centre.y, AppConstants.Spawn.centre.z]
-    //        #expect(positionArray == testPositionArray)
-    //    }
-
-    @Test mutating func testGeomagneticFieldMetalFunction() async throws {
         
-        let testPolarCoord = SIMD3<Float>(7000,0.453,0.36786)
-        let testDateTime: Date = try createDateFromDMY(day: 10, month: 12, year: 2020)
-        let yearFraction = createYearFractionFromDate(date: testDateTime)
-        
-        print("YearFraction: \(yearFraction)")
-        
-        let (outputBuffer, outputPointer) =  try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticField.self)
-        let (localVariableBuffer, localVariablePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticFieldPerParticleVariables.self)
-        
-        localVariablePointer.pointee.snorm = magneticModelPointer.pointee.snorm
-        
-        try? testMagneticModelPipeline(polarCoord: testPolarCoord, yearFraction: yearFraction, outputResult: outputBuffer, localVariableBuffer: localVariableBuffer)
-       
-        // Parse output and test
-        let components = outputPointer.pointee.components
-        let componentsArray = [components.x, components.y, components.z]
-        let testResult: [Float] = [2, 3, 4]
-        
-        // Print Out Info
-        let model: MagneticFieldModel = magneticModelPointer.pointee
-        printClassEntries(headline: "Magnetic Model", for: model)
-        printClassEntries(headline: "Local Variables", for: localVariablePointer.pointee)
-        printClassEntries(headline: "Ouput Field", for: outputPointer.pointee)
-
-        #expect(componentsArray == testResult)
+        computeEncoder!.endEncoding()
+        commandBuffer!.commit()
+        await commandBuffer!.completed()
     }
     
     // GPU function to call test magnetic field calc function
@@ -186,9 +85,9 @@ struct MetalCodeTests {
         polarCoord: SIMD3<Float>,
         yearFraction: Float,
         outputResult: MTLBuffer,
-        localVariableBuffer: MTLBuffer
+        localVariableBuffer: MTLBuffer,
+        encoder: MTLComputeCommandEncoder
     ) throws {
-        let encoder: MTLComputeCommandEncoder = computeEncoder
         guard
             let testingPipeline =
                 makeComputePipeline(
@@ -211,12 +110,113 @@ struct MetalCodeTests {
         encoder.setBuffer(magneticModelBuffer, offset: 0,  index: 2)
         encoder.setBuffer(localVariableBuffer, offset: 0, index: 3)
         encoder.setBuffer(outputResult, offset: 0, index: 4)
-
+        
         //       Dispatch on a single thread
         encoder.dispatchThreadgroups(
             MTLSizeMake(1, 1, 1),
             threadsPerThreadgroup: MTLSizeMake(1, 1, 1)
         )
     }
+    
+    // Test magnetic field with a single point and single date time
+    private func testGeomagneticFieldMetalFunction(polarCoord testPolarCoord: SIMD3<Float>, date testDateTime: Date) async throws -> (MagneticFieldPerParticleVariables, MagneticField) {
+        
+        let yearFraction = createYearFractionFromDate(date: testDateTime)
+        
+        // Create output and local variable buffer and buffer pointers
+        let (outputBuffer, outputPointer) =  try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticField.self)
+        let (localVariableBuffer, localVariablePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticFieldPerParticleVariables.self)
+        
+        // Assign local variable pointer with buffers created in the initialisation step
+        localVariablePointer.pointee.snorm = magneticModelPointer!.pointee.snorm
+        
+        // Call GPU function a single time
+        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { encoder in
+            try? testMagneticModelPipeline(polarCoord: testPolarCoord, yearFraction: yearFraction, outputResult: outputBuffer, localVariableBuffer: localVariableBuffer, encoder: encoder)
+        })
+        
+        return (localVariablePointer.pointee, outputPointer.pointee)
+    }
+    
+    // Generalised implementation
+    private func privateTestForComponent(
+        alt: Double,
+        lat: Double, lon: Double,
+        day: Int = 0, month: Int = 0, year: Int = 2020
+    ) async throws -> [Float]{
+        
+        // Conversion radians
+        let trueAlt = Float(alt)
+        let radLat = Float(Angle.degrees(lat).radians)
+        let radLon = Float(Angle.degrees(lon).radians)
 
+        // convert to polar
+        let testPolarCoord = SIMD3<Float>(trueAlt, radLat, radLon)
+        let testDateTime: Date = try createDateFromDMY(day: day, month: month, year: year)
+        // Test metal function
+        let (internalVar, res) = try! await testGeomagneticFieldMetalFunction(polarCoord: testPolarCoord, date: testDateTime)
+        
+        // Parse output and test
+        let components = res.components
+        let componentsArray = [components.x, components.y, components.z]
+        
+        // Print Out Info
+//        let model: MagneticFieldModel = magneticModelPointer.pointee
+//        printClassEntries(headline: "Magnetic Model", for: model)
+//        printClassEntries(headline: "Local Variables", for: internalVar)
+//        printClassEntries(headline: "Ouput Field", for: res)
+        
+        print("----------------- Radians -----------------")
+        print("Altitude: \(trueAlt)")
+        print("latitude: \(radLat)")
+        print("longitude: \(radLon)")
+        
+        return componentsArray
+    }
+    
+    // Raw Altitude Variation
+    func testForComponent(
+        alt: Double,
+        lat: Double, lon: Double,
+        day: Int = 0, month: Int = 0, year: Int = 2020
+    ) async throws -> [Float]{
+        let trueAlt = alt
+        return try await privateTestForComponent(alt: trueAlt, lat: lat, lon: lon, day: day, month: month, year: year)
+    }
+    
+    // Elevation from mean sea level Variation
+    func testForComponent(
+        elevation: Double,
+        lat: Double, lon: Double,
+        day: Int = 0, month: Int = 0, year: Int = 2020
+    ) async throws -> [Float]{
+        let earthSeaLevel: Double = 6000
+        let trueAlt = earthSeaLevel + elevation
+        return try await privateTestForComponent(alt: trueAlt, lat: lat, lon: lon, day: day, month: month, year: year)
+    }
+    
+    
+    // External tests (Probs move to seperate file later on)
+    func testExternalForComponent(
+        alt: Double,
+        lat: Double, lon: Double,
+        day: Int = 0, month: Int = 0, year: Int = 2020
+    ) async throws -> [Float]{
+        let testDateTime: Date = try createDateFromDMY(day: day, month: month, year: year)
+        let gm = ExternalGeomagnetism(longitude: lon, latitude: lat, altitude: alt, date: testDateTime)
+        let components = [Float(gm.northIntensity), Float(gm.eastIntensity), Float(gm.verticalIntensity)]
+        return components
+    }
+    
+    @Test func `External Class, Location: Default, Date = Epoch`() async throws {
+        let componentsArray = try await testExternalForComponent(alt: 0, lat: 0, lon: 0, day: 1, month: 1, year: 2020)
+        let testResult: [Float] = [27536.389, -2248.371, -16022.489]
+        #expect(componentsArray.elementsEqual(testResult))
+    }
+    
+    @Test func `Interal function, Location: Default, Date = Epoch`() async throws {
+        let componentsArray = try await testForComponent(alt: 0, lat: 0, lon: 0, day: 1, month: 1, year: 2020)
+        let testResult: [Float] = [27536.389, -2248.371, -16022.489]
+        #expect(componentsArray.elementsEqual(testResult))
+    }
 }
