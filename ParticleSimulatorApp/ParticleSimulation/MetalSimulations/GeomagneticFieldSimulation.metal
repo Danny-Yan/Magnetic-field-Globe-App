@@ -21,7 +21,7 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
     // polarCoord = <r, lat, lon>
     // Use polar coord in calculation
     float altitude = polarCoord.x;
-    float altitudekm = altitude; // Probs have to change uh oh
+    float altitudekm = altitude / 1000; // Probs have to change uh oh
     float rlat = polarCoord.y;
     float rlon = polarCoord.z;
     
@@ -58,7 +58,7 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
         localVar.sa = c2 * crlat * srlat / (localVar.r * localVar.d);
     }
     if (rlon != localVar.olon){
-        for (int m = 2; m < model.MAX_DEG; m++){
+        for (int m = 2; m <= model.MAX_DEG; m++){
             localVar.sp[m] = localVar.sp[1] * localVar.cp[m - 1] + localVar.cp[1] * localVar.sp[m - 1];
             localVar.cp[m] = localVar.cp[1] * localVar.cp[m - 1] - localVar.sp[1] * localVar.sp[m - 1];
         }
@@ -75,11 +75,11 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
     float temp1 = 0;
     float temp2 = 0;
     
-    for (int n = 1; n < model.MAX_DEG; n++){
+    for (int n = 1; n <= model.MAX_DEG; n++){
         ar = ar * aor;
         int m = 0;
-        float d3 = 1;
-        float d4 = (n + m + d3) / d3;
+        int d3 = 1;
+        int d4 = (n + m + d3) / d3;
         while (d4 > 0){
             
             // Compute unnormalised associated legendre polynomials and derivatives via recursion relations
@@ -94,7 +94,7 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
                     localVar.dp[m * 13 + n] = localVar.ct * localVar.dp[13 * m + (n - 1)] - localVar.st * localVar.snorm.inner[n - 1 + m * 13];
                 }
                 if (n > 1 && n != m){
-                    if (m > n - 2) {
+                    if (m > (n - 2)) {
                         localVar.snorm.inner[n - 2 + m * 13] = 0;
                         localVar.dp[13 * m + (n - 2)] = 0;
                     }
@@ -158,9 +158,11 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
     outputField.components.y = eastIntensity;
     outputField.components.z = verticalIntensity;
     
-    outputField.horizontalIntensity = sqrt((northIntensity * northIntensity) + (eastIntensity * eastIntensity));
+    float horizontalIntensity = sqrt((northIntensity * northIntensity) + (eastIntensity * eastIntensity));
+    outputField.horizontalIntensity = horizontalIntensity;
+    outputField.totalIntensity = sqrt(( horizontalIntensity * horizontalIntensity ) + (verticalIntensity * verticalIntensity));
     outputField.declination = atan2(eastIntensity, northIntensity);
-    outputField.inclination = atan2(verticalIntensity, outputField.horizontalIntensity);
+    outputField.inclination = atan2(verticalIntensity, horizontalIntensity);
     
     localVar.oalt = altitudekm;
     localVar.olat = rlat;

@@ -103,6 +103,7 @@ struct ModelConversionTests {
             SIMD2<Float>(12, 11),
             SIMD2<Float>(12, 12)
         ]
+    
     private let modelEntries: [SIMD4<Float>] = [
         SIMD4<Float>(-29404.5, 0.0, 6.7, 0.0),
         SIMD4<Float>(-1450.7, 4652.9, 7.7, -25.1),
@@ -195,10 +196,10 @@ struct ModelConversionTests {
         SIMD4<Float>(-1.1, -0.0, -0.0, 0.0),
         SIMD4<Float>(-0.3, 0.5, -0.1, -0.1)
     ]
+    
     private let modelTimeData = SIMD4<Float>(2020.0, 12, 10, 2019)
     
-    
-    @Test @MainActor func testMagneticConversion() async throws {
+    @Test func testMagneticConversion() async throws {
         let (testModelIndices, testModelCoefficients, testDateTime): ([SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>) = ParticleMeshGenerator.createModelCoefficientArray(modelCoefficients: AppConstants.modelCoefficients.igrf)
         
         #expect(testModelIndices == modelIndices)
