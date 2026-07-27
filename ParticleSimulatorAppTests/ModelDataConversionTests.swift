@@ -1,6 +1,5 @@
 //
-//  Test.swift
-//  ParticleSimulatorAppTests
+//  ModelDataConversionTests.swift
 //
 //  Created by DY on 3/7/2026.
 //  Copyright © 2026 Apple. All rights reserved.
@@ -9,7 +8,7 @@
 import Testing
 @testable import ParticleSimulatorApp
 
-struct ModelConversionTests {
+struct ModelDataConversionTests {
 
     private let modelIndices: [SIMD2<Float>] = [
             SIMD2<Float>(1, 0),

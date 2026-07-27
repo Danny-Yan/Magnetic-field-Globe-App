@@ -152,3 +152,9 @@ func smoothstep (_ value: Float, minEdge edge0: Float, maxEdge edge1: Float) -> 
     return value * value * (3.0 - 2.0 * value)
 }
 
+extension Array where Element: FloatingPoint {
+    func elementsEqual(_ other: [Element], tolerance: Element) -> Bool {
+        guard self.count == other.count else { return false }
+        return self.elementsEqual(other) { abs($0 - $1) <= tolerance }
+    }
+}

@@ -119,7 +119,6 @@ struct MagneticFieldPerParticleVariables {
     float cp[13];
     
     float pp[13];
- 
 };
 
 #pragma pack(pop)

@@ -69,19 +69,6 @@ func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async t
     return (buffer, pointer)
 }
 
-func printClassEntries(headline: String = "", for target: Any){
-    // Print out all elements in the output
-    
-    print(" ---------------------- \(headline) ---------------------- \n")
-    let outputMirror = Mirror(reflecting: target)
-    for child in outputMirror.children{
-        if let propertyName = child.label{
-            print("\(propertyName): \(child.value)")
-        }
-    }
-}
-
-
 func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder) -> Void) async throws {
     
     guard let queue = mtlDevice?.makeCommandQueue(),
@@ -96,4 +83,22 @@ func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: M
     encoder.endEncoding()
     commandBuffer.commit()
     await commandBuffer.completed()
+}
+
+func convertGeographicToPolarCoords(alt: Double, lat: Double, lon: Double) -> SIMD3<Float>{
+    // Conversion radians
+    let trueAlt = Float(alt)
+    
+    let radLat = Float(lat * .pi / 180)
+    let radLon = Float(lon * .pi / 180)
+    
+    // convert to polar
+    let testPolarCoord = SIMD3<Float>(trueAlt, radLat, radLon)
+    
+    print("Alt, RadLat, RadLon: \(trueAlt), \(radLat), \(radLon)")
+    return testPolarCoord
+}
+
+func convertPackedToFloat(array: MTLPackedFloat3)-> [Float]{
+    return [array.x, array.y, array.z]
 }

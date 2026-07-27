@@ -41,6 +41,11 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
     float b4 = b2 * b2;
     float c4 = a4 - b4;
     
+    localVar.sp[0] = 0;
+    localVar.cp[0] = 1;
+    localVar.pp[0] = 1;
+    localVar.dp[0] = 0;
+    
     localVar.sp[1] = srlon;
     localVar.cp[1] = crlon;
     
@@ -126,7 +131,7 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
             
             bt = bt - ar * temp1 * localVar.dp[m * 13 + n];
             bp += (model.fm[m] * temp2 * par);
-            br += (model.fn[m] * temp1 * par);
+            br += (model.fn[n] * temp1 * par);
             
             // Special case: north/south geographic poles
             if (localVar.st == 0 && m == 1) {
@@ -187,6 +192,9 @@ void initialiseMagneticModel(constant float4* modelCoefficients [[buffer(0)]],
     model.WGS84_B      = 6356.7523142;
     model.MAX_DEG      = 12;
     model.epoch =  modelTimeValues[0];
+    
+    model.c[0] = 0;
+    model.cd[0] = 0;
     
     for (int i = 0; i < modelCoefficientsLength; i++){
         float2 indexes = modelCoefficientIndices[i]; // n, m
@@ -346,5 +354,14 @@ void testCalculateMagneticField(device packed_float3 &polarCoordinate [[buffer(0
     output = calculateMagneticField(magneticFieldModel, localVar, yearFraction, polarCoord);
     
     localVariables = localVar; // write back to local variables to be readable on swift
+}
+
+
+[[kernel]]
+void testCreateCoordSpace(device ParticleAttributes &particle [[buffer(0)]])
+{
+    thread ParticleAttributes p = particle;
+    createCoordSpace(p);
+    particle = p;
 }
 

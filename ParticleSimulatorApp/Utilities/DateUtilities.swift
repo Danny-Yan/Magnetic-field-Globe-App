@@ -9,13 +9,13 @@ import Foundation
 import simd
 import SwiftUI
 
-func createDateFromDMY(hour: Int = 0, minute: Int = 0, day: Int, month: Int, year: Int, timeZone: String = "AEST") throws -> Date {
+func createDateFromDMY(hour: Int = 0, minute: Int = 0, day: Int, month: Int, year: Int, timeZoneIdentifier: String = "Australia/Sydney") throws -> Date {
     var dateComponents = DateComponents()
     dateComponents.day = day
     dateComponents.month = month
     dateComponents.year = year
     
-    dateComponents.timeZone = TimeZone(abbreviation: timeZone)
+    dateComponents.timeZone = TimeZone(identifier: timeZoneIdentifier)
     
     dateComponents.hour = hour
     dateComponents.minute = minute

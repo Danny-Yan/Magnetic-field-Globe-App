@@ -34,7 +34,7 @@ extension ParticleMeshGenerator {
         //       Dispatch on a single thread
         encoder.dispatchThreadgroups(
             MTLSizeMake(1, 1, 1),
-            threadsPerThreadgroup: MTLSizeMake(Int(length), 1, 1)
+            threadsPerThreadgroup: MTLSizeMake(1, 1, 1)
         )
     }
 
