@@ -24,7 +24,7 @@ struct ParticleSimulatorAppTests {
     }
     
     //    private var testParticleGen: ParticleMeshGenerator
-    private func compareComponents(tolerance: Float = 0.5, alt: Double, latLon: [Double], day: Int = 1, month: Int = 1, year: Int = 2020 ) async throws -> ([Float],[Float],Float) {
+    private func compareComponents(tolerance: Float = 0.005, alt: Double, latLon: [Double], day: Int = 1, month: Int = 1, year: Int = 2020 ) async throws -> ([Float],[Float],Float) {
         
         let expectedComponents = try await testAPI.external.testForComponent(alt: alt, lat: latLon[0], lon: latLon[1],
                                                                              day: day, month: month, year: year)

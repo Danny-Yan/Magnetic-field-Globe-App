@@ -128,7 +128,7 @@ extension GPUTester {
     ) async throws -> [Float]{
         
         // Conversion radians
-        let testPolarCoord = convertGeographicToPolarCoords(alt: alt, lat: lat, lon: lon)
+        let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
         let testDateTime: Date = try createDateFromDMY(day: day, month: month, year: year)
         
         // Test metal function
@@ -136,7 +136,7 @@ extension GPUTester {
         
         // Parse output and test
         let components = res.components
-        let componentsArray = convertPackedToFloat(array: components)
+        let componentsArray = components.toArray()
         
         // Print Out Info
         let model: MagneticFieldModel = magneticModelPointer!.pointee

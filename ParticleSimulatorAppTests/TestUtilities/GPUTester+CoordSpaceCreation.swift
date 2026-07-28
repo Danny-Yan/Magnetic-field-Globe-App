@@ -28,7 +28,12 @@ extension GPUTester {
     private func testCoordSpaceCreation(polarCoord: SIMD3<Float>) async throws -> (ParticleAttributes){
         
         let (particleBuffer, particlePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
+        particlePointer.pointee.attributes.polarCoordinate = polarCoord.packed3
+        particlePointer.pointee.attributes.position = polarCoord.toCartesian().packed3
         
+        print("Polar Coordinate: \(polarCoord)")
+        print("Cartesian Coordinate: \(polarCoord.toCartesian())")
+
         // Call GPU function a single time
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { encoder in
             try? coordinateSpaceCreationPipeline(particle: particleBuffer, encoder: encoder)
@@ -39,14 +44,14 @@ extension GPUTester {
     
     func testCoordSpaceComponents(alt: Double, lat: Double, lon: Double) async throws -> [[Float]]{
         
-        let testPolarCoord = convertGeographicToPolarCoords(alt: alt, lat: lat, lon: lon)
+        let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
         let particle = try! await testCoordSpaceCreation(polarCoord: testPolarCoord)
         
         let coordSpace = particle.attributes.coordSpace
         let coordSpaceComponents = [
-            convertPackedToFloat(array: coordSpace.northVector),
-            convertPackedToFloat(array: coordSpace.eastVector),
-            convertPackedToFloat(array: coordSpace.verticalVector)
+            coordSpace.northVector.toArray(),
+            coordSpace.eastVector.toArray(),
+            coordSpace.verticalVector.toArray()
         ]
         return coordSpaceComponents
     }

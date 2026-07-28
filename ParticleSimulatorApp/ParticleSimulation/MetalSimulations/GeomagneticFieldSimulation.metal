@@ -15,6 +15,7 @@
 
 using namespace metal;
 
+/// Based on kanchudeep's swift implementation of the WMM model: https://github.com/kanchudeep/Geomagnetism-Swift
 /// Calculates IGRF Magnetic Field for a  given polar coordinate
 MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread MagneticFieldPerParticleVariables &localVar, float yearFraction, thread packed_float3 &polarCoord)
 {
@@ -177,7 +178,7 @@ MagneticField calculateMagneticField(constant MagneticFieldModel &model, thread 
     return outputField;
 }
 
-
+/// Based on kanchudeep's swift implementation of the WMM model: https://github.com/kanchudeep/Geomagnetism-Swift
 /// Initialise magnetic model struct
 [[kernel]]
 void initialiseMagneticModel(constant float4* modelCoefficients [[buffer(0)]],
@@ -250,34 +251,38 @@ void initialiseMagneticModel(constant float4* modelCoefficients [[buffer(0)]],
     model.fm[0] = 0;
 }
 
-/// Convert polar position to geographic position
-void convertToGeographic(float3 position, thread packed_float3 &polarPosition, thread float &radius){
+/// Convert cartesian position to geographic position
+void convertToGeographic(thread ParticleAttributes &particle, thread float &radius){
+    
+    thread packed_float3 *position = &particle.attributes.position;
+    thread packed_float3 *polarPosition = &particle.attributes.polarCoordinate;
+    
+    // Scale position to Reality Kit coord space
     float globeScaleFactor = radius / 1.2;
-    float x = position.x * globeScaleFactor;
-    float y = position.y * globeScaleFactor;
-    float z = position.z * globeScaleFactor;
+    float x = position->x * globeScaleFactor;
+    float y = position->y * globeScaleFactor;
+    float z = position->z * globeScaleFactor;
     
-    
+    // Geographic coord conversion
     float coordRadius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
     float latitude = 0;
     float longitude = 0;
     
     if (coordRadius > 0.0) {
-        latitude = asin(y / coordRadius);
+        latitude = asin(z / coordRadius);
         longitude = atan2(y, x);
     }
     
-    polarPosition.x = coordRadius;
-    polarPosition.y = latitude;
-    polarPosition.z = longitude;
+    polarPosition->x = coordRadius;
+    polarPosition->y = latitude;
+    polarPosition->z = longitude;
 }
 
 /// Create shifted coordinate vector space
 void createCoordSpace(thread ParticleAttributes &particle){
-    
     thread struct CoordSpace *coordSpace = &particle.attributes.coordSpace;
     
-    // Vector Space
+    // Vector Space creation
     float3 polarCoord = particle.attributes.polarCoordinate;
     float altitude = polarCoord.x;
     float rlat = polarCoord.y;
@@ -285,6 +290,11 @@ void createCoordSpace(thread ParticleAttributes &particle){
     float3 northComponent = float3(0, 0, 1) - sin(rlat) * verticalComponent;
     float3 eastComponent = cross(northComponent, verticalComponent);
     
+    
+    // Add edge case for polar coordinates
+    
+    
+
     coordSpace->northVector = northComponent;
     coordSpace->eastVector = eastComponent;
     coordSpace->verticalVector = verticalComponent;
@@ -296,11 +306,14 @@ void applyField (constant ParticleSimulationParams &params, thread MagneticField
     createCoordSpace(particle);
     struct CoordSpace coordSpace = particle.attributes.coordSpace;
     
-    // Apply magnetic field force as a velocity vector centered within the coordinate space
+    // Apply magnetic field force as a velocity vector along the coord space defined on the particle position
     float3 components = result.components;
     float3 velocity = coordSpace.northVector * components.x + coordSpace.eastVector * components.y - coordSpace.verticalVector * components.z;
     particle.velocity = packed_float3(velocity);
     particle.attributes.position += packed_float3(particle.velocity * params.deltaTime);
+    
+    // External mag field testing
+    particle.attributes.magField = result;
 }
 
 /// Simulate magnetic field on a set of particles
@@ -316,31 +329,28 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
         return;
     }
     ParticleAttributes particle = particles[particleIdx];
-    thread packed_float3 *polarCoord = &particle.attributes.polarCoordinate;
-    thread float yearFraction = particle.attributes.yearFraction;
-    // Convert cartesian coords to geographicCoords
-    float radius = magneticFieldModel.IAU66_RADIUS;
-    convertToGeographic(particle.attributes.position, *polarCoord, radius);
     
-    thread MagneticFieldPerParticleVariables localVariables = {}; // fresh per-thread, oalt/olat/etc init to sentinel
+    // Convert cartesian (x, y, z) to geographic (r, lat, lon) values
+    float radius = magneticFieldModel.IAU66_RADIUS;
+    convertToGeographic(particle, radius);
+    
+    // Local Variables
+    thread MagneticFieldPerParticleVariables localVariables = {};
     localVariables.oalt = -1000; localVariables.olat = -1000; localVariables.olon = -1000; localVariables.otime = -1000;
     localVariables.snorm = magneticFieldModel.snorm;
     
     // Compute magnetic field
+    thread packed_float3 *polarCoord = &particle.attributes.polarCoordinate;
+    thread float yearFraction = particle.attributes.yearFraction;
     MagneticField result = calculateMagneticField(magneticFieldModel, localVariables, yearFraction, *polarCoord);
     
-    // Temp append result of mag field to particle
-    particle.attributes.magField = result;
-    
-    // Apply field to particle
+    // Apply result
     applyField(params, result, particle);
-    
-    // Write to output.
     output[particleIdx] = particle;
 }
 
 
-
+/// Test magnetic field calculation
 [[kernel]]
 void testCalculateMagneticField(device packed_float3 &polarCoordinate [[buffer(0)]],
                                 device float &yearFraction [[buffer(1)]],
@@ -351,17 +361,22 @@ void testCalculateMagneticField(device packed_float3 &polarCoordinate [[buffer(0
 {
     thread packed_float3 polarCoord = polarCoordinate;
     thread MagneticFieldPerParticleVariables localVar = localVariables;
+    
+    // Test mag calculate
     output = calculateMagneticField(magneticFieldModel, localVar, yearFraction, polarCoord);
     
-    localVariables = localVar; // write back to local variables to be readable on swift
+    localVariables = localVar;
 }
 
-
+/// Test coordinate space creation
 [[kernel]]
 void testCreateCoordSpace(device ParticleAttributes &particle [[buffer(0)]])
 {
     thread ParticleAttributes p = particle;
+    
+    // Test coord space creation
     createCoordSpace(p);
+    
     particle = p;
 }
 

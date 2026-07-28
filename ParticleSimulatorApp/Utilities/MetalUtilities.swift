@@ -22,11 +22,34 @@ func makeComputePipeline(named name: String) -> MTLComputePipelineState? {
 extension MTLPackedFloat3 {
     /// Convert a `MTLPackedFloat3` to a `SIMD3<Float>`.
     var simd3: SIMD3<Float> { return .init(x, y, z) }
+    
+    func toArray() -> [Float]{
+        return [x, y, z]
+    }
 }
 
 extension SIMD3 where Scalar == Float {
     /// Convert a `SIMD3<Float>` to a `MTLPackedFloat3`.
     var packed3: MTLPackedFloat3 { return .init(.init(elements: (x, y, z))) }
+    
+    func toCartesian() -> SIMD3<Float>{
+        let radius = x
+        let lat = y
+        let lon = z
+        return SIMD3<Float>(
+            radius * cos(lat) * cos(lon),
+            radius * cos(lat) * sin(lon),
+            radius * sin(lat)
+        )
+    }
+    
+    func toGeographic() -> SIMD3<Float>{
+        let radius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
+        let lat = asin(z / radius)
+        let lon = atan2(y, x)
+        
+        return SIMD3<Float>(radius, lat, lon)
+    }    
 }
 
 extension SIMD3 where Scalar == Float16 {
@@ -85,7 +108,7 @@ func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: M
     await commandBuffer.completed()
 }
 
-func convertGeographicToPolarCoords(alt: Double, lat: Double, lon: Double) -> SIMD3<Float>{
+func convertGeographicDegToRad(alt: Double, lat: Double, lon: Double) -> SIMD3<Float>{
     // Conversion radians
     let trueAlt = Float(alt)
     
@@ -97,8 +120,4 @@ func convertGeographicToPolarCoords(alt: Double, lat: Double, lon: Double) -> SI
     
     print("Alt, RadLat, RadLon: \(trueAlt), \(radLat), \(radLon)")
     return testPolarCoord
-}
-
-func convertPackedToFloat(array: MTLPackedFloat3)-> [Float]{
-    return [array.x, array.y, array.z]
 }
