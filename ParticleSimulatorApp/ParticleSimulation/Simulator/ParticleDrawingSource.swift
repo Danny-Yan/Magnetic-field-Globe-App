@@ -36,9 +36,14 @@ public struct ParticleDrawingSource {
     private var particleMaterial: RealityKit.Material
     private var ParticleMeshGen: ParticleMeshGenerator
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
-    
+    private let particleSettingProvider = ParticleSettingProvider()
     private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrf
-        
+    
+//    private func trace(position: SIMD3<Float>, speed: Float, settings: ParticleSettingProvider.Settings) {
+//        let particle = particleSettingProvider.createParticle(position: position, settings: settings)
+//        ParticleMeshGen.trace(point: particle)
+//    }
+    
     @MainActor
     init(rootEntity: Entity, particleMaterial: Material? = nil) async {
         self.rootEntity = rootEntity
@@ -51,10 +56,11 @@ public struct ParticleDrawingSource {
     }
     
     @MainActor
-    mutating func drawParticlePointSynthetic(point: ParticlePoint) {
+    func drawParticlePointSynthetic(point: ParticlePoint) {
         ParticleMeshGen.traceSingular(point: point)
     }
     
+//    // CONVERT REAL TIME DATA TRANSFER TO CREATE A CONTINOUS SINGLE SOURCE PARTICLE GENERATOR
 //    @MainActor
 //    mutating func receive(input: InputData?, time: TimeInterval, state: BrushState) {
 //        while let (_, headTime) = inputsOverTime.first, time - headTime > 0.1 {
@@ -81,7 +87,7 @@ public struct ParticleDrawingSource {
 //        let smoothSpeed = speedsOverTime.truncatedMean(truncation: 2)
 //        
 //        if let input, input.isDrawing {
-//            trace(position: input.brushTip, speed: smoothSpeed, state: state)
+//            (position: input.brushTip, speed: smoothSpeed, state: state)
 //        } else {
 //            
 //            if ParticleMeshGen.isDrawing {

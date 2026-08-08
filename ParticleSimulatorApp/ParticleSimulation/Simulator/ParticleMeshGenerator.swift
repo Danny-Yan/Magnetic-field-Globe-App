@@ -92,6 +92,9 @@ final class ParticleMeshGenerator {
         /// Unable to create the simulation buffer.
         case unableToCreateBuffer
     }
+    
+    static var southPoleCentre: SIMD3<Float> = AppConstants.Spawn.centre + SIMD3<Float>(0, -10, 10)
+
 
     @MainActor
     init(
@@ -106,7 +109,6 @@ final class ParticleMeshGenerator {
                 modelCoefficients: modelCoefficientString,
                 metalDevice: metalDevice
             )
-
         // Sets ParticleComponent as its new root
         rootEntity.position = .zero
         let particleComponent = ParticleComponent(
@@ -199,10 +201,10 @@ final class ParticleMeshGenerator {
         lastTracedPoint = nextTracedPoint
     }
 
-    func traceSingular(point centre: ParticlePoint) {
+    func traceSingular(point centre: ParticlePoint, spread: Float = 2.0) {
         // Spawn particles
         while particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount {
-            spawnParticle(at: centre)
+            spawnParticle(at: centre, spread: spread)
         }
     }
 
@@ -212,20 +214,18 @@ final class ParticleMeshGenerator {
         lastTracedPoint = nil
     }
 
-    private func spawnParticle(at point: ParticlePoint) {
+    private func spawnParticle(at point: ParticlePoint, spread: Float = 2.0) {
         guard particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount else {
             return
         }
-
+        
         // Generate random position within a sphere
         let randPosition: SIMD3<Float> =
-            AppConstants.Spawn.radius * randomUniformDistribute() * 2
+            AppConstants.Spawn.radius * randomUniformDistribute() * spread
             + point.position
-        let polarRandPosition: SIMD3<Float> = point.polarPosition
-        let coordSpace: CoordSpace = point.coordSpace
-        let magField = MagneticField()
-        let yearFraction: Float = 2020.354872634
-        
+        let polarRandPosition: SIMD3<Float> = randPosition.toGeographic()
+    
+        // initialising particle
         let attributes = ParticlePointAttributes(
             position: randPosition.packed3,
             polarCoordinate: polarRandPosition.packed3,
@@ -233,14 +233,17 @@ final class ParticleMeshGenerator {
             curveDistance: curveDistanceForNextSample,
             size: point.size,
             initialPosition: randPosition.packed3,
-            coordSpace: coordSpace,
-            magField: magField,
-            yearFraction: yearFraction
+            centre: point.position.packed3,
+            coordSpace: point.coordSpace,
+            magField: MagneticField(),
+            yearFraction: createYearFractionFromDate(date: try! createDateFromDMY()),
+            age: 0,
         )
+        
         particlesToSpawn.append(
             ParticleAttributes(
                 attributes: attributes,
-                velocity: (randomDirection() * point.initialSpeed).packed3
+                velocity: SIMD3<Float>(0,0,0).packed3,
             )
         )
     }
@@ -333,10 +336,18 @@ final class ParticleMeshGenerator {
             commandBuffer.commit()
         }
 
+//        // ADD PARTICLES BASED ON PARTICLE LIMIT
+//        if (particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount) {
+//            traceSingular(point: southPoleGenPoint, spread: 0.5)
+//        }
+        
         // Simulate the particles that already exist in the simulation buffer.
         if particleCount > 0, let oldBuffer {
             let parameters = ParticleSimulationParams(
                 particleCount: UInt32(particleCount),
+                southPoleSpawnCentre: Self.southPoleCentre.packed3,
+                particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
+                particleLifeSpan: AppConstants.Particle.lifeSpanSeconds.isFinite ? Float(AppConstants.Particle.lifeSpanSeconds) : -1,
                 deltaTime: deltaTime
             )
 

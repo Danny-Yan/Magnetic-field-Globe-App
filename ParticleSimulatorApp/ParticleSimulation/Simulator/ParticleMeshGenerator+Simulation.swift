@@ -88,11 +88,16 @@ extension ParticleMeshGenerator {
             encoder.setBytes(inputSlice.baseAddress!, length: byteLength, index: 0)
             encoder.setBuffer(output, offset: (particleOffsetInOutput + particleStartIndex) * particleStride, index: 1)
             
-            // Set `particleCount` to the number of particles being added this batch.
+            // Set `particleCount` to the number of particles being added this bawatch.
             // Set `deltaTime` and `dragCoefficient` to zero, because you don't yet want to simulate the particles.
             
-            var currentParameters = ParticleSimulationParams(particleCount: UInt32(length),
-                                                             deltaTime: 0)
+            var currentParameters = ParticleSimulationParams(
+                particleCount: UInt32(length),
+                southPoleSpawnCentre: Self.southPoleCentre.packed3,
+                particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
+                particleLifeSpan: (AppConstants.Particle.lifeSpanSeconds.isFinite ? (Float(AppConstants.Particle.lifeSpanSeconds)) : -1),
+                deltaTime: 0,
+            )
             encoder.setBytes(&currentParameters, length: paramSize, index: 2)
             
                               

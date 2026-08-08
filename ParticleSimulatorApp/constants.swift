@@ -36,12 +36,18 @@ enum AppConstants {
         static var centre: SIMD3<Float> = [0, 1.5, -1]
         static var radius: Float = 2
         static var randomSpawn: Bool = true
+        
+        static var particleSpawnDate: [Int] = [1, 1, 2020]
+        
     }
     
     enum Particle {
         static var initialSpeed: Float = 0.3
         static var size: Float = 0.002
         static var color: SIMD3<Float> = [1, 1, 1]
+        
+        static var boundingBox: SIMD3<Float> = [100, 100, 100]
+        static var lifeSpanSeconds: Float = 10.0
     }
     
     enum Earth {

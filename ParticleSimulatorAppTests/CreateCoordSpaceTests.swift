@@ -29,7 +29,7 @@ struct CreateCoordSpaceTests {
     }
     
     
-    @Test func `PolarCoord: (lat: 90, lon: 0)`() async throws {
+    @Test func `PolarCoord: (lat: 45, lon: 0)`() async throws {
 
         let coordSpace = try await testAPI.gpu.testCoordSpaceComponents(alt: 1, lat: 45, lon: 0)
         
@@ -41,6 +41,19 @@ struct CreateCoordSpaceTests {
         
         #expect(coordSpace.elementsEqual(coordSpaceResult))
     }
+    
+//    @Test func `PolarCoord: (lat: 45, lon: 0)`() async throws {
+//
+//        let coordSpace = try await testAPI.gpu.testCoordSpaceComponents(alt: 1, lat: 45, lon: 0)
+//        
+//        let coordSpaceResult: [[Float]] = [
+//            [0, 0, 1.0],
+//            [0, 1.0, 0],
+//            [1.0, 0, 0]
+//        ]
+//        
+//        #expect(coordSpace.elementsEqual(coordSpaceResult))
+//    }
 
 
 }

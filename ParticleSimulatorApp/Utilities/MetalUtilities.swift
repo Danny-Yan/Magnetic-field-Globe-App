@@ -32,6 +32,10 @@ extension SIMD3 where Scalar == Float {
     /// Convert a `SIMD3<Float>` to a `MTLPackedFloat3`.
     var packed3: MTLPackedFloat3 { return .init(.init(elements: (x, y, z))) }
     
+    func toArray() -> [Float]{
+        return [x, y, z]
+    }
+    
     func toCartesian() -> SIMD3<Float>{
         let radius = x
         let lat = y

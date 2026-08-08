@@ -36,9 +36,11 @@ struct ParticlePointAttributes {
     float curveDistance;
     float size;
     packed_float3 initialPosition;
+    packed_float3 centre;
     struct CoordSpace coordSpace;
     struct MagneticField magField;
     float yearFraction;
+    float age;
 };
 
 struct ParticleAttributes {
@@ -53,6 +55,9 @@ struct ParticleVertex {
 
 struct ParticleSimulationParams {
     uint32_t particleCount;
+    packed_float3 southPoleSpawnCentre;
+    packed_float3 particleBoundingBox;
+    float particleLifeSpan;
     float deltaTime;
 };
 

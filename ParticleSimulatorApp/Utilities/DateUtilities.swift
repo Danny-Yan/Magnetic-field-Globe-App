@@ -9,7 +9,12 @@ import Foundation
 import simd
 import SwiftUI
 
-func createDateFromDMY(hour: Int = 0, minute: Int = 0, day: Int, month: Int, year: Int, timeZoneIdentifier: String = "Australia/Sydney") throws -> Date {
+func createDateFromDMY(hour: Int = 0, minute: Int = 0,
+                       day: Int = AppConstants.Spawn.particleSpawnDate[0],
+                       month: Int = AppConstants.Spawn.particleSpawnDate[1],
+                       year: Int = AppConstants.Spawn.particleSpawnDate[2],
+                       timeZoneIdentifier: String = "Australia/Sydney") throws -> Date {
+    
     var dateComponents = DateComponents()
     dateComponents.day = day
     dateComponents.month = month

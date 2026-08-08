@@ -19,6 +19,7 @@
 		0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */; };
 		00641B3D300BAE2700ED2A5F /* Geomagnetism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */; };
 		006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006A84B23013A783005682B8 /* PrintLogger.swift */; };
+		0087ECE9302018850052166B /* MetalFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0087ECE8302018700052166B /* MetalFunctions.metal */; };
 		00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */; };
 		3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */; };
 		3A0BFF772BE22AEA00BF194C /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */; };
@@ -70,6 +71,8 @@
 		0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+Util.swift"; sourceTree = "<group>"; };
 		00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geomagnetism.swift; sourceTree = "<group>"; };
 		006A84B23013A783005682B8 /* PrintLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLogger.swift; sourceTree = "<group>"; };
+		0087ECE8302018700052166B /* MetalFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalFunctions.metal; sourceTree = "<group>"; };
+		0087ECEB30201B060052166B /* MetalFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalFunctions.h; sourceTree = "<group>"; };
 		00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleDrawingSource.swift; sourceTree = "<group>"; };
 		3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalUtilities.swift; sourceTree = "<group>"; };
@@ -182,6 +185,15 @@
 			path = External;
 			sourceTree = "<group>";
 		};
+		0087ECEA30201AFB0052166B /* MetalFunctions */ = {
+			isa = PBXGroup;
+			children = (
+				0087ECEB30201B060052166B /* MetalFunctions.h */,
+				0087ECE8302018700052166B /* MetalFunctions.metal */,
+			);
+			path = MetalFunctions;
+			sourceTree = "<group>";
+		};
 		3A0BFF712BE223C300BF194C /* SplashScreenView */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,6 +210,7 @@
 		3A0BFF732BE22A0100BF194C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				0087ECEA30201AFB0052166B /* MetalFunctions */,
 				004CD5D62FFE86CF00453CAA /* DateUtilities.swift */,
 				0052036A2F9E388C002FE1ED /* Error.swift */,
 				3A958F502BFFAC3800D2BF2D /* MetalPacking.h */,
@@ -452,6 +465,7 @@
 				3AECFF322C006F5C00176926 /* DrawingCanvasPlacementView.swift in Sources */,
 				0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */,
 				006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */,
+				0087ECE9302018850052166B /* MetalFunctions.metal in Sources */,
 				0052036B2F9E388C002FE1ED /* Error.swift in Sources */,
 				005203532F9E3779002FE1ED /* GeomagneticFieldSimulation.metal in Sources */,
 				3AECFF2A2C004C4000176926 /* SplashScreenBackgroundComponent.swift in Sources */,

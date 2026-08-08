@@ -17,6 +17,7 @@ import os
 struct ParticleSystemEntity {
     /// The particle system entity.
     private let ParticleSystemEntity = Entity()
+    private var source: ParticleDrawingSource
     
     private let particleProvider = ParticleSettingProvider(
         initialSpeed: AppConstants.Particle.initialSpeed,
@@ -24,7 +25,16 @@ struct ParticleSystemEntity {
         color: AppConstants.Particle.color,
     )
     
-     internal func instantiateParticleSystemEntity (to content: RealityViewContent) {
+    //  Initalise particle providers and entity
+    init(to content: RealityViewContent) async {
+        let particleMaterial = await Self.instantiateParticleMaterial()
+        source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, particleMaterial: particleMaterial)
+        instantiateParticleSystemEntity(to: content)
+        
+        await addParticles(to: content)
+    }
+    
+    internal func instantiateParticleSystemEntity (to content: RealityViewContent) {
         ParticleBrushSystem.registerSystem()
         
         ParticleSystemEntity.name = "Particle System"
@@ -47,6 +57,7 @@ struct ParticleSystemEntity {
         // As generated the stroke fills a 1 x 1 x 1 meter box. Scale down the entity to fit.
         ParticleSystemEntity.scale = SIMD3<Float>(repeating: entityScale)
     }
+    
     static internal func instantiateParticleMaterial() async -> ShaderGraphMaterial? {
         var particleMaterial = try? await ShaderGraphMaterial(named: "/Root/SparklePresetBrushMaterial",
                                                              from: "PresetBrushMaterial",
@@ -57,12 +68,7 @@ struct ParticleSystemEntity {
     }
     
     
-    func addParticles(to content: RealityViewContent) async {
-        // Initialise Particle
-        instantiateParticleSystemEntity(to: content)
-        let particleMaterial = await Self.instantiateParticleMaterial()
-        var source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, particleMaterial: particleMaterial)
-        
+    internal func addParticles(to content: RealityViewContent) async {
         // Create Particle
         let spawnCentre = AppConstants.Spawn.centre * 2
         let particlePoint = particleProvider.createParticle(position: spawnCentre)
@@ -117,15 +123,17 @@ func mix(_ point0: ParticlePoint, _ point1: ParticlePoint, t blend: Float) -> Pa
 }
 
 struct ParticleSettingProvider {
-    var initialSpeed: Float
-    var size: Float
-    var color: SIMD3<Float>
+//    struct Settings: Equatable, Hashable {
+    var initialSpeed: Float = 0.012
+    var size: Float = 0.0002
+    var color: SIMD3<Float> = [1, 1, 1]
+//    }
     
     func createParticle(position: SIMD3<Float>) -> ParticlePoint {
         return ParticlePoint(position: position,
                              initialSpeed: self.initialSpeed,
-                                       size: self.size,
-                                       color: self.color)
+                             size: self.size,
+                             color: self.color)
     }
 }
 
