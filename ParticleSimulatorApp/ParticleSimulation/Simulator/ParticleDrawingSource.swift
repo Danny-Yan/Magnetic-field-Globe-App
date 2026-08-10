@@ -39,11 +39,6 @@ public struct ParticleDrawingSource {
     private let particleSettingProvider = ParticleSettingProvider()
     private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrf
     
-//    private func trace(position: SIMD3<Float>, speed: Float, settings: ParticleSettingProvider.Settings) {
-//        let particle = particleSettingProvider.createParticle(position: position, settings: settings)
-//        ParticleMeshGen.trace(point: particle)
-//    }
-    
     @MainActor
     init(rootEntity: Entity, particleMaterial: Material? = nil) async {
         self.rootEntity = rootEntity
@@ -55,45 +50,10 @@ public struct ParticleDrawingSource {
                                                 modelCoefficientString: modelCoefficients)
     }
     
+    /// Draws particle to the screen
     @MainActor
     func drawParticlePointSynthetic(point: ParticlePoint) {
         ParticleMeshGen.traceSingular(point: point)
     }
-    
-//    // CONVERT REAL TIME DATA TRANSFER TO CREATE A CONTINOUS SINGLE SOURCE PARTICLE GENERATOR
-//    @MainActor
-//    mutating func receive(input: InputData?, time: TimeInterval, state: BrushState) {
-//        while let (_, headTime) = inputsOverTime.first, time - headTime > 0.1 {
-//            inputsOverTime.removeFirst()
-//        }
-//        
-//        if let brushTip = input?.brushTip {
-//            let lastInputPosition = inputsOverTime.last?.0
-//            inputsOverTime.append((brushTip, time))
-//            
-//            if let lastInputPosition, lastInputPosition == brushTip {
-//                return
-//            }
-//        }
-//        
-//        let speedsOverTime = inputsOverTime.adjacentPairs().map { input0, input1 in
-//            let (point0, time0) = input0
-//            let (point1, time1) = input1
-//            let distance = distance(point0, point1)
-//            let time = abs(time0 - time1)
-//            return distance / Float(time)
-//        }
-//        
-//        let smoothSpeed = speedsOverTime.truncatedMean(truncation: 2)
-//        
-//        if let input, input.isDrawing {
-//            (position: input.brushTip, speed: smoothSpeed, state: state)
-//        } else {
-//            
-//            if ParticleMeshGen.isDrawing {
-//                ParticleMeshGen.endStroke()
-//            }
-//        }
-//    }
 }
 

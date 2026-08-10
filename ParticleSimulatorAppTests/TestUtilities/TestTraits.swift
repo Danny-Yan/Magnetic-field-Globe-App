@@ -29,19 +29,7 @@ struct InitialiseLoggerTrait: SuiteTrait, TestScoping {
     }
 }
 
+/// Test Trait for initialising the print logger
 extension SuiteTrait where Self == InitialiseLoggerTrait {
     static var initialiseLogger: InitialiseLoggerTrait { .init() }
 }
-
-//protocol TesterProtocol {
-//    var testAPI: TesterAPI { get set }
-//    init() async throws
-//}
-//
-//extension TesterProtocol {
-//    init() async throws {
-//        try await self.init()
-//        testAPI = TesterAPI()
-//    }
-//}
-

@@ -20,14 +20,15 @@ extension ParticleMeshGenerator {
         modelCoefficients: [String],
         metalDevice: MTLDevice?
     ) -> (CoefficientBuffers, MTLBuffer) {
-
+        
+        // Parse coefficient string to float arrays
         var (modelIndices, modelCoefficients, dateTime):
             ([SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>) =
                 Self.createModelCoefficientArray(
                     modelCoefficients: modelCoefficients
                 )
 
-        // Safely unwrap metalDevice and create buffer
+        // Create buffers for model coefficents
         guard let metalDevice = metalDevice,
             let coefficientsBuffer = metalDevice.makeBuffer(
                 bytes: modelCoefficients,
@@ -91,7 +92,8 @@ extension ParticleMeshGenerator {
         }
         return (coeffIndexSIMD, coeffFloatArray, dateTime)
     }
-
+    
+    /// Parse time row of coefficient string
     private static func parseTimeRow(
         row: String,
         outputTimeArray: inout SIMD4<Float>
@@ -124,6 +126,7 @@ extension ParticleMeshGenerator {
         )
     }
 
+    /// Parse time component of coefficient string
     private static func parseDateTime(entry: String, outputArray: inout [Float])
     {
         let components = entry.components(separatedBy: "/").filter {
@@ -136,6 +139,7 @@ extension ParticleMeshGenerator {
         }
     }
 
+    /// Parse model coefficients component of coefficient string
     private static func parseModelRow(
         row: String,
         outputIndexArray: inout [SIMD2<Float>],
@@ -146,11 +150,14 @@ extension ParticleMeshGenerator {
         let components = row.components(separatedBy: " ").filter { !$0.isEmpty }
         for (colIndex, e) in components.enumerated() {
             if colIndex <= 1 {
+                // Index entries
                 parseEntry(entry: e, outputArray: &tempIndexArray)
             } else {
+                // Coefficient entries
                 parseEntry(entry: e, outputArray: &tempModelEntriesArray)
             }
         }
+        
         outputIndexArray.append(
             SIMD2<Float>(tempIndexArray[0], tempIndexArray[1])
         )
@@ -165,6 +172,7 @@ extension ParticleMeshGenerator {
 
     }
 
+    /// General string to float parser
     private static func parseEntry(entry: String, outputArray: inout [Float]) {
         if let floatEntry = Float(entry) {
             outputArray.append(floatEntry)

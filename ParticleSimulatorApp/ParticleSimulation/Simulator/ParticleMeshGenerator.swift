@@ -201,10 +201,11 @@ final class ParticleMeshGenerator {
         lastTracedPoint = nextTracedPoint
     }
 
-    func traceSingular(point centre: ParticlePoint, spread: Float = 2.0) {
+    /// Spawns particles until max spawn count is reached
+    func traceSingular(point centre: ParticlePoint) {
         // Spawn particles
         while particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount {
-            spawnParticle(at: centre, spread: spread)
+            spawnParticle(at: centre)
         }
     }
 
@@ -214,18 +215,21 @@ final class ParticleMeshGenerator {
         lastTracedPoint = nil
     }
 
-    private func spawnParticle(at point: ParticlePoint, spread: Float = 2.0) {
+    /// Spawns a single particle with at a random positon around a centre point
+    private func spawnParticle(at point: ParticlePoint) {
         guard particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount else {
             return
         }
         
         // Generate random position within a sphere
         let randPosition: SIMD3<Float> =
-            AppConstants.Spawn.radius * randomUniformDistribute() * spread
+            AppConstants.Spawn.radius * randomUniformDistribute()
             + point.position
         let polarRandPosition: SIMD3<Float> = randPosition.toGeographic()
     
         // initialising particle
+        
+        // TODO: BULKY INITIALISATION
         let attributes = ParticlePointAttributes(
             position: randPosition.packed3,
             polarCoordinate: polarRandPosition.packed3,
@@ -336,11 +340,6 @@ final class ParticleMeshGenerator {
             commandBuffer.commit()
         }
 
-//        // ADD PARTICLES BASED ON PARTICLE LIMIT
-//        if (particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount) {
-//            traceSingular(point: southPoleGenPoint, spread: 0.5)
-//        }
-        
         // Simulate the particles that already exist in the simulation buffer.
         if particleCount > 0, let oldBuffer {
             let parameters = ParticleSimulationParams(

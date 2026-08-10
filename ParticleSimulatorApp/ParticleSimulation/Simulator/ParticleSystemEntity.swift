@@ -25,7 +25,7 @@ struct ParticleSystemEntity {
         color: AppConstants.Particle.color,
     )
     
-    //  Initalise particle providers and entity
+    ///  Initalise particle providers and entity
     init(to content: RealityViewContent) async {
         let particleMaterial = await Self.instantiateParticleMaterial()
         source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, particleMaterial: particleMaterial)

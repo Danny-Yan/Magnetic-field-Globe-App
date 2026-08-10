@@ -12,6 +12,7 @@
 
 internal import UniformTypeIdentifiers
 
+/// Print logger for printing outputs to txt files
 final class LogDestination: TextOutputStream {
     static var dest = LogDestination()
     
@@ -40,6 +41,7 @@ final class LogDestination: TextOutputStream {
     }
 }
 
+/// prints out every entry in a class (only top level entries)
 func printClassEntries(headline: String = "", for target: Any){
     // Print out all elements in the output
     
@@ -54,6 +56,7 @@ func printClassEntries(headline: String = "", for target: Any){
     }
 }
 
+/// Utility function for clearing log file
 func clearLogFile(){
     let logger = LogDestination()
     let logURL = logger.logURL
@@ -67,6 +70,7 @@ func clearLogFile(){
 
 }
 
+/// Utility function for added headlines to log file
 func printHeadlineSpacer(headline: String = ""){
 
     var logDest = LogDestination.dest

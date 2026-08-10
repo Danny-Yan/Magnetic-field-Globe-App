@@ -15,7 +15,8 @@ extension ParticleMeshGenerator {
     ///
     /// See `particleBrushGeneration.metal`.
     private static let simulatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.simulatePipelineName)
-    
+   
+    /// Simulates particles that are already in the simulation
     static func simulate(input: MTLBuffer,
                          output: MTLBuffer,
                          particleOffsetInOutput: Int = 0,
@@ -50,7 +51,8 @@ extension ParticleMeshGenerator {
         encoder.dispatchThreadgroups(MTLSizeMake(numGroups, 1, 1),
                                      threadsPerThreadgroup: MTLSizeMake(groupSize, 1, 1))
     }
-    
+   
+    /// Adds particles that are currently in the particle buffer to the simulation
     static func addParticlesToSimulation(input: UnsafeBufferPointer<ParticleAttributes>,
                                          output: MTLBuffer,
                                          particleOffsetInOutput: Int = 0,

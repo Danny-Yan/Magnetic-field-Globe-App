@@ -22,7 +22,8 @@ func makeComputePipeline(named name: String) -> MTLComputePipelineState? {
 extension MTLPackedFloat3 {
     /// Convert a `MTLPackedFloat3` to a `SIMD3<Float>`.
     var simd3: SIMD3<Float> { return .init(x, y, z) }
-    
+   
+    /// Convert to float array
     func toArray() -> [Float]{
         return [x, y, z]
     }
@@ -32,10 +33,12 @@ extension SIMD3 where Scalar == Float {
     /// Convert a `SIMD3<Float>` to a `MTLPackedFloat3`.
     var packed3: MTLPackedFloat3 { return .init(.init(elements: (x, y, z))) }
     
+    /// Convert to float array
     func toArray() -> [Float]{
         return [x, y, z]
     }
     
+    /// Convert spherical geographic (R, Lat, Lon) to cartesian (x, y, z)
     func toCartesian() -> SIMD3<Float>{
         let radius = x
         let lat = y
@@ -46,7 +49,8 @@ extension SIMD3 where Scalar == Float {
             radius * sin(lat)
         )
     }
-    
+   
+    /// Convert cartesian (x, y, z) to spherical geographic (R, Lat, Lon)
     func toGeographic() -> SIMD3<Float>{
         let radius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
         let lat = asin(z / radius)
@@ -87,7 +91,7 @@ func createSingleTypeBufPointer<T>(buf: inout MTLBuffer, of type: T.Type) -> Uns
     return modelPointer
 }
 
-
+/// Utility function to compactly create both a buffer and its associated buffer pointer
 func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> (MTLBuffer, UnsafeMutablePointer<T>) {
     
     var buffer = try await createSingleTypeBuffer(metalDevice: metalDevice, of: T.self)
@@ -96,6 +100,7 @@ func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async t
     return (buffer, pointer)
 }
 
+/// Runs a GPU function a single time
 func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder) -> Void) async throws {
     
     guard let queue = mtlDevice?.makeCommandQueue(),
@@ -112,6 +117,7 @@ func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: M
     await commandBuffer.completed()
 }
 
+/// Converts geographic  (lR, lat, lon) from degrees to radians
 func convertGeographicDegToRad(alt: Double, lat: Double, lon: Double) -> SIMD3<Float>{
     // Conversion radians
     let trueAlt = Float(alt)
