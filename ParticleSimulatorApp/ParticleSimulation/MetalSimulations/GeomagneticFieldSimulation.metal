@@ -310,11 +310,15 @@ void createCoordSpace(thread ParticleAttributes &particle){
         float altitude = polarCoord.x;
         float3 pos = particle.attributes.position;
         
+        float posY = pos.y;
+        pos.y = pos.z;
+        pos.z = posY;
+        
         verticalComponent = pos / altitude;
         
-        if (rlat > reverseBoundary || rlat < -reverseBoundary){
-            verticalComponent = -verticalComponent;
-        }
+//        if (rlat > reverseBoundary || rlat < -reverseBoundary){
+//            verticalComponent = -verticalComponent;
+//        }
 
         northComponent = float3(0, 0, 1) - sin(rlat) * verticalComponent;
         northComponent = northComponent / length(northComponent);
@@ -344,7 +348,7 @@ void applyField (constant float &deltaTime, thread MagneticField &result, thread
     
     // DOUBLE CHECK COORD SPACE CREATION AND ASSIGNMENT
     packed_float3 components = packed_float3(result.components * globeScaleFactor);
-    packed_float3 velocity = packed_float3( (coordSpace.northVector * components.x) + (coordSpace.eastVector * components.y) - (coordSpace.verticalVector * components.z));
+    packed_float3 velocity = packed_float3( (coordSpace.northVector * components.x) - (coordSpace.eastVector * components.y) - (coordSpace.verticalVector * components.z));
     
     float velocityY = velocity.y;
     velocity.y = velocity.z;
@@ -412,9 +416,11 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
     }
     
     // Shift particles to account for off centre origin and earth Radius
+    float vrCoordSpaceScaleFactor = 2;
     float earthRadius = magneticFieldModel.IAU66_RADIUS;
+    float rescaleFactor =  earthRadius / vrCoordSpaceScaleFactor;
     particle.attributes.position -= particle.attributes.centre;
-    particle.attributes.position *= earthRadius;
+    particle.attributes.position *= rescaleFactor;
     
     // Convert cartesian (x, y, z) to geographic (r, lat, lon) values
     convertToGeographic(particle);
@@ -433,7 +439,7 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
     applyField(params.deltaTime, result, particle);
     
     // Reshift particles back to original centre and scale
-    particle.attributes.position /= earthRadius;
+    particle.attributes.position /= rescaleFactor;
     particle.attributes.position += particle.attributes.centre;
     
     // Increase particles' age

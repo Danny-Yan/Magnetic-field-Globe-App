@@ -47,7 +47,7 @@ enum AppConstants {
         static var color: SIMD3<Float> = [1, 1, 1]
         
         static var boundingBox: SIMD3<Float> = [100, 100, 100]
-        static var lifeSpanSeconds: Float = 10.0
+        static var lifeSpanSeconds: Float = -1
     }
     
     enum Earth {
