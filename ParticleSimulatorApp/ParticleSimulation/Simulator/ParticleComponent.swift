@@ -13,6 +13,9 @@ import RealityKit
 struct ParticleComponent: Component {
     var generator: ParticleMeshGenerator
     var material: Material
+    
+    var trailEntity: Entity
+    var trailMaterial: Material
 }
 
 class ParticleBrushSystem: System {
@@ -30,6 +33,7 @@ class ParticleBrushSystem: System {
         for entity in context.entities(matching: Self.query, updatingSystemWhen: .rendering) {
             let particleComponent: ParticleComponent = entity.components[ParticleComponent.self]!
             let generator = particleComponent.generator
+            let trailEntity = particleComponent.trailEntity
             
             // Calls `update` on the generator.
             // This returns a non-nil `LowLevelMesh` if a new mesh had to be allocated.
@@ -37,7 +41,7 @@ class ParticleBrushSystem: System {
             //
             // If the generator returns a new `LowLevelMesh`,
             // apply to the entity's `ModelComponent`.
-            try? generator.update(deltaTime: deltaTime) { newMesh in
+            try? generator.update(deltaTime: deltaTime) { (newMesh, trailMesh) in
                 guard let resource = try? await MeshResource(from: newMesh) else { return }
                 
                 if entity.components.has(ModelComponent.self) {
@@ -45,6 +49,15 @@ class ParticleBrushSystem: System {
                 } else {
                     let modelComponent = ModelComponent(mesh: resource, materials: [particleComponent.material])
                     entity.components.set(modelComponent)
+                }
+            
+                if let trailResource = try? await MeshResource(from: trailMesh) {
+                    if trailEntity.components.has(ModelComponent.self) {
+                        trailEntity.components[ModelComponent.self]!.mesh = trailResource
+                    } else {
+                        let trailModelComponent = ModelComponent(mesh: trailResource, materials: [particleComponent.trailMaterial])
+                        trailEntity.components.set(trailModelComponent)
+                    }
                 }
             }
         }

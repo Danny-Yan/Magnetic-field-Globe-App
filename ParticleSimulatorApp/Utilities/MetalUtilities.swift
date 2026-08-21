@@ -34,12 +34,12 @@ extension SIMD3 where Scalar == Float {
     var packed3: MTLPackedFloat3 { return .init(.init(elements: (x, y, z))) }
     
     /// Convert to float array
-    func toArray() -> [Float]{
+    func toArray() -> [Scalar]{
         return [x, y, z]
     }
     
     /// Convert spherical geographic (R, Lat, Lon) to cartesian (x, y, z)
-    func toCartesian() -> SIMD3<Float>{
+    func toCartesian() -> SIMD3<Scalar>{
         let radius = x
         let lat = y
         let lon = z
@@ -51,7 +51,7 @@ extension SIMD3 where Scalar == Float {
     }
    
     /// Convert cartesian (x, y, z) to spherical geographic (R, Lat, Lon)
-    func toGeographic() -> SIMD3<Float>{
+    func toGeographic() -> SIMD3<Scalar>{
         let radius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
         let lat = asin(z / radius)
         let lon = atan2(y, x)
@@ -63,6 +63,20 @@ extension SIMD3 where Scalar == Float {
 extension SIMD3 where Scalar == Float16 {
     /// Convert a `SIMD3<Float16>` to a `packed_half3`.
     var packed3: packed_half3 { return .init(x: x, y: y, z: z) }
+}
+
+extension packed_half4 {
+    /// Convert a `packed_half4` to a `SIMD4<Float>`.
+    var simd: SIMD4<Float16> {
+        return .init(x, y, z, w)
+    }
+}
+
+extension SIMD4 where Scalar == Float16 {
+    /// Convert to float array
+    func toArray() -> [Scalar]{
+        return [x, y, z, w]
+    }
 }
 
 /// Function for creating a buffer of a single type, non array type
@@ -101,7 +115,7 @@ func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async t
 }
 
 /// Runs a GPU function a single time
-func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder) -> Void) async throws {
+func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder, _ commandBuffer: MTLCommandBuffer) -> Void) async throws {
     
     guard let queue = mtlDevice?.makeCommandQueue(),
           let commandBuffer = queue.makeCommandBuffer(),
@@ -110,7 +124,7 @@ func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: M
         fatalError("Failed to create command buffer/encoder for test dispatch")
     }
 
-    gpuFunction(encoder)
+    gpuFunction(encoder, commandBuffer)
     
     encoder.endEncoding()
     commandBuffer.commit()

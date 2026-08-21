@@ -48,3 +48,7 @@ void testMetalRNGFunction(device packed_float4 &params [[buffer(0)]],
     RandomBounds bound = RandomBounds(lower, upper);
     output = float3(rng.nextFloat(bound), rng.nextFloat(bound), rng.nextFloat(bound));
 }
+
+bool vectorEquals(float3 a, float3 b){
+    return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
+}

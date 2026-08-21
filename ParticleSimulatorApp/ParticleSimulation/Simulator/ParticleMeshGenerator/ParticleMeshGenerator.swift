@@ -38,6 +38,9 @@ final class ParticleMeshGenerator {
 
     /// The `LowLevelMesh` currently being written to.  Contains capacity for `particleCapacity` particles.
     private var lowLevelMesh: LowLevelMesh?
+    
+    /// The `TrailLowLevelMesh` currently being written to.  Contains capacity for `MAX_TRAIL_LENGTH` particles.
+    private var trailLowLevelMesh: LowLevelMesh?
 
     /// The particle simulation buffer.  Contains capacity for `particleCapacity` articles.
     internal var simulationBuffer: MTLBuffer?
@@ -93,7 +96,7 @@ final class ParticleMeshGenerator {
         case unableToCreateBuffer
     }
     
-    static var southPoleCentre: SIMD3<Float> = AppConstants.Spawn.centre + SIMD3<Float>(0, -10, 10)
+    static var southPoleCentre: SIMD3<Float> = AppConstants.Spawn.centre * 2 + SIMD3<Float>(0, 0, 0)
 
 
     @MainActor
@@ -111,9 +114,16 @@ final class ParticleMeshGenerator {
             )
         // Sets ParticleComponent as its new root
         rootEntity.position = .zero
+        
+        let trailEntity = Entity()
+        trailEntity.name = "Particle Trails"
+        rootEntity.addChild(trailEntity)
+        
         let particleComponent = ParticleComponent(
             generator: self,
-            material: material
+            material: material,
+            trailEntity: trailEntity,
+            trailMaterial: Self.makeTrailMaterial()
         )
         rootEntity.components.set(particleComponent)
 
@@ -243,11 +253,11 @@ final class ParticleMeshGenerator {
             yearFraction: createYearFractionFromDate(date: try! createDateFromDMY()),
             age: 0,
         )
-        
+
         particlesToSpawn.append(
             ParticleAttributes(
                 attributes: attributes,
-                velocity: SIMD3<Float>(0,0,0).packed3,
+                velocity: SIMD3<Float>(repeating: 0.0).packed3
             )
         )
     }
@@ -286,6 +296,11 @@ final class ParticleMeshGenerator {
             particleCapacity: newParticleCapacity,
             particleCount: particleCount
         )
+        
+        trailLowLevelMesh = try Self.makeTrailLowLevelMesh(
+            particleCapacity: newParticleCapacity
+        )
+        
         simulationBuffer = newBuffer
         particleCapacity = newParticleCapacity
     }
@@ -293,7 +308,7 @@ final class ParticleMeshGenerator {
     @MainActor
     func update(
         deltaTime: Float,
-        _ onCreatedNewMesh: @escaping @MainActor (LowLevelMesh) async -> Void
+        _ onCreatedNewMesh: @escaping @MainActor (_ particleMesh: LowLevelMesh, _ trailMesh: LowLevelMesh) async -> Void
     ) throws {
         let oldBuffer = simulationBuffer
 
@@ -323,7 +338,7 @@ final class ParticleMeshGenerator {
         commandBuffer.addCompletedHandler { [self] commandBuffer in
             Task(priority: .high) { @MainActor in
                 if didReallocate {
-                    await onCreatedNewMesh(lowLevelMesh!)  // THIS IS WHERE THE APP PLACES THE LOW LEVEL MESH
+                    await onCreatedNewMesh(lowLevelMesh!, trailLowLevelMesh!)  // THIS IS WHERE THE APP PLACES THE LOW LEVEL MESH
                 }
 
                 precondition(isMeshUpdateInFlight)
@@ -380,6 +395,16 @@ final class ParticleMeshGenerator {
         try Self.populate(
             input: simulationBuffer!,
             output: lowLevelMesh!,
+            particleCount: particleCount,
+            commandBuffer: commandBuffer,
+            encoder: computeEncoder
+        )
+        
+        // Populate the trail `LowLevelMesh` from the same post-simulation buffer, so each particle's
+        // trail always reflects the position it was just simulated to this frame.
+        try Self.populateTrails(
+            input: simulationBuffer!,
+            output: trailLowLevelMesh!,
             particleCount: particleCount,
             commandBuffer: commandBuffer,
             encoder: computeEncoder

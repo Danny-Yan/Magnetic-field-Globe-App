@@ -9,9 +9,13 @@ import Foundation
 import simd
 import SwiftUI
 
-extension SIMD4 {
+extension SIMD4<Float>{
     /// Extract the X, Y, and Z components of a SIMD4 as a SIMD3.
     var xyz: SIMD3<Scalar> { .init(x, y, z) }
+    
+    func toColor() -> Color {
+        Color(red: Double(x), green: Double(y), blue: Double(z), opacity: Double(w))
+    }
 }
 
 extension SIMD3<Float> {
@@ -29,10 +33,19 @@ extension Color {
                               set: { simdBinding.wrappedValue = $0.toSIMD() })
     }
     
+    static func makeBinding(from simdBinding: Binding<SIMD4<Float>>) -> Binding<Color> {
+        return Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
+                              set: { simdBinding.wrappedValue = $0.toSIMD() })
+    }
     /// Converts a SwiftUI Color to a vector, such that red, green, and blue maps to X, Y, and Z, respectively.
     func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD3<Float> {
         let resolved = resolve(in: environment)
         return .init(x: resolved.red, y: resolved.green, z: resolved.blue)
+    }
+    
+    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD4<Float> {
+        let resolved = resolve(in: environment)
+        return .init(x: resolved.red, y: resolved.green, z: resolved.blue, w: resolved.opacity)
     }
 }
 

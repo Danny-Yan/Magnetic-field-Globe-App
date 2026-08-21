@@ -35,7 +35,7 @@ extension GPUTester {
         print("Cartesian Coordinate: \(polarCoord.toCartesian())")
 
         // Call GPU function a single time
-        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { encoder in
+        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
             try? coordinateSpaceCreationPipeline(particle: particleBuffer, encoder: encoder)
         })
         

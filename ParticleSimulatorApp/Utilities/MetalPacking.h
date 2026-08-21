@@ -17,4 +17,7 @@ typedef MTLPackedFloat3 packed_float3;
 typedef simd_float2 packed_float2;
 typedef struct { _Float16 x, y, z; } packed_half3;
 
+// TODO: FIX CONVERSION OF PACKED_HALF4 -> HALF4
+typedef struct { _Float16 x, y, z, w; } packed_half4;
+
 #endif // __METAL_VERSION__

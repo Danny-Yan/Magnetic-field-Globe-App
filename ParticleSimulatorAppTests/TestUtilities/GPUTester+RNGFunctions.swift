@@ -42,7 +42,7 @@ extension GPUTester {
         let params: SIMD4<Float> = SIMD4<Float>(lower, upper, id, seed)
         let (outputBuffer, outputPointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: SIMD3<Float>.self)
         
-        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { encoder in
+        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
             try? rngFunctionPipeline(params: params, output: outputBuffer, encoder: encoder)
         })
         

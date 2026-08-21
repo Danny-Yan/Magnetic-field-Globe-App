@@ -59,7 +59,7 @@ extension GPUTester {
 
         
         // Call GPU function a single time
-        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { encoder in
+        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
             try? magneticModelPipeline(polarCoord: testPolarCoord, yearFraction: yearFraction, outputResult: outputBuffer, localVariableBuffer: localVariableBuffer, encoder: encoder)
         })
         

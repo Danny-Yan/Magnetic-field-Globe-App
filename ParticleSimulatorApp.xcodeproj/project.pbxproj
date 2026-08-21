@@ -14,6 +14,11 @@
 		005203532F9E3779002FE1ED /* GeomagneticFieldSimulation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005203522F9E3779002FE1ED /* GeomagneticFieldSimulation.metal */; };
 		0052036B2F9E388C002FE1ED /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0052036A2F9E388C002FE1ED /* Error.swift */; };
 		0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */; };
+		00612E5E302DD93300ECA504 /* ParticleAttributes+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00612E5D302DD92200ECA504 /* ParticleAttributes+Util.swift */; };
+		00612E66302DE56A00ECA504 /* ParticlePopulatePipeline.metal in Sources */ = {isa = PBXBuildFile; fileRef = 00612E65302DE55B00ECA504 /* ParticlePopulatePipeline.metal */; };
+		00612E68302DE58000ECA504 /* ParticleTrailPipeline.metal in Sources */ = {isa = PBXBuildFile; fileRef = 00612E67302DE57100ECA504 /* ParticleTrailPipeline.metal */; };
+		00612E6B302DE82500ECA504 /* ParticleMeshGenerator+Trail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00612E6A302DE81A00ECA504 /* ParticleMeshGenerator+Trail.swift */; };
+		00612E6E302DE85C00ECA504 /* ParticleTrailVertex+LowLevelMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00612E6D302DE84B00ECA504 /* ParticleTrailVertex+LowLevelMesh.swift */; };
 		006248312F9F12A9006BA4B8 /* ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248302F9F12A9006BA4B8 /* ResourceLoader.swift */; };
 		006248332F9F1319006BA4B8 /* Globe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006248322F9F1319006BA4B8 /* Globe.swift */; };
 		0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */; };
@@ -65,6 +70,11 @@
 		005203522F9E3779002FE1ED /* GeomagneticFieldSimulation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GeomagneticFieldSimulation.metal; sourceTree = "<group>"; };
 		0052036A2F9E388C002FE1ED /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+InitialiseClass.swift"; sourceTree = "<group>"; };
+		00612E5D302DD92200ECA504 /* ParticleAttributes+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleAttributes+Util.swift"; sourceTree = "<group>"; };
+		00612E65302DE55B00ECA504 /* ParticlePopulatePipeline.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ParticlePopulatePipeline.metal; sourceTree = "<group>"; };
+		00612E67302DE57100ECA504 /* ParticleTrailPipeline.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ParticleTrailPipeline.metal; sourceTree = "<group>"; };
+		00612E6A302DE81A00ECA504 /* ParticleMeshGenerator+Trail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+Trail.swift"; sourceTree = "<group>"; };
+		00612E6D302DE84B00ECA504 /* ParticleTrailVertex+LowLevelMesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleTrailVertex+LowLevelMesh.swift"; sourceTree = "<group>"; };
 		00619AFC2FEFE839002DFAEC /* ParticleSimulatorAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ParticleSimulatorAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		006248302F9F12A9006BA4B8 /* ResourceLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceLoader.swift; sourceTree = "<group>"; };
 		006248322F9F1319006BA4B8 /* Globe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globe.swift; sourceTree = "<group>"; };
@@ -144,13 +154,11 @@
 		005203492F9E2B7D002FE1ED /* Simulator */ = {
 			isa = PBXGroup;
 			children = (
-				0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */,
-				0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */,
+				00612E69302DE80000ECA504 /* ParticleMeshGenerator */,
+				00612E5D302DD92200ECA504 /* ParticleAttributes+Util.swift */,
+				00612E6D302DE84B00ECA504 /* ParticleTrailVertex+LowLevelMesh.swift */,
 				0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */,
-				3AB6DB4E2BF3F37000DE837B /* ParticleMeshGenerator+LowLevelMesh.swift */,
-				3AB6DB4C2BF3D27C00DE837B /* ParticleMeshGenerator+Simulation.swift */,
 				3AB8C7642BDF5BF600D7EF6A /* ParticleVertex.h */,
-				3A4AEF842BDE19D5005534FE /* ParticleMeshGenerator.swift */,
 				3A5192C32C003C7700EF1D14 /* ParticleVertex+LowLevelMesh.swift */,
 				3A357C932BF1C64A0067B0CB /* ParticleComponent.swift */,
 				00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */,
@@ -161,6 +169,8 @@
 		0052034B2F9E2B9E002FE1ED /* MetalSimulations */ = {
 			isa = PBXGroup;
 			children = (
+				00612E67302DE57100ECA504 /* ParticleTrailPipeline.metal */,
+				00612E65302DE55B00ECA504 /* ParticlePopulatePipeline.metal */,
 				3AB8C7D22BE0C5A200D7EF6A /* SimpleParticleSimulation.metal */,
 				005203522F9E3779002FE1ED /* GeomagneticFieldSimulation.metal */,
 			);
@@ -175,6 +185,19 @@
 				006248302F9F12A9006BA4B8 /* ResourceLoader.swift */,
 			);
 			path = Globe;
+			sourceTree = "<group>";
+		};
+		00612E69302DE80000ECA504 /* ParticleMeshGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				00612E6A302DE81A00ECA504 /* ParticleMeshGenerator+Trail.swift */,
+				3A4AEF842BDE19D5005534FE /* ParticleMeshGenerator.swift */,
+				0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */,
+				0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */,
+				3AB6DB4E2BF3F37000DE837B /* ParticleMeshGenerator+LowLevelMesh.swift */,
+				3AB6DB4C2BF3D27C00DE837B /* ParticleMeshGenerator+Simulation.swift */,
+			);
+			path = ParticleMeshGenerator;
 			sourceTree = "<group>";
 		};
 		00641B3B300BADE900ED2A5F /* External */ = {
@@ -283,8 +306,8 @@
 		3A8A1A412BCCE54D0007F33F /* ParticleSimulation */ = {
 			isa = PBXGroup;
 			children = (
-				0052034B2F9E2B9E002FE1ED /* MetalSimulations */,
 				005203492F9E2B7D002FE1ED /* Simulator */,
+				0052034B2F9E2B9E002FE1ED /* MetalSimulations */,
 			);
 			path = ParticleSimulation;
 			sourceTree = "<group>";
@@ -447,6 +470,8 @@
 				006248312F9F12A9006BA4B8 /* ResourceLoader.swift in Sources */,
 				3A4AEF802BDDC301005534FE /* ImmersiveContentView.swift in Sources */,
 				0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */,
+				00612E5E302DD93300ECA504 /* ParticleAttributes+Util.swift in Sources */,
+				00612E68302DE58000ECA504 /* ParticleTrailPipeline.metal in Sources */,
 				3A7686E32AB263DA00762DDF /* ParticleSimulatorApp.swift in Sources */,
 				3A5192C42C003C7C00EF1D14 /* ParticleVertex+LowLevelMesh.swift in Sources */,
 				004F852F2F9F459C00F90CD7 /* GlobeEntity.swift in Sources */,
@@ -454,14 +479,17 @@
 				0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */,
 				3AB6DB4D2BF3D2AC00DE837B /* ParticleMeshGenerator+Simulation.swift in Sources */,
 				3A357C942BF1C6F30067B0CB /* ParticleComponent.swift in Sources */,
+				00612E6E302DE85C00ECA504 /* ParticleTrailVertex+LowLevelMesh.swift in Sources */,
 				3A7B00552BCB51A50068302D /* CurveProcessing.swift in Sources */,
 				3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */,
 				3AECFF342C00709600176926 /* DrawingCanvasVisualizationView.swift in Sources */,
 				004CD5D72FFE86D400453CAA /* DateUtilities.swift in Sources */,
 				3A5BF7452BE6F3C6000A6CA1 /* DrawingCanvas.swift in Sources */,
 				00641B3D300BAE2700ED2A5F /* Geomagnetism.swift in Sources */,
+				00612E66302DE56A00ECA504 /* ParticlePopulatePipeline.metal in Sources */,
 				00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */,
 				3A6323C72BE0C61D00D82EC6 /* SimpleParticleSimulation.metal in Sources */,
+				00612E6B302DE82500ECA504 /* ParticleMeshGenerator+Trail.swift in Sources */,
 				3AECFF322C006F5C00176926 /* DrawingCanvasPlacementView.swift in Sources */,
 				0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */,
 				006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */,

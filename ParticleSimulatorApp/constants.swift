@@ -13,7 +13,6 @@ enum AppConstants {
         static var simulatedBounds: Float = 1.0
         static var entityScale: Float = 0.5
         
-        
         // The bounding box is used to occlude parts of your mesh when it isn't seen.
         // The drawing app should display all brush strokes, so use an arbitrarily large bounds.
         enum MeshBounds{
@@ -24,17 +23,18 @@ enum AppConstants {
         static var populatePipelineName: String = "particleBrushPopulate"
         static var simulatePipelineName: String = "geoMagneticFieldSimulate"
         static var initialiseMagneticModel: String = "initialiseMagneticModel"
+        static var trailPipelineName: String = "geoMagneticTrailPopulate"
         
         static var showSim: Bool = true
         static var skipSplashScreen: Bool = false
     }
     
     enum Spawn{
-        static var maxSpawnCount: Int = (pow(2, 15) as NSDecimalNumber).intValue
+        static var maxSpawnCount: Int = (pow(2, 14) as NSDecimalNumber).intValue
         static var minSpawnCount: Int = 1024
         
         static var centre: SIMD3<Float> = [0, 1.5, -1]
-        static var radius: Float = 2
+        static var radius: Float = 4
         static var randomSpawn: Bool = true
         
         static var particleSpawnDate: [Int] = [1, 1, 2020]
@@ -46,7 +46,7 @@ enum AppConstants {
         static var size: Float = 0.002
         static var color: SIMD3<Float> = [1, 1, 1]
         
-        static var boundingBox: SIMD3<Float> = [100, 100, 100]
+        static var boundingBox: SIMD3<Float> = [5, 5, 5]
         static var lifeSpanSeconds: Float = -1
     }
     
@@ -54,7 +54,8 @@ enum AppConstants {
         static var radius: Float = 0.5
         static var showEarth: Bool = true
     }
-    
+   
+    // TODO: MOVE COEFFICIENTS INTO SEPERATE TXT FILE
     enum modelCoefficients {
         static var igrf: Array<String> = [
             "    2020.0            WMM-2020        12/10/2019",

@@ -12,6 +12,8 @@
 #include "../../Utilities/MetalPacking.h"
 #include <simd/simd.h>
 
+#define MAX_TRAIL_LENGTH 20
+
 // Vertex attribute data must respect size and alignment requirements in Metal Shading Language.
 // See Table 2.4, "Size and alignment of packed vector data types" in the Metal Shading Language Specification.
 #pragma pack(push, 4)
@@ -46,7 +48,23 @@ struct ParticlePointAttributes {
 struct ParticleAttributes {
     struct ParticlePointAttributes attributes;
     packed_float3 velocity;
+    
+    packed_float3 trailPositions[MAX_TRAIL_LENGTH];
+    
+    uint trailCurrentIndex;
 };
+
+struct ParticleTrailAttributes {
+    packed_float3 position;
+    packed_half4 color;
+    float size;
+};
+
+struct ParticleTrailVertex {
+    struct ParticleTrailAttributes attributes;
+    simd_half2 uv;
+};
+
 
 struct ParticleVertex {
     struct ParticlePointAttributes attributes;

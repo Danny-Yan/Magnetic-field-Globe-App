@@ -40,7 +40,7 @@ extension GPUTester {
         
         let deltaTime: Float  = 0.01
         
-        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { encoder in
+        try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
             try? applyFieldPipeline(particle: particleBuffer, model: magneticModelBuffer, deltaTime: deltaTime , encoder: encoder)
         })
         

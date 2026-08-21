@@ -37,3 +37,5 @@ struct RandomBounds{
     float upper;
     RandomBounds(float lower, float upper);
 };
+
+bool vectorEquals(float3 a, float3 b);
