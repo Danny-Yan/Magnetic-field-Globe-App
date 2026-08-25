@@ -16,7 +16,6 @@ extension ParticleTrailVertex {
             Attribute(semantic: .position, format: .float3, layoutIndex: 0,
                       offset: MemoryLayout.offset(of: \Self.attributes.position)!),
 
-            // TODO: CHECK IF HALF4 WORKS
             Attribute(semantic: .color, format: .half4, layoutIndex: 0,
                       offset: MemoryLayout.offset(of: \Self.attributes.color)!),
             

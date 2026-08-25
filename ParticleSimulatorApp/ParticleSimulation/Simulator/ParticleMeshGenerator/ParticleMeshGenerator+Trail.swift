@@ -11,17 +11,12 @@ import Metal
 extension ParticleMeshGenerator {
 
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushPopulate`.
-    ///
-    /// See `particleBrushSimulation.metal`.
     private static let trailPopulatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.trailPipelineName)
 
     
-    /// A minimal unlit, alpha-blended material for the trail lines. Vertex color (including the alpha we
-    /// write per-vertex in `geoMagneticTrailPopulate`) drives both color and fade, so nothing else needs
-    /// to be configured here. Swap this out for a `ShaderGraphMaterial` if you want a glow/bloom look.
     @MainActor
     static func makeTrailMaterial() -> Material {
-        var material = UnlitMaterial(color: .white)
+        var material = UnlitMaterial()
         material.blending = .transparent(opacity: .init(floatLiteral: 1.0))
         material.faceCulling = .none
         return material

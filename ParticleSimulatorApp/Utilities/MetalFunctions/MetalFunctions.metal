@@ -52,3 +52,51 @@ void testMetalRNGFunction(device packed_float4 &params [[buffer(0)]],
 bool vectorEquals(float3 a, float3 b){
     return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
 }
+
+// Helper function for HSL to RGB conversion
+half hslChannelToRGB(half p, half q, half t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1.0 / 6.0) return p + (q - p) * 6 * t;
+    if (t < 1.0 / 2.0) return q;
+    if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6;
+    return p;
+}
+
+half3 hslToRGB(half h, half s, half l){
+    half r, g, b;
+    
+    if (s == 0) {
+        r = g = b = l; // achromatic
+    }
+    else {
+        half q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        half p = 2 * l - q;
+        r = hslChannelToRGB(p, q, h + 1.0 / 3.0);
+        g = hslChannelToRGB(p, q, h);
+        b = hslChannelToRGB(p, q, h - 1.0 / 3.0);
+    }
+    
+    return {
+        r,
+        g,
+        b
+    };
+}
+
+// Linear interpolation of colour against speed
+half colourSpeedLerpHalf(half speed, half color_max_speed, half color_min, half color_max) {
+    return (color_max - color_min) * (half)(speed / color_max_speed) + color_min;
+}
+
+// Linear interpolation of colour against speed using HSL
+half3 colourLinearisationHSLToRGB(float curSpeed, half maxSpeed, half3 minColour, half3 maxColour) {
+    half speed = half(curSpeed);
+    half h = colourSpeedLerpHalf(speed, maxSpeed, minColour[0], maxColour[0]) / 360.0f;
+    half s = colourSpeedLerpHalf(speed, maxSpeed, minColour[1], maxColour[1]);
+    half l = colourSpeedLerpHalf(speed, maxSpeed, minColour[2], maxColour[2]);
+    // Convert HSL to RGB
+    half3 rgb = hslToRGB(h, s, l);
+    //printf("Speed: %f, H: %f, S: %f, L: %f, R: %d, G: %d, B: %d\n", speed, h, s, l, rgb[0], rgb[1], rgb[2]);
+    return rgb;
+}

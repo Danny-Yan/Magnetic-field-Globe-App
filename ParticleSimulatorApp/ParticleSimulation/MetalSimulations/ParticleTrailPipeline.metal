@@ -38,10 +38,6 @@ void trailPopulatePipelineFunction(thread ParticleAttributes &particle,
     }
 }
 /// Builds the trail line vertices for every particle from its `trailPositions` history.
-///
-/// Writes `PARTICLE_TRAIL_LENGTH` vertices per particle, ordered oldest-to-newest, into `vertices`.
-/// Pair this with an index buffer of `.line` segments connecting consecutive samples within each
-/// particle's block (see `ParticleMeshGenerator+Trail.swift`).
 [[kernel]]
 void geoMagneticTrailPopulate(device ParticleAttributes *particles [[buffer(0)]],
                               device ParticleTrailVertex *outputTrailVertices [[buffer(1)]],

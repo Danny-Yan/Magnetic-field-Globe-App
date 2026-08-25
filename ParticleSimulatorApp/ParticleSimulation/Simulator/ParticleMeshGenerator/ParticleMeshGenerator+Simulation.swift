@@ -12,8 +12,6 @@ import Metal
 
 extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushSimulate`.
-    ///
-    /// See `particleBrushGeneration.metal`.
     private static let simulatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.simulatePipelineName)
    
     /// Simulates particles that are already in the simulation
@@ -99,6 +97,9 @@ extension ParticleMeshGenerator {
                 particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
                 particleLifeSpan: (AppConstants.Particle.lifeSpanSeconds.isFinite ? (Float(AppConstants.Particle.lifeSpanSeconds)) : -1),
                 deltaTime: 0,
+                maxSpeedColour: AppConstants.Particle.Colour.maxSpeedColour,
+                minColour: AppConstants.Particle.Colour.minColour.packed3,
+                maxColour: AppConstants.Particle.Colour.maxColour.packed3
             )
             encoder.setBytes(&currentParameters, length: paramSize, index: 2)
             

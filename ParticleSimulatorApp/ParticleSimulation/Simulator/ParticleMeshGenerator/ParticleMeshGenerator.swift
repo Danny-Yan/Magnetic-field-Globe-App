@@ -55,16 +55,6 @@ final class ParticleMeshGenerator {
     /// The entity which is populated by this mesh generator.
     private var rootEntity: Entity
 
-    /// Particles are spawned along the path that a person draws, and there is a random interval in the distance
-    /// between particle spawn points. This variable defines the range of that random interval.
-    private var distanceBetweenParticles: ClosedRange<Float> = 0.0001...0.0005
-
-    /// Keeps track of the distance that a person must draw before spawning another particle.
-    private var distanceToNextSample: Float = 0
-
-    /// When the next particle is spawned, this value is its `curveDistance`.
-    private var curveDistanceForNextSample: Float = 0
-
     /// List of particles that must spawn into the scene when calling `populate`.
     private var particlesToSpawn: ContiguousArray<ParticleAttributes> = []
 
@@ -156,73 +146,12 @@ final class ParticleMeshGenerator {
         print("WGS84_B: \(self.modelPointer.pointee.WGS84_B)")
     }
 
-    /// Call this function to trace the current brush stroke to `nextTracedPoint`.
-    ///
-    /// Begins a new stroke if there was no currently-active stroke.
-    func trace(point nextTracedPoint: ParticlePoint) {
-        // This routine marches a point along the line segment `lastTracedPoint` -> `nextTracedPoint`.
-        // Particles always spawn at a point on this line segment, and given a random velocity.
-        //
-        // Particles spawn at a rate relative to the length of the curve (for example every millimeter traced).
-        // This rate is slightly randomized --- each time a particle spawns, `distanceToNextSample` is randomized to a
-        // number in the range `distanceBetweenParticles`.
-        if let lastTracedPoint {
-            // Length of the line segment connecting `lastTracedPoint` and `nextTracedPoint`.
-            let segmentLength = distance(
-                lastTracedPoint.position,
-                nextTracedPoint.position
-            )
-            // Distance along the line segment of the most recent sample.
-            var segmentDistance: Float = 0
-
-            while segmentDistance < segmentLength {
-                // Move along the line segment by `distanceToNextSample` meters.
-                segmentDistance += distanceToNextSample
-
-                // The distance between samples along the curve is randomized.
-                distanceToNextSample = Float.random(
-                    in: distanceBetweenParticles
-                )
-
-                // Spawn the next particle if there is enough room in the segment.
-                if segmentDistance < segmentLength {
-                    // Normalized distance of this sample along the line segment.
-                    let normalizedSegmentDistance =
-                        segmentDistance / segmentLength
-
-                    // Spawn the particle.
-                    spawnParticle(
-                        at: mix(
-                            lastTracedPoint,
-                            nextTracedPoint,
-                            t: normalizedSegmentDistance
-                        )
-                    )
-
-                    // Account for the distance traced.
-                    curveDistanceForNextSample += distanceToNextSample
-                }
-            }
-
-            // Account for the remaining distance to trace before spawning the next particle.
-            distanceToNextSample = segmentDistance - segmentLength
-        }
-
-        lastTracedPoint = nextTracedPoint
-    }
-
     /// Spawns particles until max spawn count is reached
     func traceSingular(point centre: ParticlePoint) {
         // Spawn particles
         while particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount {
             spawnParticle(at: centre)
         }
-    }
-
-    /// Ends the currently-active stroke, if any.
-    func endStroke() {
-        distanceToNextSample = 0
-        lastTracedPoint = nil
     }
 
     /// Spawns a single particle with at a random positon around a centre point
@@ -244,7 +173,6 @@ final class ParticleMeshGenerator {
             position: randPosition.packed3,
             polarCoordinate: polarRandPosition.packed3,
             color: SIMD3<Float16>(point.color).packed3,
-            curveDistance: curveDistanceForNextSample,
             size: point.size,
             initialPosition: randPosition.packed3,
             centre: point.position.packed3,
@@ -362,7 +290,10 @@ final class ParticleMeshGenerator {
                 southPoleSpawnCentre: Self.southPoleCentre.packed3,
                 particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
                 particleLifeSpan: AppConstants.Particle.lifeSpanSeconds.isFinite ? Float(AppConstants.Particle.lifeSpanSeconds) : -1,
-                deltaTime: deltaTime
+                deltaTime: deltaTime,
+                maxSpeedColour: AppConstants.Particle.Colour.maxSpeedColour,
+                minColour: AppConstants.Particle.Colour.minColour.packed3,
+                maxColour: AppConstants.Particle.Colour.maxColour.packed3
             )
 
             try Self.simulate(

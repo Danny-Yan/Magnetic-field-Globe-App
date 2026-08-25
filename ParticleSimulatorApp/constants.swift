@@ -30,7 +30,7 @@ enum AppConstants {
     }
     
     enum Spawn{
-        static var maxSpawnCount: Int = (pow(2, 14) as NSDecimalNumber).intValue
+        static var maxSpawnCount: Int = (pow(2, 15) as NSDecimalNumber).intValue
         static var minSpawnCount: Int = 1024
         
         static var centre: SIMD3<Float> = [0, 1.5, -1]
@@ -44,9 +44,16 @@ enum AppConstants {
     enum Particle {
         static var initialSpeed: Float = 0.3
         static var size: Float = 0.002
-        static var color: SIMD3<Float> = [1, 1, 1]
         
-        static var boundingBox: SIMD3<Float> = [5, 5, 5]
+        enum Colour {
+            static var maxSpeedColour: Float  = 10
+            
+            // Blue to red
+            static var minColour: SIMD3<Float16> = [215, 1, 0.5]
+            static var maxColour: SIMD3<Float16> = [1, 1, 0.5]
+        }
+        
+        static var boundingBox: SIMD3<Float> = [20, 20, 20]
         static var lifeSpanSeconds: Float = -1
     }
     

@@ -35,7 +35,6 @@ struct ParticlePointAttributes {
     packed_float3 position;
     packed_float3 polarCoordinate;
     packed_half3 color;
-    float curveDistance;
     float size;
     packed_float3 initialPosition;
     packed_float3 centre;
@@ -77,6 +76,10 @@ struct ParticleSimulationParams {
     packed_float3 particleBoundingBox;
     float particleLifeSpan;
     float deltaTime;
+    
+    float maxSpeedColour;
+    packed_half3 minColour;
+    packed_half3 maxColour;
 };
 
 struct SchmidtScalingWrapper {

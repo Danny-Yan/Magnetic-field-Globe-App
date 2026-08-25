@@ -22,12 +22,16 @@ struct ParticleSystemEntity {
     private let particleProvider = ParticleSettingProvider(
         initialSpeed: AppConstants.Particle.initialSpeed,
         size: AppConstants.Particle.size,
-        color: AppConstants.Particle.color,
+        color: AppConstants.Particle.Colour.minColour.toFloat,
     )
     
     ///  Initalise particle providers and entity
     init(to content: RealityViewContent) async {
         let particleMaterial = await Self.instantiateParticleMaterial()
+//        var particleMaterial = UnlitMaterial(color: .white)
+//        particleMaterial.blending = .opaque
+//        particleMaterial.writesDepth = false
+        
         source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, particleMaterial: particleMaterial)
         instantiateParticleSystemEntity(to: content)
         
@@ -62,6 +66,8 @@ struct ParticleSystemEntity {
         var particleMaterial = try? await ShaderGraphMaterial(named: "/Root/SparklePresetBrushMaterial",
                                                              from: "PresetBrushMaterial",
                                                              in: realityKitContentBundle)
+        
+//        particleMaterial?.setParameter(name: "transparnecy", value: <#T##MaterialParameters.Value#>)
         particleMaterial?.writesDepth = false
         try? particleMaterial?.setParameter(name: "ParticleUVScale", value: .float(8))
         return particleMaterial

@@ -74,10 +74,12 @@ extension GPUTester {
         particlePointer.pointee.attributes.yearFraction = createYearFractionFromDate(date: date)
 
         let output: LowLevelMesh = try ParticleMeshGenerator.makeTrailLowLevelMesh(
-            particleCapacity: 1
+            particleCapacity: particleCount * Int(MAX_TRAIL_LENGTH)
         )
         
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, commandBuffer) in
+            
+            
             try? ParticleMeshGenerator.populateTrails(
                 input: particleBuffer,
                 output: output,
@@ -103,12 +105,19 @@ extension GPUTester {
         var positionOutput: [[Float]] = []
         var colorOutput: [[Float16]] = []
         lowLevelMesh.withUnsafeBytes(bufferIndex: 0, { buffer in
-            let vertices = buffer.bindMemory(to: ParticleTrailVertex.self)
+            let vertices = buffer.bindMemory(to: [ParticleTrailVertex].self)
            
             // Parsing position and color outputs into float arrays
             let vertexArray = Array(vertices)
-            positionOutput = vertexArray.map {$0.attributes.position.simd3.toArray()}
-            colorOutput = vertexArray.map {$0.attributes.color.simd.toArray()}
+            
+            let _ = vertices.map{
+                
+                // Parsing position
+                positionOutput = $0.map {$0.attributes.position.simd3.toArray()}
+                
+                // Parsing color
+                colorOutput = $0.map {$0.attributes.color.simd.toArray()}
+            }
         })
         
         return (positionOutput, colorOutput)

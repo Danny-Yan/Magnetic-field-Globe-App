@@ -39,3 +39,11 @@ struct RandomBounds{
 };
 
 bool vectorEquals(float3 a, float3 b);
+
+//half hslChannelToRGB(half p, half q, half t);
+//
+//half3 hslToRGB(half h, half s, half l);
+//
+//half colourSpeedLerpHalf(half speed, half color_max_speed, half color_min, half color_max);
+
+half3 colourLinearisationHSLToRGB(float curSpeed, half maxSpeed, half3 minColour, half3 maxColour);

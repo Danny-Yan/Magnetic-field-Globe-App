@@ -13,8 +13,6 @@ import Metal
 
 extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushPopulate`.
-    ///
-    /// See `particleBrushSimulation.metal`.
     private static let populatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.populatePipelineName)
 
     /// Creates a low level mesh suitable for this mesh generator to render.
