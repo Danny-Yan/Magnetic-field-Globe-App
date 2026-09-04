@@ -15,24 +15,20 @@ import os
 
 /// `ParticleSystemEntity` describes the  entire particle system
 struct ParticleSystemEntity {
+    @Binding var settings: ParticleSystemSettings
+    
+    private let particleProvider = IndividualParticleSettings()
+    
     /// The particle system entity.
     private let ParticleSystemEntity = Entity()
     private var source: ParticleDrawingSource
     
-    private let particleProvider = ParticleSettingProvider(
-        initialSpeed: AppConstants.Particle.initialSpeed,
-        size: AppConstants.Particle.size,
-        color: AppConstants.Particle.Colour.minColour.toFloat,
-    )
     
     ///  Initalise particle providers and entity
-    init(to content: RealityViewContent) async {
-        let particleMaterial = await Self.instantiateParticleMaterial()
-//        var particleMaterial = UnlitMaterial(color: .white)
-//        particleMaterial.blending = .opaque
-//        particleMaterial.writesDepth = false
+    init(to content: RealityViewContent, withSettings: Binding<ParticleSystemSettings>) async {
+        self._settings = withSettings
         
-        source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, particleMaterial: particleMaterial)
+        source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, withSettings: withSettings)
         instantiateParticleSystemEntity(to: content)
         
         await addParticles(to: content)
@@ -61,18 +57,6 @@ struct ParticleSystemEntity {
         // As generated the stroke fills a 1 x 1 x 1 meter box. Scale down the entity to fit.
         ParticleSystemEntity.scale = SIMD3<Float>(repeating: entityScale)
     }
-    
-    static internal func instantiateParticleMaterial() async -> ShaderGraphMaterial? {
-        var particleMaterial = try? await ShaderGraphMaterial(named: "/Root/SparklePresetBrushMaterial",
-                                                             from: "PresetBrushMaterial",
-                                                             in: realityKitContentBundle)
-        
-//        particleMaterial?.setParameter(name: "transparnecy", value: <#T##MaterialParameters.Value#>)
-        particleMaterial?.writesDepth = false
-        try? particleMaterial?.setParameter(name: "ParticleUVScale", value: .float(8))
-        return particleMaterial
-    }
-    
     
     internal func addParticles(to content: RealityViewContent) async {
         // Create Particle
@@ -128,10 +112,11 @@ func mix(_ point0: ParticlePoint, _ point1: ParticlePoint, t blend: Float) -> Pa
                                   color: mix(point0.color, point1.color, t: blend))
 }
 
-struct ParticleSettingProvider {
+struct IndividualParticleSettings {
 //    struct Settings: Equatable, Hashable {
-    var initialSpeed: Float = 0.012
-    var size: Float = 0.0002
+    
+    var initialSpeed: Float = AppConstants.Particle.initialSpeed
+    var size: Float = AppConstants.Particle.size
     var color: SIMD3<Float> = [1, 1, 1]
 //    }
     
@@ -142,5 +127,8 @@ struct ParticleSettingProvider {
                              color: self.color)
     }
 }
+
+
+
 
 

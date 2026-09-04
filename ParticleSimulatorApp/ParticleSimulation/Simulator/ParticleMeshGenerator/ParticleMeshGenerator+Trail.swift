@@ -5,8 +5,13 @@
 //  Created by DY on 13/8/2026.
 //  Copyright © 2026 Apple. All rights reserved.
 //
+import SwiftUI
 import RealityKit
+import RealityKitContent
+
 import Metal
+import MetalKit
+import os
 
 extension ParticleMeshGenerator {
 
@@ -15,19 +20,28 @@ extension ParticleMeshGenerator {
 
     
     @MainActor
-    static func makeTrailMaterial() -> Material {
-        var material = UnlitMaterial()
-        material.blending = .transparent(opacity: .init(floatLiteral: 1.0))
-        material.faceCulling = .none
-        return material
+    static func makeTrailMaterial() async -> ShaderGraphMaterial? {
+//        var material = UnlitMaterial()
+//        material.blending = .transparent(opacity: .init(floatLiteral: 1.0))
+//        material.faceCulling = .none
+//        return material
+        
+        var trailMaterial = try? await ShaderGraphMaterial(named: "/Root/TrailMaterial",
+                                                             from: "PresetBrushMaterial",
+                                                             in: realityKitContentBundle)
+        
+        trailMaterial?.writesDepth = false
+        return trailMaterial
+
     }
     
     /// Creates a trail low level mesh suitable for this mesh generator to render.
     ///
     /// - Parameters:
     ///   - particleCapacity: The number of particles the `LowLevelMesh` is to support.
+    ///   - particleCount: The number of particles currently visible in the `LowLevelMesh`.
     @MainActor
-    static func makeTrailLowLevelMesh(particleCapacity: Int) throws -> LowLevelMesh {
+    static func makeTrailLowLevelMesh(particleCapacity: Int, particleCount: Int) throws -> LowLevelMesh {
         let trailLength = Int(MAX_TRAIL_LENGTH)
         let segmentsPerParticle = trailLength - 1
         var descriptor = LowLevelMesh.Descriptor()
@@ -44,7 +58,7 @@ extension ParticleMeshGenerator {
         // The bounding box is used to occlude parts of your mesh when it isn't seen.
         // The drawing app should display all brush strokes, so use an arbitrarily large bounds.
         let bounds = BoundingBox(min: AppConstants.Sim.MeshBounds.lower, max: AppConstants.Sim.MeshBounds.upper)
-        mesh.parts.append(LowLevelMesh.Part(indexOffset: 0, indexCount: 0,
+        mesh.parts.append(LowLevelMesh.Part(indexOffset: 0, indexCount: 2 * segmentsPerParticle * particleCount,
                                             topology: .line, materialIndex: 0,
                                             bounds: bounds))
 

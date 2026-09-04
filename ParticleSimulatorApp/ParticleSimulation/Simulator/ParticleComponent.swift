@@ -51,13 +51,13 @@ class ParticleBrushSystem: System {
                     entity.components.set(modelComponent)
                 }
             
-                if let trailResource = try? await MeshResource(from: trailMesh) {
-                    if trailEntity.components.has(ModelComponent.self) {
-                        trailEntity.components[ModelComponent.self]!.mesh = trailResource
-                    } else {
-                        let trailModelComponent = ModelComponent(mesh: trailResource, materials: [particleComponent.trailMaterial])
-                        trailEntity.components.set(trailModelComponent)
-                    }
+                guard let trailResource = try? await MeshResource(from: trailMesh) else { return }
+                
+                if trailEntity.components.has(ModelComponent.self) {
+                    trailEntity.components[ModelComponent.self]!.mesh = trailResource
+                } else {
+                    let trailModelComponent = ModelComponent(mesh: trailResource, materials: [particleComponent.trailMaterial])
+                    trailEntity.components.set(trailModelComponent)
                 }
             }
         }

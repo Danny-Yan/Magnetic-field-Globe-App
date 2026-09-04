@@ -25,16 +25,20 @@ void trailPopulatePipelineFunction(thread ParticleAttributes &particle,
         // Walk the ring buffer starting from the oldest sample so vertices come out oldest-to-newest.
         uint sampleIndex = (oldestSampleIndex + i) % MAX_TRAIL_LENGTH;
 
-        device ParticleTrailVertex &particleVertex = outputTrailVertices[base + i];
-        device ParticleTrailAttributes &trailAttributes = particleVertex.attributes;
-        trailAttributes.position = particle.trailPositions[sampleIndex];
+//        device ParticleTrailVertex &particleVertex = outputTrailVertices[base + i];
+//        device ParticleTrailAttributes &trailAttributes = particleVertex.attributes;
+//        trailAttributes.position = particle.trailPositions[sampleIndex];
+//        trailAttributes.color = particle.trailColor[sampleIndex];
         
-        trailAttributes.color.x = particle.attributes.color.x;
-        trailAttributes.color.y = particle.attributes.color.y;
-        trailAttributes.color.z = particle.attributes.color.z;
+        outputTrailVertices[base + i] = ParticleTrailVertex {
+            .attributes = ParticleTrailAttributes{
+                .position = particle.trailPositions[sampleIndex],
+                .color = particle.trailColor[sampleIndex]
+            }
+        };
         
         // Fade from fully transparent at the tail (i == 0) to fully opaque at the particle's current position.
-        trailAttributes.color.w = half(i) / half(MAX_TRAIL_LENGTH - 1);
+//        trailAttributes.color.w = half(i) / half(MAX_TRAIL_LENGTH - 1);
     }
 }
 /// Builds the trail line vertices for every particle from its `trailPositions` history.

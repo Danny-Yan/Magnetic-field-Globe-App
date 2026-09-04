@@ -8,7 +8,7 @@
 
 extension ParticleAttributes{
     
-    /// Workaround to initialising the particle attributes struct without initialising the trailPositions array
+    /// Workaround to initialising the particle attributes struct without initialising the trail array buffers
     init(attributes: ParticlePointAttributes, velocity: packed_float3){
         self = withUnsafeTemporaryAllocation(of: ParticleAttributes.self, capacity: 1) { buffer in
             let ptr = buffer.baseAddress!

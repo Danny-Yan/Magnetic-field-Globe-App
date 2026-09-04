@@ -30,7 +30,7 @@ enum AppConstants {
     }
     
     enum Spawn{
-        static var maxSpawnCount: Int = (pow(2, 15) as NSDecimalNumber).intValue
+        static var maxSpawnCount: Int = (pow(2, 14) as NSDecimalNumber).intValue
         static var minSpawnCount: Int = 1024
         
         static var centre: SIMD3<Float> = [0, 1.5, -1]

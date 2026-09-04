@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include "../../Utilities/MetalPacking.h"
+#include "../../Utilities/SharedMetalFunctions.h"
+#include "../../Utilities/MetalFunctions/MetalFunctions.h"
 #include <simd/simd.h>
 
 #define MAX_TRAIL_LENGTH 20
@@ -49,25 +50,36 @@ struct ParticleAttributes {
     packed_float3 velocity;
     
     packed_float3 trailPositions[MAX_TRAIL_LENGTH];
+    packed_half3 trailColor[MAX_TRAIL_LENGTH];
     
     uint trailCurrentIndex;
+    uint particleIdx;
 };
 
 struct ParticleTrailAttributes {
     packed_float3 position;
-    packed_half4 color;
+    packed_half3 color;
     float size;
 };
 
 struct ParticleTrailVertex {
     struct ParticleTrailAttributes attributes;
-    simd_half2 uv;
 };
 
 
 struct ParticleVertex {
     struct ParticlePointAttributes attributes;
     simd_half2 uv;
+};
+
+struct SimulationNormalLayerParams {
+    packed_half3 colour;
+};
+
+struct SimulationHeatMapLayerParams {
+    float maxSpeedColour;
+    packed_half3 minColour;
+    packed_half3 maxColour;
 };
 
 struct ParticleSimulationParams {
@@ -77,21 +89,23 @@ struct ParticleSimulationParams {
     float particleLifeSpan;
     float deltaTime;
     
-    float maxSpeedColour;
-    packed_half3 minColour;
-    packed_half3 maxColour;
+    ParticleVisualisationLayer chosenLayerEnum;
+    
+    struct SimulationNormalLayerParams normalLayer;
+    struct SimulationHeatMapLayerParams heatMapLayer;
 };
+
 
 struct SchmidtScalingWrapper {
     float inner[169];
 };
 
-// Magnetic Model Struct
-// Input:
-// Longitude, Latitude, Altitude, Time
-//
-// Output:
-// MagneticField
+/// Magnetic Model Struct
+/// Input:
+/// Longitude, Latitude, Altitude, Time
+///
+/// Output:
+/// MagneticField
 struct MagneticFieldModel {
     // Mean Radius of IAU-66 ellipsoid (km)
     float IAU66_RADIUS;

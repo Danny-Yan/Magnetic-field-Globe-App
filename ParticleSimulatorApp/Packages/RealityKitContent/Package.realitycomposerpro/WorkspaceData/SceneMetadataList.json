@@ -1,0 +1,50 @@
+{
+  "776FB750-0793-49B2-86C8-61EF7CEA20E4" : {
+    "objectMetadataList" : [
+      [
+        "776FB750-0793-49B2-86C8-61EF7CEA20E4",
+        "Root",
+        "TrailMaterial"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "776FB750-0793-49B2-86C8-61EF7CEA20E4",
+        "Root",
+        "SolidPresetBrushMaterial"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "776FB750-0793-49B2-86C8-61EF7CEA20E4",
+        "Root",
+        "SparklePresetBrushMaterial"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "776FB750-0793-49B2-86C8-61EF7CEA20E4",
+        "Root",
+        "PresetBrushColor"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "776FB750-0793-49B2-86C8-61EF7CEA20E4",
+        "Root"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      }
+    ]
+  }
+}

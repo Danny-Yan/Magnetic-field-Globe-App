@@ -12,8 +12,17 @@ import Foundation
 import Metal
 import RealityKit
 
+
+import SwiftUI
+import RealityKitContent
+
+import MetalKit
+import os
+
 final class ParticleMeshGenerator {
 
+    @Binding var settings: ParticleSystemSettings
+    
     /// The GPU command queue to store incoming GPU commands
     private static let commandQueue: MTLCommandQueue? = {
         if let metalDevice, let queue = metalDevice.makeCommandQueue() {
@@ -92,9 +101,10 @@ final class ParticleMeshGenerator {
     @MainActor
     init(
         rootEntity: Entity,
-        material: Material,
-        modelCoefficientString: [String]
-    ) {
+        modelCoefficientString: [String],
+        withSettings: Binding<ParticleSystemSettings>
+    ) async {
+        self._settings = withSettings
         self.rootEntity = rootEntity
 
         (self.coefficientBuffers, self.magneticModelBuffer) =
@@ -111,9 +121,9 @@ final class ParticleMeshGenerator {
         
         let particleComponent = ParticleComponent(
             generator: self,
-            material: material,
+            material: await Self.makeParticleMaterial() ?? SimpleMaterial(),
             trailEntity: trailEntity,
-            trailMaterial: Self.makeTrailMaterial()
+            trailMaterial: await Self.makeTrailMaterial() ?? SimpleMaterial()
         )
         rootEntity.components.set(particleComponent)
 
@@ -226,7 +236,8 @@ final class ParticleMeshGenerator {
         )
         
         trailLowLevelMesh = try Self.makeTrailLowLevelMesh(
-            particleCapacity: newParticleCapacity
+            particleCapacity: newParticleCapacity,
+            particleCount: particleCount
         )
         
         simulationBuffer = newBuffer
@@ -285,17 +296,13 @@ final class ParticleMeshGenerator {
 
         // Simulate the particles that already exist in the simulation buffer.
         if particleCount > 0, let oldBuffer {
-            let parameters = ParticleSimulationParams(
-                particleCount: UInt32(particleCount),
-                southPoleSpawnCentre: Self.southPoleCentre.packed3,
-                particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
-                particleLifeSpan: AppConstants.Particle.lifeSpanSeconds.isFinite ? Float(AppConstants.Particle.lifeSpanSeconds) : -1,
+            
+            let parameters = settings.convertToMetalStruct(
+                particleCount: particleCount,
                 deltaTime: deltaTime,
-                maxSpeedColour: AppConstants.Particle.Colour.maxSpeedColour,
-                minColour: AppConstants.Particle.Colour.minColour.packed3,
-                maxColour: AppConstants.Particle.Colour.maxColour.packed3
+                southPoleCentre: Self.southPoleCentre
             )
-
+            
             try Self.simulate(
                 input: oldBuffer,
                 output: simulationBuffer!,
@@ -309,7 +316,7 @@ final class ParticleMeshGenerator {
         // Add any new particles to the simulation.
         if !particlesToSpawn.isEmpty {
             try particlesToSpawn.withUnsafeBufferPointer { bufferPointer in
-                try Self.addParticlesToSimulation(
+                try addParticlesToSimulation(
                     input: bufferPointer,
                     output: simulationBuffer!,
                     particleOffsetInOutput: particleCount,

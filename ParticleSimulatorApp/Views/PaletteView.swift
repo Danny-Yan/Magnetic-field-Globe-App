@@ -1,0 +1,38 @@
+/*
+See the LICENSE.txt file for this sample’s licensing information.
+
+Abstract:
+A view that encapsulates the palette functionality, including settings and preset selectors.
+*/
+
+import SwiftUI
+import RealityKit
+import RealityKitContent
+
+struct PaletteView: View {
+    
+    @Binding var settings: ParticleSystemSettings
+    @State var isDrawing: Bool = false
+    @State var isSettingsPopoverPresented: Bool = false
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Palette")
+                    .font(.title)
+                    .padding()
+            }
+            
+            Divider()
+                .padding(.horizontal, 20)
+            
+            BrushTypeView(settings: $settings)
+                .padding(.horizontal, 20)
+            
+            Spacer()
+            
+            Divider()
+                .padding(.horizontal, 20)
+        }
+    }
+}

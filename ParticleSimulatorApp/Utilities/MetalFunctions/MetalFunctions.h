@@ -29,6 +29,10 @@ public:
     // Rand float gen within a certain range [lower, upper]
     float nextFloat(struct RandomBounds bounds);
     float nextFloat(float lower, float upper);
+    
+    // Rand float vector3 gen within a certain range [lower, upper] -> (Creates a box of evenly distributed vectors)
+    float3 nextFloat3(struct RandomBounds bounds);
+    float3 nextFloat3(float lower, float upper);
 };
 
 // Ease of use
@@ -47,3 +51,4 @@ bool vectorEquals(float3 a, float3 b);
 //half colourSpeedLerpHalf(half speed, half color_max_speed, half color_min, half color_max);
 
 half3 colourLinearisationHSLToRGB(float curSpeed, half maxSpeed, half3 minColour, half3 maxColour);
+

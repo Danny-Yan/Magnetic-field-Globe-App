@@ -12,7 +12,8 @@ import SwiftUI
 
 @main
 struct ParticleSimulatorApp: App {
-    private static let ImmersiveGlobeSpace: String = "ImmersiveGlobeSpace"
+    private static let paletteWindowId: String = "Palette"
+    private static let immersiveGlobeSpace: String = "ImmersiveGlobeSpace"
     private static let splashScreenWindowId: String = "SplashScreen"
     
     /// The mode of the app determines which windows and immersive spaces should be open.
@@ -31,11 +32,12 @@ struct ParticleSimulatorApp: App {
         fileprivate var windowId: String {
             switch self {
             case .splashScreen: return splashScreenWindowId
-            case .drawing: return ImmersiveGlobeSpace
+            case .drawing: return paletteWindowId
             }
         }
     }
-        
+    
+    @State private var settings: ParticleSystemSettings = ParticleSystemSettings()
     @State private var mode: Mode = .splashScreen
     @State private var canvas = DrawingCanvasSettings()
     
@@ -50,14 +52,28 @@ struct ParticleSimulatorApp: App {
     
     @MainActor private func setMode(_ newMode: Mode) async {
         let oldMode = mode
-        guard newMode != oldMode else { return }
+//        guard newMode != oldMode else { return }
+//        
+//        if (newMode.windowId == Mode.drawing.windowId) {
+//            await openImmersiveSpace(id: newMode.windowId)
+//        } else {
+//            openWindow(id: newMode.windowId)
+//        }
+//
+//        dismissWindow(id: oldMode.windowId)
         
-        if (newMode.windowId == Mode.drawing.windowId) {
-            await openImmersiveSpace(id: newMode.windowId)
-        } else {
-            openWindow(id: newMode.windowId)
+        guard newMode != oldMode else { return }
+        mode = newMode
+        
+        if !immersiveSpacePresented && newMode.needsImmersiveSpace {
+            immersiveSpacePresented = true
+            await openImmersiveSpace(id: Self.immersiveGlobeSpace)
+        } else if immersiveSpacePresented && !newMode.needsImmersiveSpace {
+            immersiveSpacePresented = false
+            await dismissImmersiveSpace()
         }
-
+        
+        openWindow(id: newMode.windowId)
         dismissWindow(id: oldMode.windowId)
     }
 
@@ -81,11 +97,20 @@ struct ParticleSimulatorApp: App {
                 }
                 
             }
+            
+            
+            WindowGroup(id: Self.paletteWindowId) {
+                PaletteView(settings: $settings)
+                    .frame(width: 400, height: 550, alignment: .top)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            
+            .windowResizability(.contentSize)
             .windowResizability(.contentSize)
             .windowStyle(.plain)
             
-            ImmersiveSpace(id: Self.ImmersiveGlobeSpace){
-                ImmersiveContentView()
+            ImmersiveSpace(id: Self.immersiveGlobeSpace){
+                ImmersiveContentView(settings: $settings)
             }
             .immersionStyle(selection: $immersionStyle, in: .mixed)
         }

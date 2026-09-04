@@ -51,7 +51,7 @@ extension ParticleMeshGenerator {
     }
    
     /// Adds particles that are currently in the particle buffer to the simulation
-    static func addParticlesToSimulation(input: UnsafeBufferPointer<ParticleAttributes>,
+    func addParticlesToSimulation(input: UnsafeBufferPointer<ParticleAttributes>,
                                          output: MTLBuffer,
                                          particleOffsetInOutput: Int = 0,
                                          encoder: MTLComputeCommandEncoder,
@@ -91,16 +91,12 @@ extension ParticleMeshGenerator {
             // Set `particleCount` to the number of particles being added this bawatch.
             // Set `deltaTime` and `dragCoefficient` to zero, because you don't yet want to simulate the particles.
             
-            var currentParameters = ParticleSimulationParams(
-                particleCount: UInt32(length),
-                southPoleSpawnCentre: Self.southPoleCentre.packed3,
-                particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
-                particleLifeSpan: (AppConstants.Particle.lifeSpanSeconds.isFinite ? (Float(AppConstants.Particle.lifeSpanSeconds)) : -1),
+            var currentParameters = settings.convertToMetalStruct(
+                particleCount: particleCount,
                 deltaTime: 0,
-                maxSpeedColour: AppConstants.Particle.Colour.maxSpeedColour,
-                minColour: AppConstants.Particle.Colour.minColour.packed3,
-                maxColour: AppConstants.Particle.Colour.maxColour.packed3
+                southPoleCentre: Self.southPoleCentre
             )
+
             encoder.setBytes(&currentParameters, length: paramSize, index: 2)
             
                               

@@ -12,6 +12,12 @@ import Collections
 import Foundation
 import RealityKit
 
+import SwiftUI
+import RealityKitContent
+
+import MetalKit
+import os
+
 private extension Collection where Element: FloatingPoint {
     
     /// Computes the average over this collection, omitting a number of the largest and smallest values.
@@ -31,23 +37,18 @@ private extension Collection where Element: FloatingPoint {
 
 /// Instantiates `ParticleMeshGenerator`, draws particles to the screen
 public struct ParticleDrawingSource {
-    
     private let rootEntity: Entity
-    private var particleMaterial: RealityKit.Material
     private var ParticleMeshGen: ParticleMeshGenerator
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
-    private let particleSettingProvider = ParticleSettingProvider()
     private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrf
     
     @MainActor
-    init(rootEntity: Entity, particleMaterial: Material? = nil) async {
+    init(rootEntity: Entity, withSettings: Binding<ParticleSystemSettings>) async {
         self.rootEntity = rootEntity
         let particleMeshEntity = Entity()
         rootEntity.addChild(particleMeshEntity)
-        self.particleMaterial = particleMaterial ?? SimpleMaterial()
-        ParticleMeshGen = ParticleMeshGenerator(rootEntity: particleMeshEntity,
-                                                material: self.particleMaterial,
-                                                modelCoefficientString: modelCoefficients)
+        ParticleMeshGen = await ParticleMeshGenerator(rootEntity: particleMeshEntity,
+                                                      modelCoefficientString: modelCoefficients, withSettings: withSettings)
     }
     
     /// Draws particle to the screen

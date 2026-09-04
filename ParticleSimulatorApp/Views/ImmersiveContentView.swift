@@ -15,11 +15,13 @@ import MetalKit
 import os
 
 struct ImmersiveContentView: View {
+    @Binding var settings: ParticleSystemSettings
+    
     var body: some View {
         RealityView { content in
             
             if (AppConstants.Sim.showSim){
-                var particleSystemEntity = await ParticleSystemEntity(to: content)
+                var particleSystemEntity = await ParticleSystemEntity(to: content, withSettings: $settings)
                 
             }
             if (AppConstants.Earth.showEarth) {

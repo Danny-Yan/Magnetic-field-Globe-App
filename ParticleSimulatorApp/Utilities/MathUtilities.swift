@@ -25,6 +25,13 @@ extension SIMD3<Float> {
     }
 }
 
+extension SIMD3<Float16> {
+    /// Reinterpret a vectors X, Y, and Z components as red, green, and blue components of SwiftUI Color, respectively.
+    func toColor() -> Color {
+        Color(red: Double(x), green: Double(y), blue: Double(z))
+    }
+}
+
 extension Color {
     /// Converts a vector binding into a color binding.  The X, Y, and Z components of the vector correspond with the
     /// red, green and blue channels of the color, respectively.
@@ -37,6 +44,12 @@ extension Color {
         return Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
                               set: { simdBinding.wrappedValue = $0.toSIMD() })
     }
+    
+    static func makeBinding(from simdBinding: Binding<SIMD3<Float16>>) -> Binding<Color> {
+        return Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
+                              set: { simdBinding.wrappedValue = $0.toSIMD() })
+    }
+    
     /// Converts a SwiftUI Color to a vector, such that red, green, and blue maps to X, Y, and Z, respectively.
     func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD3<Float> {
         let resolved = resolve(in: environment)
@@ -46,6 +59,14 @@ extension Color {
     func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD4<Float> {
         let resolved = resolve(in: environment)
         return .init(x: resolved.red, y: resolved.green, z: resolved.blue, w: resolved.opacity)
+    }
+    
+    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD3<Float16> {
+        let resolved = resolve(in: environment)
+        return .init(x: Float16(resolved.red),
+                     y: Float16(resolved.green),
+                     z: Float16(resolved.blue)
+        )
     }
 }
 
@@ -169,5 +190,12 @@ extension Array where Element: FloatingPoint {
     func elementsEqual(_ other: [Element], tolerance: Element) -> Bool {
         guard self.count == other.count else { return false }
         return self.elementsEqual(other) { abs($0 - $1) <= tolerance }
+    }
+}
+
+/// Equates a binding value with a regular value
+extension Binding where Value: Equatable {
+    func valueEqual(_ other: Value) -> Bool {
+        return self.wrappedValue == other
     }
 }

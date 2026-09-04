@@ -289,7 +289,7 @@ void createCoordSpace(thread ParticleAttributes &particle){
     
     float3 polarCoord = particle.attributes.polarCoordinate;
     float rlat = polarCoord.y;
-    float boundDeg = 89.99;
+    float boundDeg = 89.999999;
     float bound = boundDeg * (PI / 180);
     
     
@@ -313,24 +313,35 @@ void createCoordSpace(thread ParticleAttributes &particle){
         northComponent = northComponent / length(northComponent);
         eastComponent = cross(northComponent, verticalComponent);
     
-    // Pole calc
+    // Pole calc (Does nothing lmao)
     } else {
         
-        // Return prev coordSpace if it exists
-        if ( !vectorEquals(coordSpace->northVector, float3(0, 0, 0))){
-            return;
-        }
+        // Randomly assign a vector for the particle to travel in
+        uint id = uint(particle.attributes.position.x * 100000);
+        uint seed = particle.particleIdx;
+        RNG rng = RNG(id, seed);
         
-        // North pole
-        if (rlat >= bound){
-            northComponent = float3(1, 0, 0);
-            eastComponent = float3(0, 0, 1);
-            
-        // South Pole
-        } else {
-            northComponent = -float3(1, 0, 0);
-            eastComponent = -float3(0, 0, 1);
-        }
+        RandomBounds bound = RandomBounds(-0.5, 0.5);
+        float3 randomCoord = rng.nextFloat3(bound);
+    
+        northComponent = randomCoord;
+        eastComponent = cross(northComponent, verticalComponent);
+
+//        // Return prev coordSpace if it exists
+//        if ( !vectorEquals(coordSpace->northVector, float3(0, 0, 0))){
+//            return;
+//        }
+//        
+//        // North pole
+//        if (rlat >= bound){
+//            northComponent = float3(1, 0, 0);
+//            eastComponent = float3(0, 0, 1);
+//            
+//        // South Pole
+//        } else {
+//            northComponent = -float3(1, 0, 0);
+//            eastComponent = -float3(0, 0, 1);
+//        }
     }
     
     // Assigning coord spaces
@@ -385,17 +396,17 @@ bool checkParticleAge(thread ParticleAttributes &particle, thread float lifeSpan
 }
 
 /// Records `position` into a particle's trail ring buffer, advancing the write index.
-void pushTrailPosition(thread ParticleAttributes &particle, packed_float3 position){
-    particle.trailPositions[particle.trailCurrentIndex] = position;
+void pushTrailPosition(thread ParticleAttributes &particle){
+    particle.trailPositions[particle.trailCurrentIndex] = particle.attributes.position;
+    particle.trailColor[particle.trailCurrentIndex] = particle.attributes.color;
     particle.trailCurrentIndex = (particle.trailCurrentIndex + 1) % MAX_TRAIL_LENGTH;
 }
 
 /// Resets every sample in a particle's trail to `position`, collapsing it to a single point.
-/// Call this whenever a particle is (re)spawned so its trail doesn't streak across the scene
-/// from stale/zero-initialised history to its new position.
-void resetTrail(thread ParticleAttributes &particle, packed_float3 position){
+void resetTrail(thread ParticleAttributes &particle){
     for (int i = 0; i < MAX_TRAIL_LENGTH; i++){
-        particle.trailPositions[i] = position;
+        particle.trailPositions[i] = particle.attributes.position;
+        particle.trailColor[i] = particle.attributes.color;
     }
     particle.trailCurrentIndex = 0;
 }
@@ -403,9 +414,9 @@ void resetTrail(thread ParticleAttributes &particle, packed_float3 position){
 /// Update handler for creating and resetting a particle's trail
 void updateTrail(thread ParticleAttributes &particle){
     if (particle.attributes.age == 0){
-        resetTrail(particle, particle.attributes.position);
+        resetTrail(particle);
     } else {
-        pushTrailPosition(particle, particle.attributes.position);
+        pushTrailPosition(particle);
     }
 }
 
@@ -414,11 +425,11 @@ void resetParticleToSouthPole(thread ParticleAttributes &particle, constant Part
     
     // Generate a random point
     uint id = uint(particle.attributes.position.x * 100000);
-    uint seed = particleIdx;
+    uint seed = particle.particleIdx;
     RNG rng = RNG(id, seed);
-    RandomBounds bound = RandomBounds(-1, 1);
-    float3 randomCoord = float3(rng.nextFloat(bound), rng.nextFloat(bound), rng.nextFloat(bound)) * 0.5;
-    
+    RandomBounds bound = RandomBounds(-0.5, 0.5);
+    float3 randomCoord = rng.nextFloat3(bound);
+
     // May need to make random velocities fire in a cone like pattern
 //    float3 randomVelcity = float3(rng.nextFloat(bound), rng.nextFloat(bound), rng.nextFloat(bound)) * 0.1;
     
@@ -438,14 +449,16 @@ void updateColor(thread ParticleAttributes &particle, constant ParticleSimulatio
     
     // Speed to colour calculation
     float speed = length(particle.velocity);
-    half maxSpeed = half(params.maxSpeedColour);
-    half3 minColour = params.minColour;
-    half3 maxColour = params.maxColour;
+
+    
+    half maxSpeed = half(params.heatMapLayer.maxSpeedColour);
+    half3 minColour = params.heatMapLayer.minColour;
+    half3 maxColour = params.heatMapLayer.maxColour;
     half3 rgbColour = colourLinearisationHSLToRGB(speed, maxSpeed, minColour, maxColour);
   
     // Colour uses transparency scale from [0, 1] for each channel instead of a black to white scale
-    // TODO: FIX THIS
-    half3 colour = half3(1, 0.5, 0);
+    
+    half3 colour = params.normalLayer.colour;
     particle.attributes.color = colour;
 }
 
@@ -463,6 +476,7 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
     }
     
     ParticleAttributes particle = particles[particleIdx];
+    particle.particleIdx = particleIdx;
     particle.attributes.position -= particle.attributes.centre;
     
     // Move particles to south pole if they expire/go out of bounds

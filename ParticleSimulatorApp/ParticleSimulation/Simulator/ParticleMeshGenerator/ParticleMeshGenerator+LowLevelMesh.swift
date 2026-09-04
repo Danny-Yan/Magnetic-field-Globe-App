@@ -8,12 +8,29 @@
  */
 
 
+import SwiftUI
 import RealityKit
+import RealityKitContent
+
 import Metal
+import MetalKit
+import os
 
 extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushPopulate`.
     private static let populatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.populatePipelineName)
+
+    static internal func makeParticleMaterial() async -> ShaderGraphMaterial? {
+        var particleMaterial = try? await ShaderGraphMaterial(
+            named: "/Root/SparklePresetBrushMaterial",
+            from: "PresetBrushMaterial",
+            in: realityKitContentBundle
+        )
+        
+        particleMaterial?.writesDepth = false
+        try? particleMaterial?.setParameter(name: "ParticleUVScale", value: .float(8))
+        return particleMaterial
+    }
 
     /// Creates a low level mesh suitable for this mesh generator to render.
     ///

@@ -81,8 +81,7 @@ struct SplashScreenBackgroundComponent: TransientComponent {
     
     /// Updates the texture size of the splash screen background to the provided resolution.
     @MainActor
-    mutating func setTextureSize(_ textureSize: SIMD2<Int>) throws {
-        lowLevelTexture = try Self.generateTexture(width: textureSize.x, height: textureSize.y)
+    mutating func setTextureSize(_ textureSize: SIMD2<Int>) throws { lowLevelTexture = try Self.generateTexture(width: textureSize.x, height: textureSize.y)
         let textureResource = try TextureResource(from: lowLevelTexture)
         try material.setParameter(name: "DistanceFieldTexture", value: .textureResource(textureResource))
         try update()

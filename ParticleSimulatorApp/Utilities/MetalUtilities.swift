@@ -67,6 +67,11 @@ extension SIMD3 where Scalar == Float16 {
     var toFloat: SIMD3<Float>{
         return .init(Float(x), Float(y), Float(z))
     }
+    
+    /// Convert to float array
+    func toArray() -> [Scalar]{
+        return [x, y, z]
+    }
 }
 
 extension packed_half4 {

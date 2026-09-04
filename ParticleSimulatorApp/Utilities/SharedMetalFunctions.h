@@ -20,4 +20,24 @@ typedef struct { _Float16 x, y, z; } packed_half3;
 // TODO: FIX CONVERSION OF PACKED_HALF4 -> HALF4
 typedef struct { _Float16 x, y, z, w; } packed_half4;
 
-#endif // __METAL_VERSION__
+#endif
+
+// https://stackoverflow.com/questions/60250968/unsupported-architecture-shared-enum-between-metal-and-swift
+#ifndef MetalFunctions_h
+#define MetalFunctions_h
+
+#ifdef __METAL_VERSION__
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
+#define NSInteger metal::int32_t
+#else
+
+#import <Foundation/Foundation.h>
+
+#endif /* __METAL_VERSION__ */
+#endif /* SharedIndizes_h */
+
+typedef NS_ENUM(NSInteger, ParticleVisualisationLayer)
+{
+    normalLayer = 0,
+    heatMapLayer = 1,
+};
