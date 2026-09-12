@@ -29,7 +29,7 @@ struct GPUTester {
                     named: name
                 )
         else {
-            Issue.record("Test pipeline failed to initlaise")
+            Issue.record("Test pipeline failed to initalise")
             return
         }
         encoder.setComputePipelineState(testingPipeline)
@@ -52,7 +52,7 @@ struct ExternalTester {
         lat: Double, lon: Double,
         day: Int = 1, month: Int = 1, year: Int = 2020
     ) async throws -> [Float]{
-        let testDateTime: Date = try createDateFromDMY(day: day, month: month, year: year)
+        let testDateTime: Date = createDateFromDMY(day: day, month: month, year: year)!
         let gm = ExternalGeomagnetism(longitude: lon, latitude: lat, altitude: alt, date: testDateTime)
         
         printClassEntries(headline: "External Variables", for: gm)

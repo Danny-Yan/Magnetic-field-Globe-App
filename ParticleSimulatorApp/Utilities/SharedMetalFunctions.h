@@ -28,15 +28,13 @@ typedef struct { _Float16 x, y, z, w; } packed_half4;
 
 #ifdef __METAL_VERSION__
 #define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
-#define NSInteger metal::int32_t
 #else
 
 #import <Foundation/Foundation.h>
-
 #endif /* __METAL_VERSION__ */
 #endif /* SharedIndizes_h */
 
-typedef NS_ENUM(NSInteger, ParticleVisualisationLayer)
+typedef NS_ENUM(int32_t, ParticleVisualisationLayer)
 {
     normalLayer = 0,
     heatMapLayer = 1,

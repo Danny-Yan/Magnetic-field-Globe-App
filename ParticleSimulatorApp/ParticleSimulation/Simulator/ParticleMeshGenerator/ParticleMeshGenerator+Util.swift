@@ -17,16 +17,13 @@ extension ParticleMeshGenerator {
 
     /// Function for initialising coefficient buffers and magnetic model buffer
     static func createModelBuffers(
-        modelCoefficients: [String],
+        chosenModel: MagneticModelVersion,
         metalDevice: MTLDevice?
     ) -> (CoefficientBuffers, MTLBuffer) {
         
         // Parse coefficient string to float arrays
         var (modelIndices, modelCoefficients, dateTime):
-            ([SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>) =
-                Self.createModelCoefficientArray(
-                    modelCoefficients: modelCoefficients
-                )
+            ([SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>) = Self.parseModelCoefficientFile(chosenModel: chosenModel)
 
         // Create buffers for model coefficents
         guard let metalDevice = metalDevice,
@@ -63,9 +60,23 @@ extension ParticleMeshGenerator {
         return (metalCoefficients, magneticModelBuffer)
 
     }
+    
+    static func parseModelCoefficientFile(chosenModel: MagneticModelVersion) -> (
+        [SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>
+    ){
+
+        // Parse Model Coefficient file
+        var content: [String] = []
+        parseDataFile(path: chosenModel.rawValue, parser: {
+            (strArray) in
+            content = strArray
+        })
+
+        return createModelCoefficientArray(modelCoefficients: content)
+    }
 
     /// Parses coefficient string into index, entry and date time arrays
-    static func createModelCoefficientArray(modelCoefficients: [String]) -> (
+    private static func createModelCoefficientArray(modelCoefficients: [String]) -> (
         [SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>
     ) {
 
@@ -77,7 +88,7 @@ extension ParticleMeshGenerator {
 
         // Date time index array
         var dateTime: SIMD4<Float> = SIMD4<Float>(0, 0, 0, 0)
-
+        
         // Iterate through rows
         for (rowIndex, row) in modelCoefficients.enumerated() {
             if rowIndex == 0 {
@@ -149,6 +160,12 @@ extension ParticleMeshGenerator {
         var tempModelEntriesArray: [Float] = []
         let components = row.components(separatedBy: " ").filter { !$0.isEmpty }
         for (colIndex, e) in components.enumerated() {
+            // Skip End of file character
+            if (e == String("999999999999999999999999999999999999999999999999")){
+                print("End of file reached")
+                return
+            }
+            
             if colIndex <= 1 {
                 // Index entries
                 parseEntry(entry: e, outputArray: &tempIndexArray)
@@ -169,7 +186,6 @@ extension ParticleMeshGenerator {
                 tempModelEntriesArray[3]
             )
         )
-
     }
 
     /// General string to float parser

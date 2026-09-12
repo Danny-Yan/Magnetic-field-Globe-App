@@ -52,7 +52,7 @@ extension GPUTester {
 //    ) async throws -> [Float] {
 //        
 //        let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
-//        let testDate = try createDateFromDMY(day: day, month: month, year: year)
+//        let testDate = createDateFromDMY(day: day, month: month, year: year)!
 //        let particle = try await testTrailPopulate(polarCoord: testPolarCoord, date: testDate)
 //        
 //        let pos = particle.attributes.position.toArray()
@@ -74,7 +74,8 @@ extension GPUTester {
         particlePointer.pointee.attributes.yearFraction = createYearFractionFromDate(date: date)
 
         let output: LowLevelMesh = try ParticleMeshGenerator.makeTrailLowLevelMesh(
-            particleCapacity: particleCount * Int(MAX_TRAIL_LENGTH)
+            particleCapacity: particleCount * Int(MAX_TRAIL_LENGTH),
+            particleCount: particleCount
         )
         
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, commandBuffer) in
@@ -99,7 +100,7 @@ extension GPUTester {
         day: Int = 1, month: Int = 1, year: Int = 2020
     ) async throws -> ([[Float]], [[Float16]]) {
         let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
-        let testDate = try createDateFromDMY(day: day, month: month, year: year)
+        let testDate = createDateFromDMY(day: day, month: month, year: year)!
         let lowLevelMesh: LowLevelMesh = try await testTrailPopulateLowLevelMesh(polarCoord: testPolarCoord, date: testDate)
         
         var positionOutput: [[Float]] = []

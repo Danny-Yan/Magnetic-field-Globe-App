@@ -32,6 +32,12 @@ extension SIMD3<Float16> {
     }
 }
 
+extension [Float] {
+    static func /(lhs: [Float], rhs: [Float]) -> [Float] {
+        return zip(lhs, rhs).map{ $0 / $1 }
+    }
+}
+
 extension Color {
     /// Converts a vector binding into a color binding.  The X, Y, and Z components of the vector correspond with the
     /// red, green and blue channels of the color, respectively.

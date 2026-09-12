@@ -16,35 +16,99 @@ import Testing
 
 extension GPUTester {
     
+    // GPU Function to call the initialise model pipeline
+    // TODO: REMOVE MODEL BUFFER AND POINTER SHARED VALUE
+    mutating func initialiseMetalApp(chosenModel: MagneticModelVersion) async throws -> (MTLBuffer, UnsafeMutablePointer<MagneticFieldModel>) {
+        
+        // TODO: CHECK IF THESE DO ANYTHING
+        AppConstants.Spawn.maxSpawnCount = 1
+        AppConstants.Spawn.minSpawnCount = 1
+        
+        AppConstants.Spawn.centre = [-0.5, 1.5, -1]
+        AppConstants.Spawn.radius = 0  // Remove Randomness from sphere position
+        
+        AppConstants.Particle.initialSpeed = 0
+        AppConstants.Particle.size = 0.3
+        
+        AppConstants.Earth.showEarth = false
+        AppConstants.Sim.skipSplashScreen = true
+        AppConstants.Sim.showSim = true
+        
+        // The GPU command queue to store incoming GPU commands
+        let commandQueue: MTLCommandQueue? = {
+            if let metalDevice, let queue = metalDevice.makeCommandQueue() {
+                queue.label = "particle Brush Command Queue"
+                return queue
+            } else {
+                return nil
+            }
+        }()
+        
+        (coefficientBuffers, magneticModelBuffer) =
+        ParticleMeshGenerator.createModelBuffers(
+            chosenModel: chosenModel,
+            metalDevice: metalDevice
+        )
+        
+        magneticModelPointer = createSingleTypeBufPointer(buf: &magneticModelBuffer!, of: MagneticFieldModel.self)
+        
+        guard let commandBuf = commandQueue?.makeCommandBuffer(),
+              let compute = commandBuf.makeComputeCommandEncoder()
+        else {
+            fatalError("Command buffer failed to initalise")
+        }
+        
+        computeEncoder = compute
+        commandBuffer = commandBuf
+        commandBuffer!.enqueue()
+        
+        try? ParticleMeshGenerator.initialiseMagneticModelClass(
+            coefficientBuffers: coefficientBuffers!,
+            outputModel: magneticModelBuffer!,
+            encoder: computeEncoder!
+        )
+        
+        computeEncoder!.endEncoding()
+        commandBuffer!.commit()
+        await commandBuffer!.completed()
+        
+        
+        return (magneticModelBuffer, magneticModelPointer)
+    }
+    
     // GPU function to call test magnetic field calc function
     private func magneticModelPipeline(
         polarCoord: SIMD3<Float>,
-        yearFraction: Float,
-        outputResult: MTLBuffer,
+        modelBuffer: MTLBuffer,
         localVariableBuffer: MTLBuffer,
+        outputResult: MTLBuffer,
         encoder: MTLComputeCommandEncoder
     ) throws {
         testPipelineTemplate(encoder: encoder, name: "testCalculateMagneticField", pipeline: { (encoder) in
             withUnsafePointer(to: polarCoord) {coord in
                 encoder.setBytes(coord, length: MemoryLayout<SIMD3<Float>>.size,  index: 0)
             }
-            withUnsafePointer(to: yearFraction) { yearFrac in
-                encoder.setBytes(yearFrac, length: MemoryLayout<Float>.size,  index: 1)
-            }
             
-            encoder.setBuffer(magneticModelBuffer, offset: 0,  index: 2)
-            encoder.setBuffer(localVariableBuffer, offset: 0, index: 3)
-            encoder.setBuffer(outputResult, offset: 0, index: 4)
+            encoder.setBuffer(modelBuffer, offset: 0,  index: 1)
+            encoder.setBuffer(localVariableBuffer, offset: 0, index: 2)
+            encoder.setBuffer(outputResult, offset: 0, index: 3)
         })
     }
     
     // Test magnetic field with a single point and single date time
-    private func testGeomagneticFieldMetalFunction(polarCoord testPolarCoord: SIMD3<Float>, date testDateTime: Date) async throws -> (MagneticFieldPerParticleVariables, MagneticField) {
+    private mutating func testGeomagneticFieldMetalFunction(
+        polarCoord testPolarCoord: SIMD3<Float>,
+        date testDateTime: Date,
+        chosenModel: MagneticModelVersion = .WMM2020
+    ) async throws -> (MagneticFieldPerParticleVariables, MagneticField) {
+        
+        // Initialises model struct with chosen version
+        try? await initialiseMetalApp(chosenModel: chosenModel)
         
         let yearFraction = createYearFractionFromDate(date: testDateTime)
         
-        print("DateTime: \(testDateTime)")
-        print("YearFraction: \(createYearFractionFromDate(date: testDateTime))")
+//        print("DateTime: \(testDateTime)")
+//        print("YearFraction: \(createYearFractionFromDate(date: testDateTime))")
         
         // Create output and local variable buffer and buffer pointers
         let (outputBuffer, outputPointer) =  try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticField.self)
@@ -60,25 +124,36 @@ extension GPUTester {
         
         // Call GPU function a single time
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
-            try? magneticModelPipeline(polarCoord: testPolarCoord, yearFraction: yearFraction, outputResult: outputBuffer, localVariableBuffer: localVariableBuffer, encoder: encoder)
+            try? magneticModelPipeline(
+                polarCoord: testPolarCoord,
+                modelBuffer:
+                localVariableBuffer: localVariableBuffer,
+                outputResult: outputBuffer,
+                encoder: encoder
+            )
         })
         
         return (localVariablePointer.pointee, outputPointer.pointee)
     }
     
     // Generalised implementation
-    private func privateTestForComponent(
+    private mutating func privateTestForComponent(
         alt: Double,
         lat: Double, lon: Double,
-        day: Int = 1, month: Int = 1, year: Int = 2020
+        day: Int = 1, month: Int = 1, year: Int = 2020,
+        chosenModel: MagneticModelVersion = .WMM2020
     ) async throws -> [Float]{
         
         // Conversion radians
         let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
-        let testDateTime: Date = try createDateFromDMY(day: day, month: month, year: year)
+        let testDateTime: Date = createDateFromDMY(day: day, month: month, year: year)!
         
         // Test metal function
-        let (internalVar, res) = try! await testGeomagneticFieldMetalFunction(polarCoord: testPolarCoord, date: testDateTime)
+        let (internalVar, res) = try! await testGeomagneticFieldMetalFunction(
+            polarCoord: testPolarCoord,
+            date: testDateTime,
+            chosenModel: chosenModel
+        )
         
         // Parse output and test
         let components = res.components
@@ -96,23 +171,25 @@ extension GPUTester {
     }
     
     // Raw Altitude Variation
-    func testForComponent(
+    mutating func testForComponent(
         alt: Double,
         lat: Double, lon: Double,
-        day: Int = 1, month: Int = 1, year: Int = 2020
+        day: Int = 1, month: Int = 1, year: Int = 2020,
+        chosenModel: MagneticModelVersion = .WMM2020
     ) async throws -> [Float]{
         let trueAlt = alt
-        return try await privateTestForComponent(alt: trueAlt, lat: lat, lon: lon, day: day, month: month, year: year)
+        return try await privateTestForComponent(alt: trueAlt, lat: lat, lon: lon, day: day, month: month, year: year, chosenModel: chosenModel)
     }
     
     // Elevation from mean sea level Variation
-    func testForComponent(
+    mutating func testForComponent(
         elevation: Double,
         lat: Double, lon: Double,
-        day: Int = 1, month: Int = 1, year: Int = 2020
+        day: Int = 1, month: Int = 1, year: Int = 2020,
+        chosenModel: MagneticModelVersion = .WMM2020
     ) async throws -> [Float]{
         let earthSeaLevel: Double = 6000
         let trueAlt = earthSeaLevel + elevation
-        return try await privateTestForComponent(alt: trueAlt, lat: lat, lon: lon, day: day, month: month, year: year)
+        return try await privateTestForComponent(alt: trueAlt, lat: lat, lon: lon, day: day, month: month, year: year, chosenModel: chosenModel)
     }
 }

@@ -57,7 +57,12 @@ extension SIMD3 where Scalar == Float {
         let lon = atan2(y, x)
         
         return SIMD3<Float>(radius, lat, lon)
-    }    
+    }
+    
+    /// Finds the size of the vector
+    func magnitude() -> Scalar{
+        return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
+    }
 }
 
 extension SIMD3 where Scalar == Float16 {
@@ -71,6 +76,13 @@ extension SIMD3 where Scalar == Float16 {
     /// Convert to float array
     func toArray() -> [Scalar]{
         return [x, y, z]
+    }
+}
+
+extension packed_half3 {
+    /// Convert a `packed_half3` to a `SIMD3<Float>`.
+    var simd: SIMD3<Float16> {
+        return .init(x, y, z)
     }
 }
 

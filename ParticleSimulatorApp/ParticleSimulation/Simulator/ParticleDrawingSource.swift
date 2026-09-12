@@ -40,7 +40,10 @@ public struct ParticleDrawingSource {
     private let rootEntity: Entity
     private var ParticleMeshGen: ParticleMeshGenerator
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
-    private var modelCoefficients: [String] = AppConstants.modelCoefficients.igrf
+    
+    
+    // TODO: MOVE VERSION INITIALISATION TO THE SETTINGS STRUCT
+    private var chosenVersion: MagneticModelVersion = AppConstants.Sim.chosenDataSet
     
     @MainActor
     init(rootEntity: Entity, withSettings: Binding<ParticleSystemSettings>) async {
@@ -48,7 +51,9 @@ public struct ParticleDrawingSource {
         let particleMeshEntity = Entity()
         rootEntity.addChild(particleMeshEntity)
         ParticleMeshGen = await ParticleMeshGenerator(rootEntity: particleMeshEntity,
-                                                      modelCoefficientString: modelCoefficients, withSettings: withSettings)
+                                                      chosenModel: chosenVersion,
+                                                      withSettings: withSettings
+        )
     }
     
     /// Draws particle to the screen

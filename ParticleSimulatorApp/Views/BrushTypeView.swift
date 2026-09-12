@@ -7,6 +7,7 @@ Views that control the settings selection on the palette for each style of brush
 
 import SwiftUI
 import RealityKit
+import Collections
 
 
 // TODO: RENAME THESE
@@ -16,12 +17,16 @@ struct SparkleBrushStyleView: View {
     var body: some View {
         VStack {
             
+            // Chose Date Picker
+            DatePicker("Select Date", selection: $settings.timeOfSimulation)
+            
             // Toggle Button
             Picker(selection: $settings.chosenLayer, label: EmptyView()) {
                 
+                // Hard coded array
                 let activeLayerArray = ["Normal", "Heat Map"]
-                
                 let zippedUI = Array(zip(ParticleVisualisationLayer.allCases, activeLayerArray))
+                    
                 ForEach(zippedUI, id: \.0) { (layer, text) in
                     Text(text).tag(layer)
                 }
@@ -31,7 +36,7 @@ struct SparkleBrushStyleView: View {
             
             // Normal Mode
             VStack{
-                ColorPicker("Choose Colour", selection: Color.makeBinding(from: $settings.normalLayer.colour))
+                ColorPicker("Choose Colour", selection: Color.makeBinding(from: $settings.normalLayer.normalColour))
             }
             .disabled( !$settings.chosenLayer.valueEqual(.normalLayer) )
 
@@ -39,7 +44,12 @@ struct SparkleBrushStyleView: View {
             VStack{
                 HStack {
                     Text("Max Colour Speed")
-                    Slider(value: $settings.heatMapLayer.maxSpeedColour, in: 0.000...1.000)
+                    Slider(value: $settings.heatMapLayer.minSpeed, in: 0.000...50000.0)
+                        .transaction { $0.animation = nil }
+                }
+                HStack {
+                    Text("Max Colour Speed")
+                    Slider(value: $settings.heatMapLayer.maxSpeed, in: 0.000...50000.0)
                         .transaction { $0.animation = nil }
                 }
                 ColorPicker("Min Colour", selection: Color.makeBinding(from: $settings.heatMapLayer.minColour))

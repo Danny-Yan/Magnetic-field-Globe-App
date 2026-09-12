@@ -101,7 +101,7 @@ final class ParticleMeshGenerator {
     @MainActor
     init(
         rootEntity: Entity,
-        modelCoefficientString: [String],
+        chosenModel: MagneticModelVersion,
         withSettings: Binding<ParticleSystemSettings>
     ) async {
         self._settings = withSettings
@@ -109,7 +109,7 @@ final class ParticleMeshGenerator {
 
         (self.coefficientBuffers, self.magneticModelBuffer) =
             Self.createModelBuffers(
-                modelCoefficients: modelCoefficientString,
+                chosenModel: chosenModel,
                 metalDevice: metalDevice
             )
         // Sets ParticleComponent as its new root
@@ -178,7 +178,7 @@ final class ParticleMeshGenerator {
     
         // initialising particle
         
-        // TODO: BULKY INITIALISATION
+        // TODO: BULKY INITIALISATION (PUT INTO PARTICLE SYSTEM SETTINGS)
         let attributes = ParticlePointAttributes(
             position: randPosition.packed3,
             polarCoordinate: polarRandPosition.packed3,
@@ -188,7 +188,6 @@ final class ParticleMeshGenerator {
             centre: point.position.packed3,
             coordSpace: point.coordSpace,
             magField: MagneticField(),
-            yearFraction: createYearFractionFromDate(date: try! createDateFromDMY()),
             age: 0,
         )
 

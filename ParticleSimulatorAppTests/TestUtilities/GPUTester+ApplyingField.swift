@@ -52,12 +52,24 @@ extension GPUTester {
         day: Int = 1, month: Int = 1, year: Int = 2020
     ) async throws -> [Float] {
         
-        let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
-        let testDate = try createDateFromDMY(day: day, month: month, year: year)
-        let particle = try await testApplyField(polarCoord: testPolarCoord, date: testDate)
+        let testPolarCoord = convertGeographicDegToRad( alt: alt, lat: lat, lon: lon )
+        let testDate = createDateFromDMY( day: day, month: month, year: year )
+        let particle = try await testApplyField( polarCoord: testPolarCoord, date: testDate! )
         
         let pos = particle.attributes.position.toArray()
         return pos
     }
-
+    
+    func testApplyFieldForVelocity(
+        alt: Double, lat: Double, lon: Double,
+        day: Int = 1, month: Int = 1, year: Int = 2020
+    ) async throws -> SIMD3<Float> {
+        
+        let testPolarCoord = convertGeographicDegToRad( alt: alt, lat: lat, lon: lon )
+        let testDate = createDateFromDMY( day: day, month: month, year: year)
+        let particle = try await testApplyField( polarCoord: testPolarCoord, date: testDate! )
+        
+        let vel = particle.velocity.simd3
+        return vel
+    }
 }

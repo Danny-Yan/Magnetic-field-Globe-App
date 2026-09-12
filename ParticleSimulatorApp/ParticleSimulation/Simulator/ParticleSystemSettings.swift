@@ -11,16 +11,19 @@ struct ParticleSystemSettings {
     var particleLifeSpan: Float = AppConstants.Particle.lifeSpanSeconds.isFinite ? Float(AppConstants.Particle.lifeSpanSeconds) : -1
     var particleSize: Float = AppConstants.Particle.size
     
+    var timeOfSimulation: Date = createDateFromDMY()!
+    
     // Layer settings
-    var chosenLayer: ParticleVisualisationLayer = .normalLayer
+    var chosenLayer: ParticleVisualisationLayer = AppConstants.Particle.Colour.defaultColourLayer
     
     struct NormalLayer{
-        var colour: SIMD3<Float16> = AppConstants.Particle.Colour.maxColour
+        var normalColour: SIMD3<Float16> = AppConstants.Particle.Colour.maxColour
     }
     var normalLayer: NormalLayer = NormalLayer()
     
     struct HeatMapLayer{
-        var maxSpeedColour: Float = AppConstants.Particle.Colour.maxSpeedColour
+        var minSpeed: Float = AppConstants.Particle.Colour.minSpeed
+        var maxSpeed: Float = AppConstants.Particle.Colour.maxSpeed
         var minColour: SIMD3<Float16> = AppConstants.Particle.Colour.minColour
         var maxColour: SIMD3<Float16> = AppConstants.Particle.Colour.maxColour
     }
@@ -32,12 +35,12 @@ struct ParticleSystemSettings {
         deltaTime: Float,
         southPoleCentre: SIMD3<Float>
     ) -> ParticleSimulationParams {
-        
-        var normalLayer = SimulationNormalLayerParams(
-            colour: normalLayer.colour.packed3
+        let normalLayer = SimulationNormalLayerParams(
+            normalColour: normalLayer.normalColour.packed3
         )
-        var heatMapLayer = SimulationHeatMapLayerParams(
-            maxSpeedColour: heatMapLayer.maxSpeedColour,
+        let heatMapLayer = SimulationHeatMapLayerParams(
+            minSpeed: heatMapLayer.minSpeed,
+            maxSpeed: heatMapLayer.maxSpeed,
             minColour: heatMapLayer.minColour.packed3,
             maxColour: heatMapLayer.maxColour.packed3
         )
@@ -49,6 +52,9 @@ struct ParticleSystemSettings {
             particleLifeSpan: particleLifeSpan,
             deltaTime: deltaTime,
             
+            // TODO: SLOW
+            yearFraction: createYearFractionFromDate(date: timeOfSimulation),
+            
             chosenLayerEnum: chosenLayer,
             normalLayer: normalLayer,
             heatMapLayer: heatMapLayer,
@@ -58,7 +64,7 @@ struct ParticleSystemSettings {
     }
 }
 
-// TODO: Point of expansion for enum (MetalFunctions.h, ParticleSystemSettings.h) MAYBE MACRO????
+// TODO: Hardcoded Array MAYBE MACRO????
 extension ParticleVisualisationLayer: CaseIterable {
     public static var allCases: [ParticleVisualisationLayer] {
         return [.normalLayer, .heatMapLayer]

@@ -10,7 +10,6 @@
 #pragma once
 
 #include "../../Utilities/SharedMetalFunctions.h"
-#include "../../Utilities/MetalFunctions/MetalFunctions.h"
 #include <simd/simd.h>
 
 #define MAX_TRAIL_LENGTH 20
@@ -18,37 +17,50 @@
 // Vertex attribute data must respect size and alignment requirements in Metal Shading Language.
 // See Table 2.4, "Size and alignment of packed vector data types" in the Metal Shading Language Specification.
 #pragma pack(push, 4)
+
+/// Coordinate Space of a particle in the magnetic field
 struct CoordSpace{
     packed_float3 northVector;
     packed_float3 eastVector;
     packed_float3 verticalVector;
 };
 
+/// Output Magnetic Field
 struct MagneticField {
-    float declination;
-    float inclination;
-    float horizontalIntensity;
-    float totalIntensity;
+//    float declination;
+//    float inclination;
+//    float horizontalIntensity;
+//    float totalIntensity;
     packed_float3 components;
 };
 
+/// Seperated particle attributes for rendering
 struct ParticlePointAttributes {
     packed_float3 position;
     packed_float3 polarCoordinate;
     packed_half3 color;
     float size;
+    
+    // TODO: MOVE to PARENT
     packed_float3 initialPosition;
     packed_float3 centre;
     struct CoordSpace coordSpace;
     struct MagneticField magField;
-    float yearFraction;
     float age;
 };
 
+/// Individual particle attributes
 struct ParticleAttributes {
     struct ParticlePointAttributes attributes;
     packed_float3 velocity;
     
+    // TODO: Re implement particle attributes that are non necessary for rendering
+//    packed_float3 initialPosition;
+//    packed_float3 centre;
+//    struct CoordSpace coordSpace;
+//    struct MagneticField magField;
+//    float age;
+
     packed_float3 trailPositions[MAX_TRAIL_LENGTH];
     packed_half3 trailColor[MAX_TRAIL_LENGTH];
     
@@ -56,32 +68,39 @@ struct ParticleAttributes {
     uint particleIdx;
 };
 
+///Particle vertex which is rendered to the low level mesh
+struct ParticleVertex {
+    struct ParticlePointAttributes attributes;
+    simd_half2 uv;
+};
+
+/// Seperated trail attributes for rendering
 struct ParticleTrailAttributes {
     packed_float3 position;
     packed_half3 color;
     float size;
 };
 
+/// Individual trail vertex that is rendered to the low level mesh; each trail is created
+/// from an array of [ParticleTrailVertex] joined together as a single connected line segment
 struct ParticleTrailVertex {
     struct ParticleTrailAttributes attributes;
 };
 
-
-struct ParticleVertex {
-    struct ParticlePointAttributes attributes;
-    simd_half2 uv;
-};
-
+/// Normal Colour Layer
 struct SimulationNormalLayerParams {
-    packed_half3 colour;
+    packed_half3 normalColour;
 };
 
+/// Heat Map Colour Layer
 struct SimulationHeatMapLayerParams {
-    float maxSpeedColour;
+    float minSpeed;
+    float maxSpeed;
     packed_half3 minColour;
     packed_half3 maxColour;
 };
 
+/// Shared simulation settings that are used to interface between the UI and metal shader
 struct ParticleSimulationParams {
     uint32_t particleCount;
     packed_float3 southPoleSpawnCentre;
@@ -89,24 +108,25 @@ struct ParticleSimulationParams {
     float particleLifeSpan;
     float deltaTime;
     
+    float yearFraction;
+    
     ParticleVisualisationLayer chosenLayerEnum;
     
     struct SimulationNormalLayerParams normalLayer;
     struct SimulationHeatMapLayerParams heatMapLayer;
 };
 
-
+/// Hack for allowing buffer transfer between initialisation phase
+/// and simulation phase
 struct SchmidtScalingWrapper {
     float inner[169];
 };
 
-/// Magnetic Model Struct
-/// Input:
-/// Longitude, Latitude, Altitude, Time
-///
-/// Output:
-/// MagneticField
+/// Magnetic Model that for storing variables
+/// initialised in the initialisation phase and who are shared amongst
+/// all particles
 struct MagneticFieldModel {
+    
     // Mean Radius of IAU-66 ellipsoid (km)
     float IAU66_RADIUS;
     float WGS84_A;
@@ -117,6 +137,10 @@ struct MagneticFieldModel {
     
     // Global epoch of the simulation
     float epoch;
+   
+    // TODO: REMOVE THIS IN FAVOUR OF USING JUST SIMULATION PARAMS VERSION
+//    // Time of simulation as a fraction
+//    float yearFraction;
 
     // Main Model coefficients
     float c[169];
@@ -132,9 +156,8 @@ struct MagneticFieldModel {
     float k[169];
 };
 
-
+/// Local variables used per field calculation
 struct MagneticFieldPerParticleVariables {
-    
     float ct;
     float st;
     float r;

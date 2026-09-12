@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		004CD5D72FFE86D400453CAA /* DateUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004CD5D62FFE86CF00453CAA /* DateUtilities.swift */; };
+		004CD5D72FFE86D400453CAA /* ParsingUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004CD5D62FFE86CF00453CAA /* ParsingUtilities.swift */; };
 		004F852F2F9F459C00F90CD7 /* GlobeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004F852E2F9F459800F90CD7 /* GlobeEntity.swift */; };
 		005024DA2F9CCA8F0033597A /* constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005024D92F9CCA8C0033597A /* constants.swift */; };
 		0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */; };
@@ -16,6 +16,7 @@
 		00525976303FEF3F0045018F /* BrushTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00525975303FEF3F0045018F /* BrushTypeView.swift */; };
 		00525978303FEF520045018F /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00525977303FEF510045018F /* PaletteView.swift */; };
 		0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */; };
+		00565976304A63D200D2FECB /* OtherFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 00565975304A63CD00D2FECB /* OtherFunctions.metal */; };
 		005EB8BF304A5506007A9FFF /* TrailFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005EB8BE304A54FE007A9FFF /* TrailFunctions.metal */; };
 		005EB8C1304A5521007A9FFF /* ColourFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005EB8C0304A5518007A9FFF /* ColourFunctions.metal */; };
 		005EB8C3304A5590007A9FFF /* RNGFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005EB8C2304A5587007A9FFF /* RNGFunctions.metal */; };
@@ -29,8 +30,13 @@
 		006351753049161000B60D45 /* ParticleSystemSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006351743049160300B60D45 /* ParticleSystemSettings.swift */; };
 		0063A76F2FF78D2600734183 /* ParticleMeshGenerator+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */; };
 		00641B3D300BAE2700ED2A5F /* Geomagnetism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */; };
+		00680AAB30512B3F001D3092 /* WMM_COEFF2020.COF in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAA30512B2F001D3092 /* WMM_COEFF2020.COF */; };
+		00680AB230512C9F001D3092 /* WMM2025.COF in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAE30512C9F001D3092 /* WMM2025.COF */; };
+		00680AB330512C9F001D3092 /* WMM2025_TestValues.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAF30512C9F001D3092 /* WMM2025_TestValues.pdf */; };
+		00680AB430512C9F001D3092 /* WMM2025_TestValues.txt in Resources */ = {isa = PBXBuildFile; fileRef = 00680AB030512C9F001D3092 /* WMM2025_TestValues.txt */; };
+		00680AB530512C9F001D3092 /* README-WMM-COEFS.txt in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAC30512C9F001D3092 /* README-WMM-COEFS.txt */; };
+		00680AB630512C9F001D3092 /* WMM.COF in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAD30512C9F001D3092 /* WMM.COF */; };
 		006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006A84B23013A783005682B8 /* PrintLogger.swift */; };
-		0087ECE9302018850052166B /* MetalFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0087ECE8302018700052166B /* MetalFunctions.metal */; };
 		00B323C92F99D6AC0087A21D /* ParticleDrawingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */; };
 		3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */; };
 		3A0BFF772BE22AEA00BF194C /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */; };
@@ -69,7 +75,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		004CD5D62FFE86CF00453CAA /* DateUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtilities.swift; sourceTree = "<group>"; };
+		004CD5D62FFE86CF00453CAA /* ParsingUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsingUtilities.swift; sourceTree = "<group>"; };
 		004F852E2F9F459800F90CD7 /* GlobeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeEntity.swift; sourceTree = "<group>"; };
 		005024D92F9CCA8C0033597A /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constants.swift; sourceTree = "<group>"; };
 		0052034D2F9E3428002FE1ED /* ParticleSystemEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleSystemEntity.swift; sourceTree = "<group>"; };
@@ -78,7 +84,9 @@
 		00525975303FEF3F0045018F /* BrushTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushTypeView.swift; sourceTree = "<group>"; };
 		00525977303FEF510045018F /* PaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+InitialiseClass.swift"; sourceTree = "<group>"; };
-		005EB8BE304A54FE007A9FFF /* TrailFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailFunctions.metal; sourceTree = "<group>"; };
+		00565975304A63CD00D2FECB /* OtherFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = OtherFunctions.metal; sourceTree = "<group>"; };
+		00565977304A63FD00D2FECB /* OtherFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OtherFunctions.h; sourceTree = "<group>"; };
+		005EB8BE304A54FE007A9FFF /* TrailFunctions.metal */ = {isa = PBXFileReference; explicitFileType = sourcecode.metal; path = TrailFunctions.metal; sourceTree = "<group>"; };
 		005EB8C0304A5518007A9FFF /* ColourFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ColourFunctions.metal; sourceTree = "<group>"; };
 		005EB8C2304A5587007A9FFF /* RNGFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RNGFunctions.metal; sourceTree = "<group>"; };
 		005EB8C5304A5648007A9FFF /* RNGFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNGFunctions.h; sourceTree = "<group>"; };
@@ -95,9 +103,13 @@
 		006351743049160300B60D45 /* ParticleSystemSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleSystemSettings.swift; sourceTree = "<group>"; };
 		0063A76E2FF78D1500734183 /* ParticleMeshGenerator+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+Util.swift"; sourceTree = "<group>"; };
 		00641B3C300BAE2700ED2A5F /* Geomagnetism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geomagnetism.swift; sourceTree = "<group>"; };
+		00680AAA30512B2F001D3092 /* WMM_COEFF2020.COF */ = {isa = PBXFileReference; lastKnownFileType = text; path = WMM_COEFF2020.COF; sourceTree = "<group>"; };
+		00680AAC30512C9F001D3092 /* README-WMM-COEFS.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "README-WMM-COEFS.txt"; sourceTree = "<group>"; };
+		00680AAD30512C9F001D3092 /* WMM.COF */ = {isa = PBXFileReference; lastKnownFileType = text; path = WMM.COF; sourceTree = "<group>"; };
+		00680AAE30512C9F001D3092 /* WMM2025.COF */ = {isa = PBXFileReference; lastKnownFileType = text; path = WMM2025.COF; sourceTree = "<group>"; };
+		00680AAF30512C9F001D3092 /* WMM2025_TestValues.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = WMM2025_TestValues.pdf; sourceTree = "<group>"; };
+		00680AB030512C9F001D3092 /* WMM2025_TestValues.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WMM2025_TestValues.txt; sourceTree = "<group>"; };
 		006A84B23013A783005682B8 /* PrintLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLogger.swift; sourceTree = "<group>"; };
-		0087ECE8302018700052166B /* MetalFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalFunctions.metal; sourceTree = "<group>"; };
-		0087ECEB30201B060052166B /* MetalFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalFunctions.h; sourceTree = "<group>"; };
 		00B323C82F99D6AC0087A21D /* ParticleDrawingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleDrawingSource.swift; sourceTree = "<group>"; };
 		3A0BFF722BE2264D00BF194C /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalUtilities.swift; sourceTree = "<group>"; };
@@ -210,6 +222,7 @@
 		005EB8BC304A54D2007A9FFF /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				00565975304A63CD00D2FECB /* OtherFunctions.metal */,
 				005EB8C2304A5587007A9FFF /* RNGFunctions.metal */,
 				005EB8C0304A5518007A9FFF /* ColourFunctions.metal */,
 				005EB8BE304A54FE007A9FFF /* TrailFunctions.metal */,
@@ -220,6 +233,7 @@
 		005EB8C4304A55B0007A9FFF /* Include */ = {
 			isa = PBXGroup;
 			children = (
+				00565977304A63FD00D2FECB /* OtherFunctions.h */,
 				005EB8C5304A5648007A9FFF /* RNGFunctions.h */,
 				005EB8C6304A566B007A9FFF /* ColourFunctions.h */,
 				005EB8C7304A567A007A9FFF /* TrailFunctions.h */,
@@ -248,13 +262,25 @@
 			path = External;
 			sourceTree = "<group>";
 		};
-		0087ECEA30201AFB0052166B /* MetalFunctions */ = {
+		00680AA930512B19001D3092 /* Coefficients */ = {
 			isa = PBXGroup;
 			children = (
-				0087ECEB30201B060052166B /* MetalFunctions.h */,
-				0087ECE8302018700052166B /* MetalFunctions.metal */,
+				00680AAA30512B2F001D3092 /* WMM_COEFF2020.COF */,
+				00680AB130512C9F001D3092 /* WMM2025COF */,
 			);
-			path = MetalFunctions;
+			path = Coefficients;
+			sourceTree = "<group>";
+		};
+		00680AB130512C9F001D3092 /* WMM2025COF */ = {
+			isa = PBXGroup;
+			children = (
+				00680AAC30512C9F001D3092 /* README-WMM-COEFS.txt */,
+				00680AAD30512C9F001D3092 /* WMM.COF */,
+				00680AAE30512C9F001D3092 /* WMM2025.COF */,
+				00680AAF30512C9F001D3092 /* WMM2025_TestValues.pdf */,
+				00680AB030512C9F001D3092 /* WMM2025_TestValues.txt */,
+			);
+			path = WMM2025COF;
 			sourceTree = "<group>";
 		};
 		3A0BFF712BE223C300BF194C /* SplashScreenView */ = {
@@ -273,8 +299,7 @@
 		3A0BFF732BE22A0100BF194C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				0087ECEA30201AFB0052166B /* MetalFunctions */,
-				004CD5D62FFE86CF00453CAA /* DateUtilities.swift */,
+				004CD5D62FFE86CF00453CAA /* ParsingUtilities.swift */,
 				0052036A2F9E388C002FE1ED /* Error.swift */,
 				3A958F502BFFAC3800D2BF2D /* SharedMetalFunctions.h */,
 				3A7B00532BCB51A50068302D /* CurveProcessing.swift */,
@@ -310,6 +335,7 @@
 		3A7686DD2AB263DA00762DDF /* ParticleSimulatorApp */ = {
 			isa = PBXGroup;
 			children = (
+				00680AA930512B19001D3092 /* Coefficients */,
 				00641B3B300BADE900ED2A5F /* External */,
 				0052034F2F9E35CD002FE1ED /* Globe */,
 				3ADB78A42AB3A8BB000BD147 /* ParticleSimulatorApp_BridgingHeader.h */,
@@ -483,7 +509,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00680AB230512C9F001D3092 /* WMM2025.COF in Resources */,
+				00680AB330512C9F001D3092 /* WMM2025_TestValues.pdf in Resources */,
+				00680AB430512C9F001D3092 /* WMM2025_TestValues.txt in Resources */,
+				00680AB530512C9F001D3092 /* README-WMM-COEFS.txt in Resources */,
+				00680AB630512C9F001D3092 /* WMM.COF in Resources */,
 				3A7686EA2AB263DC00762DDF /* Preview Assets.xcassets in Resources */,
+				00680AAB30512B3F001D3092 /* WMM_COEFF2020.COF in Resources */,
 				3A7686E72AB263DC00762DDF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -527,7 +559,7 @@
 				3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */,
 				005EB8C3304A5590007A9FFF /* RNGFunctions.metal in Sources */,
 				3AECFF342C00709600176926 /* DrawingCanvasVisualizationView.swift in Sources */,
-				004CD5D72FFE86D400453CAA /* DateUtilities.swift in Sources */,
+				004CD5D72FFE86D400453CAA /* ParsingUtilities.swift in Sources */,
 				3A5BF7452BE6F3C6000A6CA1 /* DrawingCanvas.swift in Sources */,
 				00641B3D300BAE2700ED2A5F /* Geomagnetism.swift in Sources */,
 				00612E66302DE56A00ECA504 /* ParticlePopulatePipeline.metal in Sources */,
@@ -537,13 +569,13 @@
 				3AECFF322C006F5C00176926 /* DrawingCanvasPlacementView.swift in Sources */,
 				0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */,
 				006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */,
-				0087ECE9302018850052166B /* MetalFunctions.metal in Sources */,
 				0052036B2F9E388C002FE1ED /* Error.swift in Sources */,
 				005203532F9E3779002FE1ED /* GeomagneticFieldSimulation.metal in Sources */,
 				3AECFF2A2C004C4000176926 /* SplashScreenBackgroundComponent.swift in Sources */,
 				3AB8C7652BE04AD500D7EF6A /* ParticleMeshGenerator.swift in Sources */,
 				3AECFF2E2C004CAF00176926 /* SplashScreenForeground.swift in Sources */,
 				00525978303FEF520045018F /* PaletteView.swift in Sources */,
+				00565976304A63D200D2FECB /* OtherFunctions.metal in Sources */,
 				005EB8BF304A5506007A9FFF /* TrailFunctions.metal in Sources */,
 				006248332F9F1319006BA4B8 /* Globe.swift in Sources */,
 			);
