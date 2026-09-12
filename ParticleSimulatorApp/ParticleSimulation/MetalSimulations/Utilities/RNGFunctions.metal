@@ -21,10 +21,12 @@ uint RNG::nextIntXORShift(){
     state ^= state << 5;
     return state;
 }
+
 float RNG::nextFloatPrivate(float lower, float upper) {
     float rnd = float(nextIntXORShift());
     return lower + (rnd / (MAX_UNSIGNED_32_BIT) * ( upper - lower ));
 }
+
 // Rand float gen within a certain range [lower, upper]
 float RNG::nextFloat(struct RandomBounds bounds) {
     float lower = bounds.lower;
@@ -35,6 +37,7 @@ float RNG::nextFloat(struct RandomBounds bounds) {
 float RNG::nextFloat(float lower, float upper) {
     return nextFloatPrivate(lower, upper);
 }
+
 float3 RNG::nextFloat3(struct RandomBounds bounds){
     float3 randomCoord = float3(nextFloat(bounds), nextFloat(bounds), nextFloat(bounds));
     return randomCoord;

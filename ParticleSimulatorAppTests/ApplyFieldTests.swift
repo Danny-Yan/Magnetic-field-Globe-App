@@ -22,52 +22,51 @@ struct ApplyFieldTests {
     
     init() async throws {
         testAPI = TesterAPI()
-        try await testAPI.gpu.initialiseMetalApp(chosenModel: .WMM2020)
     }
     
-    @Test func `Polar Coord: Default`() async throws {
+    @Test mutating func `Polar Coord: Default`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1, lat: 0, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Polar Coord: (alt: 1, lat: 10, lon: 0)`() async throws {
+    @Test mutating func `Polar Coord: (alt: 1, lat: 10, lon: 0)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1, lat: 10, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Polar Coord: (alt: 1, lat: -10, lon: 0)`() async throws {
+    @Test mutating func `Polar Coord: (alt: 1, lat: -10, lon: 0)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1, lat: -10, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Polar Coord: (alt: 1, lat: 0, lon: 10)`() async throws {
+    @Test mutating func `Polar Coord: (alt: 1, lat: 0, lon: 10)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1, lat: 0, lon: 10)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Polar Coord: (alt: 1, lat: 0, lon: -10)`() async throws {
+    @Test mutating func `Polar Coord: (alt: 1, lat: 0, lon: -10)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1, lat: 0, lon: -10)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Polar Coord: (alt: 0.5, lat: 0, lon: 0)`() async throws {
+    @Test mutating func `Polar Coord: (alt: 0.5, lat: 0, lon: 0)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 0.5, lat: 0, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Polar Coord: (alt: 1.5, lat: 0, lon: 0)`() async throws {
+    @Test mutating func `Polar Coord: (alt: 1.5, lat: 0, lon: 0)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1.5, lat: 0, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos, tolerance: tolerance))
     }
     
-    @Test func `Test Velocity, Polar Coord: (alt: 1.5, lat: 0, lon: 0)`() async throws {
+    @Test mutating func `Test Velocity, Polar Coord: (alt: 1.5, lat: 0, lon: 0)`() async throws {
         let particleVelocity: SIMD3<Float> = try await testAPI.gpu.testApplyFieldForVelocity(alt: 1.5, lat: 0, lon: 0)
         let vel = particleVelocity.toArray()
         let testVel: [Float] = [0, 0, 0]
@@ -80,12 +79,12 @@ struct ApplyFieldTests {
     }
     
     
-    @Test func `PolarCoord: (alt: 1.5, lat: 90, lon: 0)`() async throws {
+    @Test mutating func `PolarCoord: (alt: 1.5, lat: 90, lon: 0)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1.5, lat: 90, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos))
     }
-    @Test func `PolarCoord: (alt: 1.5, lat: -90, lon: 0)`() async throws {
+    @Test mutating func `PolarCoord: (alt: 1.5, lat: -90, lon: 0)`() async throws {
         let particlePos = try await testAPI.gpu.testApplyFieldForPosition(alt: 1.5, lat: -90, lon: 0)
         let testPos: [Float] = [0, 0, 0]
         #expect(particlePos.elementsEqual(testPos))

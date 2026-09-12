@@ -71,7 +71,6 @@ extension GPUTester {
         
         particlePointer.pointee.attributes.polarCoordinate = polarCoord.packed3
         particlePointer.pointee.attributes.position = polarCoord.toCartesian().packed3
-        particlePointer.pointee.attributes.yearFraction = createYearFractionFromDate(date: date)
 
         let output: LowLevelMesh = try ParticleMeshGenerator.makeTrailLowLevelMesh(
             particleCapacity: particleCount * Int(MAX_TRAIL_LENGTH),

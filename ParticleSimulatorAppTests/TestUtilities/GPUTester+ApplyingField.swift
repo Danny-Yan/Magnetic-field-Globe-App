@@ -31,23 +31,31 @@ extension GPUTester {
         })
     }
 
-    private func testApplyField(polarCoord: SIMD3<Float>, date: Date) async throws -> ParticleAttributes {
+    private mutating func testApplyField(polarCoord: SIMD3<Float>, date: Date) async throws -> ParticleAttributes {
+        
+        // Run initialise pipeline
+        var (magneticModelBuffer, magneticModelPointer) = try await initialiseMagneticModel(chosenModel: .WMM2020)
         
         let (particleBuffer, particlePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
         particlePointer.pointee.attributes.polarCoordinate = polarCoord.packed3
         particlePointer.pointee.attributes.position = polarCoord.toCartesian().packed3
-        particlePointer.pointee.attributes.yearFraction = createYearFractionFromDate(date: date)
+        magneticModelPointer.pointee.yearFraction = createYearFractionFromDate(date: date)
         
         let deltaTime: Float  = 0.01
         
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
-            try? applyFieldPipeline(particle: particleBuffer, model: magneticModelBuffer, deltaTime: deltaTime , encoder: encoder)
+            try? applyFieldPipeline(
+                particle: particleBuffer,
+                model: magneticModelBuffer,
+                deltaTime: deltaTime,
+                encoder: encoder
+            )
         })
         
         return particlePointer.pointee
     }
     
-    func testApplyFieldForPosition(
+    mutating func testApplyFieldForPosition(
         alt: Double, lat: Double, lon: Double,
         day: Int = 1, month: Int = 1, year: Int = 2020
     ) async throws -> [Float] {
@@ -60,7 +68,7 @@ extension GPUTester {
         return pos
     }
     
-    func testApplyFieldForVelocity(
+    mutating func testApplyFieldForVelocity(
         alt: Double, lat: Double, lon: Double,
         day: Int = 1, month: Int = 1, year: Int = 2020
     ) async throws -> SIMD3<Float> {

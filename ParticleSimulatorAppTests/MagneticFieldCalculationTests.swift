@@ -157,7 +157,7 @@ struct ParticleSimulatorAppTests {
         #expect(expectedOutcome.elementsEqual(testOutcome))
     }
     
-    // Testing pre made test results
+    // Testing csv test results
     @Test mutating func `WMM2025 tests`() async throws {
         let dataSet: TestingDataSets = TestingDataSets()
         let testEntries = dataSet.parseTestDataFile(chosenModel: .WMM2025)

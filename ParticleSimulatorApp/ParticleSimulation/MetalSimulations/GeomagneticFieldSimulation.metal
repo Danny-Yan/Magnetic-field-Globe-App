@@ -29,7 +29,7 @@ MagneticField calculateMagneticField(device MagneticFieldModel &model,
     // polarCoord = <r, lat, lon>
     // Use polar coord in calculation
     float altitude = polarCoord.x;
-    float altitudekm = altitude / 1000; // Probs have to change uh oh
+    float altitudekm = altitude; // Probs have to change uh oh
     float rlat = polarCoord.y;
     float rlon = polarCoord.z;
     
@@ -172,7 +172,6 @@ MagneticField calculateMagneticField(device MagneticFieldModel &model,
     outputField.components.y = eastIntensity;
     outputField.components.z = verticalIntensity;
     
-//    // TODO: REMOVE OTHER USELESS ENTRIES
 //    float horizontalIntensity = sqrt((northIntensity * northIntensity) + (eastIntensity * eastIntensity));
 //    outputField.horizontalIntensity = horizontalIntensity;
 //    outputField.totalIntensity = sqrt(( horizontalIntensity * horizontalIntensity ) + (verticalIntensity * verticalIntensity));
@@ -259,7 +258,7 @@ void initialiseMagneticModel(constant float4* modelCoefficients [[buffer(0)]],
 }
 
 /// Convert cartesian position to geographic position
-void convertToGeographic(thread ParticleAttributes &particle){
+void convertToGeographic(thread ParticleAttributes &particle, float earthRadius){
     thread packed_float3 *position = &particle.attributes.position;
     thread packed_float3 *polarPosition = &particle.attributes.polarCoordinate;
 
@@ -268,13 +267,9 @@ void convertToGeographic(thread ParticleAttributes &particle){
     float y = position->z;
     float z = position->y;
 
-//    float x = position->x;
-//    float y = position->y;
-//    float z = position->z;
-
     // Geographic coord conversion
     float coordRadius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-    float latitude = 0;
+    float latitude = 85;
     float longitude = 0;
     
     if (coordRadius > 0.0) {
@@ -282,6 +277,7 @@ void convertToGeographic(thread ParticleAttributes &particle){
         longitude = atan2(y, x);
     }
     
+    // Model calculation expects height above surface of from the center of the earth
     polarPosition->x = coordRadius;
     polarPosition->y = latitude;
     polarPosition->z = longitude;
@@ -302,7 +298,6 @@ void createCoordSpace(thread ParticleAttributes &particle){
     // Coord Space calculations
     thread struct CoordSpace *coordSpace = &particle.attributes.coordSpace;
     
-    float altitude = polarCoord.x;
     float3 pos = particle.attributes.position;
     
     // Flip up and east to match reality kit
@@ -311,19 +306,18 @@ void createCoordSpace(thread ParticleAttributes &particle){
     pos.z = posY;
     
     // Vertical component is the same calc no matter the position
-    verticalComponent = pos / altitude;
+    verticalComponent = pos / length(pos);
     
     // Normal (non-pole) calc
     if ( !((rlat >= bound) || (rlat <= -bound)) ) {
-        northComponent = float3(0, 0, 1) - sin(rlat) * verticalComponent;
-        northComponent = northComponent / length(northComponent);
+        float3 unscaledNorthComp = float3(0, 0, 1) - sin(rlat) * verticalComponent;
+        northComponent = unscaledNorthComp / length(unscaledNorthComp);
         eastComponent = cross(northComponent, verticalComponent);
     
     // Pole calc (Does nothing lmao)
     } else {
         
         // Randomly assign a vector for the particle to travel in
-        
         float modParticle = fmod(particle.attributes.position.x,
                             fmod(particle.attributes.position.y,
                                  particle.attributes.position.z));
@@ -334,7 +328,7 @@ void createCoordSpace(thread ParticleAttributes &particle){
         RandomBounds bound = RandomBounds(-1.0, 1.0);
         float3 randomCoord = rng.nextFloat3(bound);
     
-        northComponent = randomCoord;
+        northComponent = randomCoord / length(randomCoord);
         eastComponent = cross(northComponent, verticalComponent);
 
 //        // Return prev coordSpace if it exists
@@ -356,7 +350,7 @@ void createCoordSpace(thread ParticleAttributes &particle){
     
     // Assigning coord spaces
     coordSpace->northVector = northComponent;
-    coordSpace->eastVector = - eastComponent;
+    coordSpace->eastVector = eastComponent;
     coordSpace->verticalVector = - verticalComponent;
 }
 
@@ -367,15 +361,19 @@ void applyField (constant float &deltaTime, thread MagneticField &result, thread
     struct CoordSpace coordSpace = particle.attributes.coordSpace;
     
     // Apply magnetic field force as a velocity vector along the coord space defined on the particle position
+    
+    // TODO: LOOK INTO GV AND BoZ AND SAA
     packed_float3 components = packed_float3( result.components );
     packed_float3 velocity = packed_float3( (coordSpace.northVector * components.x) + (coordSpace.eastVector * components.y) + (coordSpace.verticalVector * components.z) );
  
-  // Flip up and east to match reality kit
+    // Flip up and east to match reality kit
     float velocityY = velocity.y;
     velocity.y = velocity.z;
     velocity.z = velocityY;
 
-    particle.velocity = packed_float3(velocity);
+    // TODO: ADD THIS MULTIPLIER TO THE SETTINGS MENU
+    float forceMultiplier = 10;
+    particle.velocity = packed_float3(velocity * forceMultiplier);
     particle.attributes.position += packed_float3(particle.velocity * deltaTime);
     
     // For external mag field testing
@@ -400,23 +398,26 @@ bool checkParticleAge(thread ParticleAttributes &particle, thread float lifeSpan
 }
 
 /// Resets a particles position and velocity to the origin, and age to 0
-void resetParticleToSouthPole(thread ParticleAttributes &particle, constant ParticleSimulationParams &params, uint particleIdx){
+void resetParticleToSouthPole(thread ParticleAttributes &particle,
+                              constant ParticleSimulationParams &params){
     
     // Generate a random point
-    float modParticle = fmod(particle.attributes.position.x,
+    float idSample = 0;
+    if (particle.attributes.age == 0){
+        idSample = fmod(particle.attributes.position.x,
                         fmod(particle.attributes.position.y,
                              particle.attributes.position.z));
-    
-    uint id = uint(modParticle * 2819);
+    } else {
+        idSample = particle.attributes.age;
+    }
+    uint id = uint(idSample * 2819);
     uint seed = uint(particle.particleIdx * 1999);
     RNG rng = RNG(id, seed);
     RandomBounds bound = RandomBounds(-0.5, 0.5);
     float3 randomCoord = rng.nextFloat3(bound);
-
-    // May need to make random velocities fire in a cone like pattern
-//    float3 randomVelcity = float3(rng.nextFloat(bound), rng.nextFloat(bound), rng.nextFloat(bound)) * 0.1;
     
-    particle.attributes.position = randomCoord;
+    // Reset particle position, velocity and age
+    particle.attributes.position = randomCoord + float3(0, 0, 0);
     particle.velocity = float3(0, 0, 0);
     particle.attributes.age = 0;
 }
@@ -436,26 +437,26 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
     
     ParticleAttributes particle = particles[particleIdx];
     particle.particleIdx = particleIdx;
+    
+    // Shift particles to origin
     particle.attributes.position -= particle.attributes.centre;
     
     // Move particles to south pole if they expire/go out of bounds
     if (checkParticleInBounds(particle, params.particleBoundingBox) ||
         checkParticleAge(particle, params.particleLifeSpan)){
-        resetParticleToSouthPole(particle, params, particleIdx);
+        resetParticleToSouthPole(particle, params);
     }
     
-    // Shift particles to account for off centre origin and earth Radius
-    float vrCoordSpaceScaleFactor = 1.5;
+    // Scale particle positions to account for earth Radius
     float earthRadius = magneticFieldModel.IAU66_RADIUS;
-    float rescaleFactor =  earthRadius / vrCoordSpaceScaleFactor;
-    particle.attributes.position *= rescaleFactor;
+    particle.attributes.position *= earthRadius;
     
     // Convert cartesian (x, y, z) to geographic (r, lat, lon) values
-    convertToGeographic(particle);
+    convertToGeographic(particle, earthRadius);
     
     // Local Variables (per particle storage) initialisation
     thread MagneticFieldPerParticleVariables localVariables = {};
-    localVariables.oalt = -1000; localVariables.olat = -1000; localVariables.olon = -1000; localVariables.otime = -1000;
+    localVariables.oalt = -1000000; localVariables.olat = -1000000; localVariables.olon = -1000000; localVariables.otime = -1000000;
     localVariables.snorm = magneticFieldModel.snorm;
     
     // Compute magnetic field
@@ -463,17 +464,18 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
     magneticFieldModel.yearFraction = params.yearFraction;
     MagneticField result = calculateMagneticField(magneticFieldModel, localVariables, *polarCoord);
     
-    // Apply result
+    // Apply resulting force vector as velocity to a particle's position
     applyField(params.deltaTime, result, particle);
     
     // Reshift particles back to original centre and scale
-    particle.attributes.position /= rescaleFactor;
+    particle.attributes.position /= earthRadius;
     particle.attributes.position += particle.attributes.centre;
     
     // Update Colors and Trails
     updateColor(particle, params);
     updateTrail(particle);
     
+    // Update particle's age and add them onto output buffer
     particle.attributes.age += params.deltaTime;
     output[particleIdx] = particle;
 }
@@ -514,12 +516,13 @@ void testApplyMagneticField(device ParticleAttributes &p [[buffer(0)]],
                             constant float &deltaTime [[buffer(2)]]){
     
     thread ParticleAttributes particle = p;
+    
     // Convert cartesian (x, y, z) to geographic (r, lat, lon) values
-    convertToGeographic(particle);
+    convertToGeographic(particle, magneticFieldModel.IAU66_RADIUS);
     
     // Local Variables
     thread MagneticFieldPerParticleVariables localVariables = {};
-    localVariables.oalt = -1000; localVariables.olat = -1000; localVariables.olon = -1000; localVariables.otime = -1000;
+    localVariables.oalt = -1000000; localVariables.olat = -1000000; localVariables.olon = -1000000; localVariables.otime = -1000000;
     localVariables.snorm = magneticFieldModel.snorm;
     
     // Compute magnetic field

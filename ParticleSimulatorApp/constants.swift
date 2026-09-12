@@ -35,12 +35,13 @@ enum AppConstants {
         static var maxSpawnCount: Int = (pow(2, 14) as NSDecimalNumber).intValue
         static var minSpawnCount: Int = 1024
         
+//        static var centre: SIMD3<Float> = [0, 1.5, -1]
         static var centre: SIMD3<Float> = [0, 1.5, -1]
         static var radius: Float = 4
         static var randomSpawn: Bool = true
         
         // TODO: MAKE THIS DEPENDENT ON MODEL FILE
-        static var spawnDate: [Int] = [1, 1, 2020]
+        static var spawnDate: [Int] = [1, 1, 2026]
     }
     
     enum Particle {
@@ -60,14 +61,14 @@ enum AppConstants {
             static var maxColour: SIMD3<Float16> = [232, 87, 87] / 255
         }
         
-        static var boundingBox: SIMD3<Float> = [20, 20, 20]
+        static var boundingBox: SIMD3<Float> = [1, 1, 1] * 3
         static var lifeSpanSeconds: Float = -1
     }
     
     enum Earth {
         static var radius: Float = 0.5
-        static var showEarth: Bool = false
-    }   
+        static var showEarth: Bool = true
+    }
 }
 
 enum MagneticModelVersion: String {

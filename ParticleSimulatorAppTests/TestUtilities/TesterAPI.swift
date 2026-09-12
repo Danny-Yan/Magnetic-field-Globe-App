@@ -17,8 +17,8 @@ import Testing
 
 struct GPUTester {
     var coefficientBuffers: CoefficientBuffers? = nil
-    var magneticModelBuffer: MTLBuffer? = nil
-    var magneticModelPointer: UnsafeMutablePointer<MagneticFieldModel>? = nil
+//    var magneticModelBuffer: MTLBuffer? = nil
+//    var magneticModelPointer: UnsafeMutablePointer<MagneticFieldModel>? = nil
     var computeEncoder: MTLComputeCommandEncoder? = nil
     var commandBuffer: MTLCommandBuffer? = nil
     

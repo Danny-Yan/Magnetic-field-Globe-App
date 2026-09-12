@@ -138,9 +138,8 @@ struct MagneticFieldModel {
     // Global epoch of the simulation
     float epoch;
    
-    // TODO: REMOVE THIS IN FAVOUR OF USING JUST SIMULATION PARAMS VERSION
-//    // Time of simulation as a fraction
-//    float yearFraction;
+    // Time of simulation as a fraction
+    float yearFraction;
 
     // Main Model coefficients
     float c[169];

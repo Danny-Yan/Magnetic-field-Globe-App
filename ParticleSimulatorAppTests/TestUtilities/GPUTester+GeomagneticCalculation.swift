@@ -15,67 +15,6 @@ import Testing
 @testable import ParticleSimulatorApp
 
 extension GPUTester {
-    
-    // GPU Function to call the initialise model pipeline
-    // TODO: REMOVE MODEL BUFFER AND POINTER SHARED VALUE
-    mutating func initialiseMetalApp(chosenModel: MagneticModelVersion) async throws -> (MTLBuffer, UnsafeMutablePointer<MagneticFieldModel>) {
-        
-        // TODO: CHECK IF THESE DO ANYTHING
-        AppConstants.Spawn.maxSpawnCount = 1
-        AppConstants.Spawn.minSpawnCount = 1
-        
-        AppConstants.Spawn.centre = [-0.5, 1.5, -1]
-        AppConstants.Spawn.radius = 0  // Remove Randomness from sphere position
-        
-        AppConstants.Particle.initialSpeed = 0
-        AppConstants.Particle.size = 0.3
-        
-        AppConstants.Earth.showEarth = false
-        AppConstants.Sim.skipSplashScreen = true
-        AppConstants.Sim.showSim = true
-        
-        // The GPU command queue to store incoming GPU commands
-        let commandQueue: MTLCommandQueue? = {
-            if let metalDevice, let queue = metalDevice.makeCommandQueue() {
-                queue.label = "particle Brush Command Queue"
-                return queue
-            } else {
-                return nil
-            }
-        }()
-        
-        (coefficientBuffers, magneticModelBuffer) =
-        ParticleMeshGenerator.createModelBuffers(
-            chosenModel: chosenModel,
-            metalDevice: metalDevice
-        )
-        
-        magneticModelPointer = createSingleTypeBufPointer(buf: &magneticModelBuffer!, of: MagneticFieldModel.self)
-        
-        guard let commandBuf = commandQueue?.makeCommandBuffer(),
-              let compute = commandBuf.makeComputeCommandEncoder()
-        else {
-            fatalError("Command buffer failed to initalise")
-        }
-        
-        computeEncoder = compute
-        commandBuffer = commandBuf
-        commandBuffer!.enqueue()
-        
-        try? ParticleMeshGenerator.initialiseMagneticModelClass(
-            coefficientBuffers: coefficientBuffers!,
-            outputModel: magneticModelBuffer!,
-            encoder: computeEncoder!
-        )
-        
-        computeEncoder!.endEncoding()
-        commandBuffer!.commit()
-        await commandBuffer!.completed()
-        
-        
-        return (magneticModelBuffer, magneticModelPointer)
-    }
-    
     // GPU function to call test magnetic field calc function
     private func magneticModelPipeline(
         polarCoord: SIMD3<Float>,
@@ -100,40 +39,38 @@ extension GPUTester {
         polarCoord testPolarCoord: SIMD3<Float>,
         date testDateTime: Date,
         chosenModel: MagneticModelVersion = .WMM2020
-    ) async throws -> (MagneticFieldPerParticleVariables, MagneticField) {
+    ) async throws -> (MagneticFieldModel, MagneticFieldPerParticleVariables, MagneticField) {
         
         // Initialises model struct with chosen version
-        try? await initialiseMetalApp(chosenModel: chosenModel)
+        var (magneticModelBuffer, magneticModelPointer) = try await initialiseMagneticModel(chosenModel: chosenModel)
         
+        // Assign time of magnetic model simulation
         let yearFraction = createYearFractionFromDate(date: testDateTime)
-        
-//        print("DateTime: \(testDateTime)")
-//        print("YearFraction: \(createYearFractionFromDate(date: testDateTime))")
+        magneticModelPointer.pointee.yearFraction = yearFraction
         
         // Create output and local variable buffer and buffer pointers
         let (outputBuffer, outputPointer) =  try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticField.self)
         let (localVariableBuffer, localVariablePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: MagneticFieldPerParticleVariables.self)
         
         // Assign local variable pointer with buffers created in the initialisation step
-        localVariablePointer.pointee.snorm = magneticModelPointer!.pointee.snorm
+        localVariablePointer.pointee.snorm = magneticModelPointer.pointee.snorm
         localVariablePointer.pointee.olat = -1000
         localVariablePointer.pointee.olon = -1000
         localVariablePointer.pointee.oalt = -1000
         localVariablePointer.pointee.otime = -1000
 
-        
         // Call GPU function a single time
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
             try? magneticModelPipeline(
                 polarCoord: testPolarCoord,
-                modelBuffer:
+                modelBuffer: magneticModelBuffer,
                 localVariableBuffer: localVariableBuffer,
                 outputResult: outputBuffer,
                 encoder: encoder
             )
         })
         
-        return (localVariablePointer.pointee, outputPointer.pointee)
+        return (magneticModelPointer.pointee, localVariablePointer.pointee, outputPointer.pointee)
     }
     
     // Generalised implementation
@@ -149,7 +86,7 @@ extension GPUTester {
         let testDateTime: Date = createDateFromDMY(day: day, month: month, year: year)!
         
         // Test metal function
-        let (internalVar, res) = try! await testGeomagneticFieldMetalFunction(
+        let (model, internalVar, res) = try! await testGeomagneticFieldMetalFunction(
             polarCoord: testPolarCoord,
             date: testDateTime,
             chosenModel: chosenModel
@@ -160,7 +97,6 @@ extension GPUTester {
         let componentsArray = components.toArray()
         
         // Print Out Info
-        let model: MagneticFieldModel = magneticModelPointer!.pointee
         printClassEntries(headline: "Magnetic Model", for: model)
         printClassEntries(headline: "Local Variables", for: internalVar)
         printClassEntries(headline: "Ouput Field", for: res)
