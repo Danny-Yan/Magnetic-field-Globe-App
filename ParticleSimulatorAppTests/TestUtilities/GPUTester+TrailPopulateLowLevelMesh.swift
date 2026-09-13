@@ -30,10 +30,10 @@ extension GPUTester {
 //
 //    private func testTrailPopulate(polarCoord: SIMD3<Float>, date: Date) async throws -> ParticleAttributes {
 //        
-//        let (particleBuffer, particlePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
-//        particlePointer.pointee.attributes.polarCoordinate = polarCoord.packed3
-//        particlePointer.pointee.attributes.position = polarCoord.toCartesian().packed3
-//        particlePointer.pointee.attributes.yearFraction = createYearFractionFromDate(date: date)
+//        let (particleBuffer, ParticleSystemPointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
+//        ParticleSystemPointer.pointee.attributes.polarCoordinate = polarCoord.packed3
+//        ParticleSystemPointer.pointee.attributes.position = polarCoord.toCartesian().packed3
+//        ParticleSystemPointer.pointee.attributes.yearFraction = createYearFractionFromDate(date: date)
 //        
 //        // Create Trail Buffer
 //        // oh wait this doesn't make buffers fuckkkkk
@@ -43,7 +43,7 @@ extension GPUTester {
 //            try? trailPopulatePipeline(particle: particleBuffer, outputTrailVertices: particleTrailBuffer, encoder: encoder)
 //        })
 //        
-//        return particlePointer.pointee
+//        return ParticleSystemPointer.pointee
 //    }
 //    
 //    func testTrailPopulateForPosition(
@@ -64,13 +64,13 @@ extension GPUTester {
                                                date : Date) async throws -> LowLevelMesh {
         let particleCount: Int = 1
         
-        let (particleBuffer, particlePointer) = try await createBufferAndPointer(
+        let (particleBuffer, ParticleSystemPointer) = try await createBufferAndPointer(
             metalDevice: metalDevice,
             of: ParticleAttributes.self
         )
         
-        particlePointer.pointee.attributes.polarCoordinate = polarCoord.packed3
-        particlePointer.pointee.attributes.position = polarCoord.toCartesian().packed3
+        ParticleSystemPointer.pointee.attributes.polarCoordinate = polarCoord.packed3
+        ParticleSystemPointer.pointee.attributes.position = polarCoord.toCartesian().packed3
 
         let output: LowLevelMesh = try ParticleMeshGenerator.makeTrailLowLevelMesh(
             particleCapacity: particleCount * Int(MAX_TRAIL_LENGTH),

@@ -17,17 +17,14 @@ extension GPUTester {
     
     private func applyFieldPipeline(
         particle: MTLBuffer,
-        model: MTLBuffer?,
-        deltaTime: Float,
+        model: MTLBuffer,
+        params: MTLBuffer,
         encoder: MTLComputeCommandEncoder
     ) throws {
         testPipelineTemplate(encoder: encoder, name: "testApplyMagneticField", pipeline: { (encoder) in
             encoder.setBuffer(particle, offset: 0, index: 0)
             encoder.setBuffer(model, offset: 0, index: 1)
-            
-            withUnsafePointer(to: deltaTime) { dt in
-                encoder.setBytes(dt, length: MemoryLayout<Float>.size,  index: 2)
-            }
+            encoder.setBuffer(params, offset: 0, index: 2)
         })
     }
 
@@ -36,23 +33,27 @@ extension GPUTester {
         // Run initialise pipeline
         var (magneticModelBuffer, magneticModelPointer) = try await initialiseMagneticModel(chosenModel: .WMM2020)
         
-        let (particleBuffer, particlePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
-        particlePointer.pointee.attributes.polarCoordinate = polarCoord.packed3
-        particlePointer.pointee.attributes.position = polarCoord.toCartesian().packed3
+        // Particle initialisation
+        let (particleBuffer, ParticleSystemPointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
+        ParticleSystemPointer.pointee.attributes.polarCoordinate = polarCoord.packed3
+        ParticleSystemPointer.pointee.attributes.position = polarCoord.toCartesian().packed3
         magneticModelPointer.pointee.yearFraction = createYearFractionFromDate(date: date)
         
-        let deltaTime: Float  = 0.01
+        // Params initialisation
+        let (paramsBuffer, paramsPointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleSimulationParams.self)
+        paramsPointer.pointee.deltaTime = 0.01
+        paramsPointer.pointee.forceMultiplier = 1.0
         
         try? await singleGPUCall(metalDevice: metalDevice, gpuFunction: { (encoder, _) in
             try? applyFieldPipeline(
                 particle: particleBuffer,
                 model: magneticModelBuffer,
-                deltaTime: deltaTime,
+                params: paramsBuffer,
                 encoder: encoder
             )
         })
         
-        return particlePointer.pointee
+        return ParticleSystemPointer.pointee
     }
     
     mutating func testApplyFieldForPosition(

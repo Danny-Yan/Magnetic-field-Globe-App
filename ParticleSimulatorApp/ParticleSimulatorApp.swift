@@ -100,7 +100,7 @@ struct ParticleSimulatorApp: App {
             
             
             WindowGroup(id: Self.paletteWindowId) {
-                PaletteView(settings: $settings)
+                ParticleSystemUI(settings: $settings)
                     .frame(width: 400, height: 550, alignment: .top)
                     .fixedSize(horizontal: true, vertical: false)
             }

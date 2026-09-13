@@ -38,28 +38,23 @@ private extension Collection where Element: FloatingPoint {
 /// Instantiates `ParticleMeshGenerator`, draws particles to the screen
 public struct ParticleDrawingSource {
     private let rootEntity: Entity
-    private var ParticleMeshGen: ParticleMeshGenerator
+    private var particleMeshGen: ParticleMeshGenerator
     private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
-    
-    
-    // TODO: MOVE VERSION INITIALISATION TO THE SETTINGS STRUCT
-    private var chosenVersion: MagneticModelVersion = AppConstants.Sim.chosenDataSet
     
     @MainActor
     init(rootEntity: Entity, withSettings: Binding<ParticleSystemSettings>) async {
         self.rootEntity = rootEntity
         let particleMeshEntity = Entity()
         rootEntity.addChild(particleMeshEntity)
-        ParticleMeshGen = await ParticleMeshGenerator(rootEntity: particleMeshEntity,
-                                                      chosenModel: chosenVersion,
+        particleMeshGen = await ParticleMeshGenerator(rootEntity: particleMeshEntity,
                                                       withSettings: withSettings
         )
     }
     
     /// Draws particle to the screen
     @MainActor
-    func drawParticlePointSynthetic(point: ParticlePoint) {
-        ParticleMeshGen.traceSingular(point: point)
+    func drawParticleSystemPointSynthetic(point: ParticleSystemPoint) {
+        particleMeshGen.traceSingular(point: point)
     }
 }
 

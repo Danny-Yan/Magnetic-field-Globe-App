@@ -6,15 +6,13 @@
 //  Copyright © 2026 Apple. All rights reserved.
 //
 
-extension ParticleAttributes{
+extension ParticleTrailBuffers{
     
     /// Workaround to initialising the particle attributes struct without initialising the trail array buffers
-    init(attributes: ParticlePointAttributes, velocity: packed_float3){
-        self = withUnsafeTemporaryAllocation(of: ParticleAttributes.self, capacity: 1) { buffer in
+    init(){
+        self = withUnsafeTemporaryAllocation(of: ParticleTrailBuffers.self, capacity: 1) { buffer in
             let ptr = buffer.baseAddress!
-            memset(ptr, 0, MemoryLayout<ParticleAttributes>.stride)
-            ptr.pointee.attributes = attributes
-            ptr.pointee.velocity = velocity
+            memset(ptr, 0, MemoryLayout<ParticleTrailBuffers>.stride)
             ptr.pointee.trailCurrentIndex = 0
             return ptr.pointee
         }

@@ -36,10 +36,10 @@ extension GPUTester {
         maxColour: SIMD3<Float16>
     ) async throws -> [Float16] {
         
-        let (particleBuffer, particlePointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
-        var particle = particlePointer.pointee
+        let (particleBuffer, ParticleSystemPointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleAttributes.self)
+        var particle = ParticleSystemPointer.pointee
         particle.velocity = SIMD3(velocity).packed3
-        particlePointer.pointee = particle
+        ParticleSystemPointer.pointee = particle
         
         let (paramsBuffer, paramsPointer) = try await createBufferAndPointer(metalDevice: metalDevice, of: ParticleSimulationParams.self)
         
@@ -56,9 +56,9 @@ extension GPUTester {
             try? updateColourPipeline(particle: particleBuffer, params: paramsBuffer, encoder: encoder)
         })
         
-        let sizeFloat = particlePointer.pointee.attributes.size
+        let sizeFloat = ParticleSystemPointer.pointee.attributes.size
         print("HeatMapLayer: \(sizeFloat)")
         
-        return particlePointer.pointee.attributes.color.simd.toArray()
+        return ParticleSystemPointer.pointee.attributes.color.simd.toArray()
     }
 }

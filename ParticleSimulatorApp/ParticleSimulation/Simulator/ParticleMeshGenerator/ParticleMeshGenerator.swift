@@ -68,7 +68,7 @@ final class ParticleMeshGenerator {
     private var particlesToSpawn: ContiguousArray<ParticleAttributes> = []
 
     /// If there is an active stroke, contains the most recently-traced point.  Else, contains `nil`.
-    private var lastTracedPoint: ParticlePoint?
+    private var lastTracedPoint: ParticleSystemPoint?
 
     /// True if a command buffer is currently in flight.  Concurrent updates aren't permitted due to contention
     /// over `lowLevelMesh` and `simulationBuffer`.
@@ -101,7 +101,6 @@ final class ParticleMeshGenerator {
     @MainActor
     init(
         rootEntity: Entity,
-        chosenModel: MagneticModelVersion,
         withSettings: Binding<ParticleSystemSettings>
     ) async {
         self._settings = withSettings
@@ -109,7 +108,7 @@ final class ParticleMeshGenerator {
 
         (self.coefficientBuffers, self.magneticModelBuffer) =
             Self.createModelBuffers(
-                chosenModel: chosenModel,
+                chosenModel: withSettings.wrappedValue.sChosenVersion,
                 metalDevice: metalDevice
             )
         // Sets ParticleComponent as its new root
@@ -157,46 +156,27 @@ final class ParticleMeshGenerator {
     }
 
     /// Spawns particles until max spawn count is reached
-    func traceSingular(point centre: ParticlePoint) {
+    func traceSingular(point centre: ParticleSystemPoint) {
         // Spawn particles
-        while particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount {
+        while particlesToSpawn.count < $settings.wrappedValue.sNumberOfParticles {
             spawnParticle(at: centre)
         }
     }
 
     /// Spawns a single particle with at a random positon around a centre point
-    private func spawnParticle(at point: ParticlePoint) {
-        guard particlesToSpawn.count < AppConstants.Spawn.maxSpawnCount else {
+    private func spawnParticle(at point: ParticleSystemPoint) {
+        guard particlesToSpawn.count < $settings.wrappedValue.sNumberOfParticles else {
             return
         }
         
         // Generate random position within a sphere
         let randPosition: SIMD3<Float> =
             AppConstants.Spawn.radius * randomUniformDistribute()
-            + point.position
-        let polarRandPosition: SIMD3<Float> = randPosition.toGeographic()
+            + point.centre
     
-        // initialising particle
-        
-        // TODO: BULKY INITIALISATION (PUT INTO PARTICLE SYSTEM SETTINGS)
-        let attributes = ParticlePointAttributes(
-            position: randPosition.packed3,
-            polarCoordinate: polarRandPosition.packed3,
-            color: SIMD3<Float16>(point.color).packed3,
-            size: point.size,
-            initialPosition: randPosition.packed3,
-            centre: point.position.packed3,
-            coordSpace: point.coordSpace,
-            magField: MagneticField(),
-            age: 0,
-        )
-
-        particlesToSpawn.append(
-            ParticleAttributes(
-                attributes: attributes,
-                velocity: SIMD3<Float>(repeating: 0.0).packed3
-            )
-        )
+        // initialise particle and add it to the spawn queue
+        let particleAttributes = point.convertToMetalStruct(spawnPosition: randPosition)
+        particlesToSpawn.append( particleAttributes )
     }
 
     /// Reallocates `lowLevelMesh` and `simulationBuffer` to a capacity of at least `newParticleCount`.
@@ -234,6 +214,7 @@ final class ParticleMeshGenerator {
             particleCount: particleCount
         )
         
+        // Allocate a new `TrailLowLevelMesh` with room for `newParticleCapacity` particles.
         trailLowLevelMesh = try Self.makeTrailLowLevelMesh(
             particleCapacity: newParticleCapacity,
             particleCount: particleCount

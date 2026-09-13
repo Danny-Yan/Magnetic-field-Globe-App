@@ -19,23 +19,17 @@ void trailPopulatePipelineFunction(thread ParticleAttributes &particle,
                                    uint particleIdx){
 
     uint32_t base = particleIdx * MAX_TRAIL_LENGTH;
-    uint32_t oldestSampleIndex = particle.trailCurrentIndex;
+    uint32_t oldestSampleIndex = particle.trailBuffers.trailCurrentIndex;
 
     for (uint i = 0; i < MAX_TRAIL_LENGTH; i++){
         // Walk the ring buffer starting from the oldest sample so vertices come out oldest-to-newest.
         uint sampleIndex = (oldestSampleIndex + i) % MAX_TRAIL_LENGTH;
 
-//        device ParticleTrailVertex &particleVertex = outputTrailVertices[base + i];
-//        device ParticleTrailAttributes &trailAttributes = particleVertex.attributes;
-//        trailAttributes.position = particle.trailPositions[sampleIndex];
-//        trailAttributes.color = particle.trailColor[sampleIndex];
+        device ParticleTrailVertex &particleVertex = outputTrailVertices[base + i];
+        device ParticleTrailAttributes &trailAttributes = particleVertex.attributes;
+        trailAttributes.position = particle.trailBuffers.trailPositions[sampleIndex];
+        trailAttributes.color = particle.trailBuffers.trailColor[sampleIndex];
         
-        outputTrailVertices[base + i] = ParticleTrailVertex {
-            .attributes = ParticleTrailAttributes{
-                .position = particle.trailPositions[sampleIndex],
-                .color = particle.trailColor[sampleIndex]
-            }
-        };
         
         // Fade from fully transparent at the tail (i == 0) to fully opaque at the particle's current position.
 //        trailAttributes.color.w = half(i) / half(MAX_TRAIL_LENGTH - 1);
@@ -54,21 +48,9 @@ void geoMagneticTrailPopulate(device ParticleAttributes *particles [[buffer(0)]]
     thread ParticleAttributes particle = particles[particleIdx];
     
     trailPopulatePipelineFunction(particle, outputTrailVertices, particleIdx);
-    
-//    const uint startIndex = particleIdx * 4;
-//    
-//    vertices[startIndex + 0] = ParticleTrailVertex { .attributes = particle.attributes, .uv = { 0, 0 }};
-//    vertices[startIndex + 1] = ParticleTrailVertex { .attributes = particle.attributes, .uv = { 0, 1 }};
-//    vertices[startIndex + 2] = ParticleTrailVertex { .attributes = particle.attributes, .uv = { 1, 1 }};
-//    vertices[startIndex + 3] = ParticleTrailVertex { .attributes = particle.attributes, .uv = { 1, 0 }};
 }
 
-
-
-
-
-// TODO: CREATE POPULATE PIPELINE TESTS, CHECK TO SEE IF THIS HAS ANY BUGS
-
+/// Tests trail line creation
 [[kernel]]
 void testTrailPopulatePipeline(device ParticleAttributes &particle [[buffer(0)]],
                               device ParticleTrailVertex *vertices [[buffer(1)]]){
@@ -76,5 +58,4 @@ void testTrailPopulatePipeline(device ParticleAttributes &particle [[buffer(0)]]
     thread ParticleAttributes tParticle = particle;
     uint particleIdx = 0;
     trailPopulatePipelineFunction(tParticle, vertices, particleIdx);
-    
 }

@@ -10,8 +10,35 @@ import RealityKit
 import Collections
 
 
-// TODO: RENAME THESE
-struct SparkleBrushStyleView: View {
+struct ParticleSystemUI: View {
+    
+    @Binding var settings: ParticleSystemSettings
+    @State var isDrawing: Bool = false
+    @State var isSettingsPopoverPresented: Bool = false
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Settings")
+                    .font(.title)
+                    .padding()
+            }
+            
+            Divider()
+                .padding(.horizontal, 20)
+            
+            ParticleSystemSettingsUI(settings: $settings)
+                .padding(.horizontal, 20)
+            
+            Spacer()
+            
+            Divider()
+                .padding(.horizontal, 20)
+        }
+    }
+}
+
+struct ParticleSystemSettingsUI: View {
     @Binding var settings: ParticleSystemSettings
 
     var body: some View {
@@ -20,6 +47,7 @@ struct SparkleBrushStyleView: View {
             // Chose Date Picker
             DatePicker("Select Date", selection: $settings.timeOfSimulation)
             
+            // TODO: MAKE TOGGLE ACTUALLY HIDE/GREYOUT UNINTERACTABLE UI
             // Toggle Button
             Picker(selection: $settings.chosenLayer, label: EmptyView()) {
                 
@@ -58,12 +86,6 @@ struct SparkleBrushStyleView: View {
             }
             .disabled( !$settings.chosenLayer.valueEqual(.heatMapLayer) )
             
-//            HStack {
-//                Text("Thickness")
-//                Slider(value: $settings., in: 0.005...0.02)
-//                    .transaction { $0.animation = nil }
-//            }
-            
             HStack {
                 Text("Particle Size")
                 Slider(value: $settings.particleSize, in: 0.000_15...0.00_35)
@@ -72,21 +94,3 @@ struct SparkleBrushStyleView: View {
         }
     }
 }
-
-struct BrushTypeView: View {
-    @Binding var settings: ParticleSystemSettings
-
-    var body: some View {
-        VStack {
-            
-            ScrollView(.vertical) {
-                ZStack {
-                    SparkleBrushStyleView(settings: $settings)
-                        .id("BrushStyleView")
-                }
-            }
-            .animation(.easeInOut)
-        }
-    }
-}
-

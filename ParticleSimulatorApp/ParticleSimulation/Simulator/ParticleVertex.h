@@ -12,6 +12,7 @@
 #include "../../Utilities/SharedMetalFunctions.h"
 #include <simd/simd.h>
 
+// TODO: FIGURE OUT HOW TO MAKE THIS DYNAMIC (DUNNO IF THIS IS POSSIBLE)
 #define MAX_TRAIL_LENGTH 20
 
 // Vertex attribute data must respect size and alignment requirements in Metal Shading Language.
@@ -40,31 +41,25 @@ struct ParticlePointAttributes {
     packed_float3 polarCoordinate;
     packed_half3 color;
     float size;
-    
-    // TODO: MOVE to PARENT
-    packed_float3 initialPosition;
-    packed_float3 centre;
-    struct CoordSpace coordSpace;
-    struct MagneticField magField;
-    float age;
+};
+
+/// Trail buffers that each particle stores
+struct ParticleTrailBuffers {
+    packed_float3 trailPositions[MAX_TRAIL_LENGTH];
+    packed_half3 trailColor[MAX_TRAIL_LENGTH];
+    uint trailCurrentIndex;
 };
 
 /// Individual particle attributes
 struct ParticleAttributes {
     struct ParticlePointAttributes attributes;
+    struct ParticleTrailBuffers trailBuffers;
     packed_float3 velocity;
     
     // TODO: Re implement particle attributes that are non necessary for rendering
-//    packed_float3 initialPosition;
-//    packed_float3 centre;
-//    struct CoordSpace coordSpace;
-//    struct MagneticField magField;
-//    float age;
-
-    packed_float3 trailPositions[MAX_TRAIL_LENGTH];
-    packed_half3 trailColor[MAX_TRAIL_LENGTH];
-    
-    uint trailCurrentIndex;
+    packed_float3 centre;
+    struct CoordSpace coordSpace;
+    float age;
     uint particleIdx;
 };
 
@@ -107,6 +102,7 @@ struct ParticleSimulationParams {
     packed_float3 particleBoundingBox;
     float particleLifeSpan;
     float deltaTime;
+    float forceMultiplier;
     
     float yearFraction;
     

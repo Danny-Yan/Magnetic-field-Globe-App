@@ -21,7 +21,7 @@ struct ImmersiveContentView: View {
         RealityView { content in
             
             if (AppConstants.Sim.showSim){
-                var particleSystemEntity = await ParticleSystemEntity(to: content, withSettings: $settings)
+                let particleSystemEntity = await ParticleSystemEntity(to: content, withSettings: $settings)
                 
             }
             if (AppConstants.Earth.showEarth) {

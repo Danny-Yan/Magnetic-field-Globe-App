@@ -44,7 +44,7 @@ void particleBrushSimulate(device const ParticleAttributes *particles [[buffer(0
 //    }
     
     const float springConst = 1.0;
-    const float3 acceleration = - springConst * (particle.attributes.position - particle.attributes.initialPosition);
+    const float3 acceleration = - springConst * (particle.attributes.position - particle.centre);
 
     particle.velocity += acceleration * params.deltaTime;
 //    particle.velocity = particle.velocity / speed * newSpeed;

@@ -7,11 +7,18 @@
 //
 
 /// System settings for passing UI info to the particle system
+///
+/// Settings denoted with `s` prefix (short for `static configuration`)
+/// should only be changed at compile time by restarting the system
 struct ParticleSystemSettings {
     var particleLifeSpan: Float = AppConstants.Particle.lifeSpanSeconds.isFinite ? Float(AppConstants.Particle.lifeSpanSeconds) : -1
     var particleSize: Float = AppConstants.Particle.size
     
     var timeOfSimulation: Date = createDateFromDMY()!
+    
+    // Static Config (Require restart to change)
+    var sChosenVersion: MagneticModelVersion = AppConstants.Sim.chosenDataSet
+    var sNumberOfParticles: Int = AppConstants.Spawn.maxSpawnCount
     
     // Layer settings
     var chosenLayer: ParticleVisualisationLayer = AppConstants.Particle.Colour.defaultColourLayer
@@ -51,8 +58,8 @@ struct ParticleSystemSettings {
             particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
             particleLifeSpan: particleLifeSpan,
             deltaTime: deltaTime,
-            
-            // TODO: SLOW
+            forceMultiplier: AppConstants.Sim.forceMultipler,
+
             yearFraction: createYearFractionFromDate(date: timeOfSimulation),
             
             chosenLayerEnum: chosenLayer,

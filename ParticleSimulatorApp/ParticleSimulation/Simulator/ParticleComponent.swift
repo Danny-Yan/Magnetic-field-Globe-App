@@ -18,7 +18,7 @@ struct ParticleComponent: Component {
     var trailMaterial: Material
 }
 
-class ParticleBrushSystem: System {
+class ParticleSimulatorSystem: System {
     private static let query = EntityQuery(where: .has(ParticleComponent.self))
     
     required init(scene: RealityKit.Scene) {}

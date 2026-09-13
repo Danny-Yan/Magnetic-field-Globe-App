@@ -17,10 +17,10 @@ import os
 struct ParticleSystemEntity {
     @Binding var settings: ParticleSystemSettings
     
-    private let particleProvider = IndividualParticleSettings()
+    private let particleSpawner = ParticlePointSpawner()
     
     /// The particle system entity.
-    private let ParticleSystemEntity = Entity()
+    private let particleSystemEntity = Entity()
     private var source: ParticleDrawingSource
     
     
@@ -28,17 +28,17 @@ struct ParticleSystemEntity {
     init(to content: RealityViewContent, withSettings: Binding<ParticleSystemSettings>) async {
         self._settings = withSettings
         
-        source = await ParticleDrawingSource(rootEntity: ParticleSystemEntity, withSettings: withSettings)
+        source = await ParticleDrawingSource(rootEntity: particleSystemEntity, withSettings: withSettings)
         instantiateParticleSystemEntity(to: content)
         
         await addParticles(to: content)
     }
     
     internal func instantiateParticleSystemEntity (to content: RealityViewContent) {
-        ParticleBrushSystem.registerSystem()
+        ParticleSimulatorSystem.registerSystem()
         
-        ParticleSystemEntity.name = "Particle System"
-        content.add(ParticleSystemEntity)
+        particleSystemEntity.name = "Particle System"
+        content.add(particleSystemEntity)
         
         let simulatedBounds: Float = AppConstants.Sim.simulatedBounds
         let entityScale: Float = AppConstants.Sim.entityScale
@@ -52,83 +52,18 @@ struct ParticleSystemEntity {
         let inputTargetComponent = InputTargetComponent()
         let collisionComponent = CollisionComponent(shapes: [selectionShape], isStatic: true)
 
-        ParticleSystemEntity.components.set([hoverEffectComponent, inputTargetComponent, collisionComponent])
+        particleSystemEntity.components.set([hoverEffectComponent, inputTargetComponent, collisionComponent])
         
         // As generated the stroke fills a 1 x 1 x 1 meter box. Scale down the entity to fit.
-        ParticleSystemEntity.scale = SIMD3<Float>(repeating: entityScale)
+        particleSystemEntity.scale = SIMD3<Float>(repeating: entityScale)
     }
     
     internal func addParticles(to content: RealityViewContent) async {
         // Create Particle
         let spawnCentre = AppConstants.Spawn.centre * 2
-        let particlePoint = particleProvider.createParticle(position: spawnCentre)
-        await source.drawParticlePointSynthetic(point: particlePoint)
+        let particle = particleSpawner.createParticle(position: spawnCentre)
+        
+        // Load particle into rendering queue
+        await source.drawParticleSystemPointSynthetic(point: particle)
     }
 }
-
-/// `ParticlePoints` are emitted by the `ParticleSettingProvider` and consumed by the `ParticleMeshGenerator`.
-///
-/// These are the styled points  to be meshed by the `ParticleMeshGenerator`.
-struct ParticlePoint {
-    /// Position of this point.
-    var position: SIMD3<Float>
-    
-    /// Add in new polar position struct
-    var polarPosition: SIMD3<Float> = SIMD3<Float>(repeating: 0.0)
-    
-    /// Initial speed of particles emitted from this point.
-    var initialSpeed: Float
-    
-    /// Size of particles emitted from this point.
-    var size: Float
-    
-    /// Color of particles emitted from this point.
-    var color: SIMD3<Float>
-    
-    var coordSpace: CoordSpace = CoordSpace(
-        northVector: SIMD3<Float>(repeating: 0.0).packed3,
-        eastVector:  SIMD3<Float>(repeating: 0.0).packed3,
-        verticalVector: SIMD3<Float>(repeating: 0.0).packed3,
-    )
-    
-    init(position: SIMD3<Float>, initialSpeed: Float, size: Float, color: SIMD3<Float>) {
-        self.position = position
-        self.initialSpeed = initialSpeed
-        self.size = size
-        self.color = color
-    }
-}
-
-/// Interpolate between two `ParticlePoints` by the blend value `blend`.
-///
-/// - Parameters:
-///   - point0: The first point to interpolate, corresponding with `blend == 0`.
-///   - point1: The second point to interpolate, corresponding with `blend == 1`.
-///   - blend: The blend of the interpolation, typically ranging from 0 to 1.
-func mix(_ point0: ParticlePoint, _ point1: ParticlePoint, t blend: Float) -> ParticlePoint {
-    return ParticlePoint(position: mix(point0.position, point1.position, t: blend),
-                                  initialSpeed: mix(point0.initialSpeed, point1.initialSpeed, t: blend),
-                                  size: mix(point0.size, point1.size, t: blend),
-                                  color: mix(point0.color, point1.color, t: blend))
-}
-
-struct IndividualParticleSettings {
-//    struct Settings: Equatable, Hashable {
-    
-    var initialSpeed: Float = AppConstants.Particle.initialSpeed
-    var size: Float = AppConstants.Particle.size
-    var color: SIMD3<Float> = [1, 1, 1]
-//    }
-    
-    func createParticle(position: SIMD3<Float>) -> ParticlePoint {
-        return ParticlePoint(position: position,
-                             initialSpeed: self.initialSpeed,
-                             size: self.size,
-                             color: self.color)
-    }
-}
-
-
-
-
-
