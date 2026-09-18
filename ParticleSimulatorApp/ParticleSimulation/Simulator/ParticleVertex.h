@@ -98,6 +98,7 @@ struct SimulationHeatMapLayerParams {
 /// Shared simulation settings that are used to interface between the UI and metal shader
 struct ParticleSimulationParams {
     uint32_t particleCount;
+    float particleSize;
     packed_float3 southPoleSpawnCentre;
     packed_float3 particleBoundingBox;
     float particleLifeSpan;

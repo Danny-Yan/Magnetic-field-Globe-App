@@ -30,6 +30,10 @@ public:
     
     // Rand float vector3 gen within a certain range [lower, upper] -> (Creates a box of evenly distributed vectors)
     float3 nextFloat3(struct RandomBounds bounds);
+    
+    float3 nextFloat3(struct RandomBounds xBounds,
+                           struct RandomBounds yBounds,
+                           struct RandomBounds zBounds);
     float3 nextFloat3(float lower, float upper);
 };
 
@@ -38,4 +42,5 @@ struct RandomBounds{
     float lower;
     float upper;
     RandomBounds(float lower, float upper);
+    RandomBounds(float size);
 };

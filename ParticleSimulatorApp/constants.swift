@@ -8,6 +8,7 @@
 */
 import Foundation
 
+// TODO: Slowly phase out
 // System wide defaults for Particle Simulator
 enum AppConstants {
     enum Sim {
@@ -43,7 +44,8 @@ enum AppConstants {
         
         // TODO: FIX CENTER AND SOUTH POLE PLACEMENT
         static var centre: SIMD3<Float> = [0, 1.5, -1]
-        static var radius: Float = 4
+        static var radius: Float = 1
+        
         static var randomSpawn: Bool = true
         
         // TODO: MAKE THIS DEPENDENT ON MODEL FILE
@@ -55,7 +57,7 @@ enum AppConstants {
         static var size: Float = 0.002
         
         // Particle will only exist within this bounding box
-        static var boundingBox: SIMD3<Float> = [1, 1, 1] * 3
+        static var boundingBox: SIMD3<Float> = [1, 1, 1] * 5
         
         // Lifespan of particles
         // If lifespan = -1 => Infinite lifespan
@@ -81,7 +83,7 @@ enum AppConstants {
 }
 
 /// Particle model version with its corresponding coefficient file
-enum MagneticModelVersion: String {
+enum MagneticModelVersion: String, CaseIterable {
     case WMM2020 = "WMM_COEFF2020.COF"
     case WMM2025 = "WMM2025.COF"
 }

@@ -7,18 +7,6 @@ Utilities for interfacing with Metal.
 
 import Metal
 
-/// A metal device to use throughout the app.
-let metalDevice: MTLDevice? = MTLCreateSystemDefaultDevice()
-
-/// Create a `MTLComputePipelineState` for a Metal compute kernel named `name`, using a default Metal device.
-func makeComputePipeline(named name: String) -> MTLComputePipelineState? {
-    if let metalDevice, let function = metalDevice.makeDefaultLibrary()?.makeFunction(name: name) {
-        return try? metalDevice.makeComputePipelineState(function: function)
-    } else {
-        return nil
-    }
-}
-
 extension MTLPackedFloat3 {
     /// Convert a `MTLPackedFloat3` to a `SIMD3<Float>`.
     var simd3: SIMD3<Float> { return .init(x, y, z) }
@@ -100,69 +88,86 @@ extension SIMD4 where Scalar == Float16 {
     }
 }
 
-/// Function for creating a buffer of a single type, non array type
-func createSingleTypeBuffer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> MTLBuffer {
-    guard let metalDevice = metalDevice,
-        let outputBuffer = metalDevice.makeBuffer(
-            length: MemoryLayout<T>.stride,
-            options: .storageModeShared  // shared so CPU can read it back
-        )
-    else {
-        fatalError("Failed to create magnetic model coefficient buffer")
-    }
-    return outputBuffer
-}
 
-/// Creates a buffer pointer to an inputted pointer
-func createSingleTypeBufPointer<T>(buf: inout MTLBuffer, of type: T.Type) -> UnsafeMutablePointer<T> {
-    // Direct pointer access to the magneticModel struct
-    var modelPointer: UnsafeMutablePointer<T>{
-        buf.contents().bindMemory(
-            to: type.self,
-            capacity: 1
-        )
+extension MagneticFieldFunctionScope {
+    
+    /// Create a `MTLComputePipelineState` for a Metal compute kernel named `name`, using a default Metal device.
+    static func makeComputePipeline(named name: String) -> MTLComputePipelineState? {
+        
+        /// A metal device to use throughout the app.
+        let metalDevice: MTLDevice? = MTLCreateSystemDefaultDevice()
+        
+        if let metalDevice, let function = metalDevice.makeDefaultLibrary()?.makeFunction(name: name) {
+            return try? metalDevice.makeComputePipelineState(function: function)
+        } else {
+            return nil
+        }
     }
     
-    return modelPointer
-}
-
-/// Utility function to compactly create both a buffer and its associated buffer pointer
-func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> (MTLBuffer, UnsafeMutablePointer<T>) {
-    
-    var buffer = try await createSingleTypeBuffer(metalDevice: metalDevice, of: T.self)
-    var pointer = createSingleTypeBufPointer(buf: &buffer, of: T.self)
-    
-    return (buffer, pointer)
-}
-
-/// Runs a GPU function a single time
-func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder, _ commandBuffer: MTLCommandBuffer) -> Void) async throws {
-    
-    guard let queue = mtlDevice?.makeCommandQueue(),
-          let commandBuffer = queue.makeCommandBuffer(),
-          let encoder = commandBuffer.makeComputeCommandEncoder()
-    else {
-        fatalError("Failed to create command buffer/encoder for test dispatch")
+    /// Function for creating a buffer of a single type, non array type
+    static func createSingleTypeBuffer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> MTLBuffer {
+        guard let metalDevice = metalDevice,
+              let outputBuffer = metalDevice.makeBuffer(
+                length: MemoryLayout<T>.stride,
+                options: .storageModeShared  // shared so CPU can read it back
+              )
+                else {
+            fatalError("Failed to create magnetic model coefficient buffer")
+        }
+        return outputBuffer
     }
-
-    gpuFunction(encoder, commandBuffer)
     
-    encoder.endEncoding()
-    commandBuffer.commit()
-    await commandBuffer.completed()
-}
-
-/// Converts geographic  (lR, lat, lon) from degrees to radians
-func convertGeographicDegToRad(alt: Double, lat: Double, lon: Double) -> SIMD3<Float>{
-    // Conversion radians
-    let trueAlt = Float(alt)
+    /// Creates a buffer pointer to an inputted pointer
+    static func createSingleTypeBufPointer<T>(buf: inout MTLBuffer, of type: T.Type) -> UnsafeMutablePointer<T> {
+        // Direct pointer access to the magneticModel struct
+        var modelPointer: UnsafeMutablePointer<T>{
+            buf.contents().bindMemory(
+                to: type.self,
+                capacity: 1
+            )
+        }
+        
+        return modelPointer
+    }
     
-    let radLat = Float(lat * .pi / 180)
-    let radLon = Float(lon * .pi / 180)
+    /// Utility function to compactly create both a buffer and its associated buffer pointer
+    static func createBufferAndPointer<T>(metalDevice: MTLDevice?, of type: T.Type) async throws -> (MTLBuffer, UnsafeMutablePointer<T>) {
+        
+        var buffer = try await createSingleTypeBuffer(metalDevice: metalDevice, of: T.self)
+        var pointer = createSingleTypeBufPointer(buf: &buffer, of: T.self)
+        
+        return (buffer, pointer)
+    }
     
-    // convert to polar
-    let testPolarCoord = SIMD3<Float>(trueAlt, radLat, radLon)
+    /// Runs a GPU function a single time
+    static func singleGPUCall(metalDevice mtlDevice: MTLDevice?, gpuFunction: (_ encoder: MTLComputeCommandEncoder, _ commandBuffer: MTLCommandBuffer) -> Void) async throws {
+        
+        guard let queue = mtlDevice?.makeCommandQueue(),
+              let commandBuffer = queue.makeCommandBuffer(),
+              let encoder = commandBuffer.makeComputeCommandEncoder()
+                else {
+            fatalError("Failed to create command buffer/encoder for test dispatch")
+        }
+        
+        gpuFunction(encoder, commandBuffer)
+        
+        encoder.endEncoding()
+        commandBuffer.commit()
+        await commandBuffer.completed()
+    }
     
-    print("Alt, RadLat, RadLon: \(trueAlt), \(radLat), \(radLon)")
-    return testPolarCoord
+    /// Converts geographic  (lR, lat, lon) from degrees to radians
+    static func convertGeographicDegToRad(alt: Double, lat: Double, lon: Double) -> SIMD3<Float>{
+        // Conversion radians
+        let trueAlt = Float(alt)
+        
+        let radLat = Float(lat * .pi / 180)
+        let radLon = Float(lon * .pi / 180)
+        
+        // convert to polar
+        let testPolarCoord = SIMD3<Float>(trueAlt, radLat, radLon)
+        
+        print("Alt, RadLat, RadLon: \(trueAlt), \(radLat), \(radLon)")
+        return testPolarCoord
+    }
 }

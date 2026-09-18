@@ -418,11 +418,15 @@ void resetParticleToSouthPole(thread ParticleAttributes &particle,
     uint id = uint(idSample * 2819);
     uint seed = uint(particle.particleIdx * 1999);
     RNG rng = RNG(id, seed);
-    RandomBounds bound = RandomBounds(-0.5, 0.5);
-    float3 randomCoord = rng.nextFloat3(bound);
+    float correctionTerm = 1.0;
+    float3 boundingBox = params.particleBoundingBox * correctionTerm;
+    float3 randomCoord = rng.nextFloat3(RandomBounds(boundingBox.x),
+                                        RandomBounds(0.7, boundingBox.y),
+                                        RandomBounds(boundingBox.z));
     
     // Reset particle position, velocity and age
-    particle.attributes.position = randomCoord + float3(0, 0, 0);
+    // TODO: Particles reset to within a flat horizontal circle ABOVE the earth to better capture the north pole
+    particle.attributes.position = randomCoord;
     particle.velocity = float3(0, 0, 0);
     particle.age = 0;
 }
@@ -476,10 +480,11 @@ void geoMagneticFieldSimulate(device const ParticleAttributes *particles [[buffe
     particle.attributes.position /= earthRadius;
     particle.attributes.position += particle.centre;
     
-    // Update Colors and Trails
+    // Update Colors, Trails and Size
     updateColor(particle, params);
     updateTrail(particle);
-    
+    particle.attributes.size = params.particleSize;
+
     // Update particle's age and add them onto output buffer
     particle.age += params.deltaTime;
     output[particleIdx] = particle;

@@ -13,8 +13,9 @@
 struct ParticleSystemSettings {
     var particleLifeSpan: Float = AppConstants.Particle.lifeSpanSeconds.isFinite ? Float(AppConstants.Particle.lifeSpanSeconds) : -1
     var particleSize: Float = AppConstants.Particle.size
-    
+    var forceMultipler: Float = AppConstants.Sim.forceMultipler
     var timeOfSimulation: Date = createDateFromDMY()!
+    var boundingBoxSize: Float = AppConstants.Particle.boundingBox.x
     
     // Static Config (Require restart to change)
     var sChosenVersion: MagneticModelVersion = AppConstants.Sim.chosenDataSet
@@ -54,11 +55,12 @@ struct ParticleSystemSettings {
 
         let parameters = ParticleSimulationParams(
             particleCount: UInt32(particleCount),
+            particleSize: particleSize,
             southPoleSpawnCentre: southPoleCentre.packed3,
-            particleBoundingBox: AppConstants.Particle.boundingBox.packed3,
+            particleBoundingBox: (SIMD3<Float>(1, 1, 1) * boundingBoxSize).packed3,
             particleLifeSpan: particleLifeSpan,
             deltaTime: deltaTime,
-            forceMultiplier: AppConstants.Sim.forceMultipler,
+            forceMultiplier: forceMultipler,
 
             yearFraction: createYearFractionFromDate(date: timeOfSimulation),
             

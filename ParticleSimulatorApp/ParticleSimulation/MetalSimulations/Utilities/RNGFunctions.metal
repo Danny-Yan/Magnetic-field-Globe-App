@@ -43,6 +43,13 @@ float3 RNG::nextFloat3(struct RandomBounds bounds){
     return randomCoord;
 }
 
+float3 RNG::nextFloat3(struct RandomBounds xBounds,
+                       struct RandomBounds yBounds,
+                       struct RandomBounds zBounds){
+    float3 randomCoord = float3(nextFloat(xBounds), nextFloat(yBounds), nextFloat(zBounds));
+    return randomCoord;
+}
+
 float3 RNG::nextFloat3(float lower, float upper){
     RandomBounds bounds = RandomBounds(lower, upper);
     float3 randomCoord = float3(nextFloat(bounds), nextFloat(bounds), nextFloat(bounds));
@@ -54,6 +61,10 @@ RandomBounds::RandomBounds(float lower, float upper){
     this->upper = upper;
 }
 
+RandomBounds::RandomBounds(float size){
+    this->lower = -size;
+    this->upper = size;
+}
 
 [[kernel]]
 void testMetalRNGFunction(device packed_float4 &params [[buffer(0)]],
