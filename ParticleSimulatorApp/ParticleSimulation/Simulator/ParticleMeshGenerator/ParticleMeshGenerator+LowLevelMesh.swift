@@ -20,6 +20,7 @@ extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushPopulate`.
     private static let populatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.populatePipelineName)
 
+    /// Shader graph material used for the particles
     static internal func makeParticleMaterial() async -> ShaderGraphMaterial? {
         var particleMaterial = try? await ShaderGraphMaterial(
             named: "/Root/SparklePresetBrushMaterial",

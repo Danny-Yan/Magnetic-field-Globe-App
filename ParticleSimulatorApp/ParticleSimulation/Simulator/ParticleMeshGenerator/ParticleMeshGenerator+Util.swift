@@ -61,6 +61,7 @@ extension ParticleMeshGenerator {
 
     }
     
+    /// Parses coefficient txt file into index, entry and date time arrays
     static func parseModelCoefficientFile(chosenModel: MagneticModelVersion) -> (
         [SIMD2<Float>], [SIMD4<Float>], SIMD4<Float>
     ){

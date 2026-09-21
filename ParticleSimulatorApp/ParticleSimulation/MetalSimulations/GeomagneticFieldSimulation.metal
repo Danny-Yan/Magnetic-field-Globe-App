@@ -425,7 +425,6 @@ void resetParticleToSouthPole(thread ParticleAttributes &particle,
                                         RandomBounds(boundingBox.z));
     
     // Reset particle position, velocity and age
-    // TODO: Particles reset to within a flat horizontal circle ABOVE the earth to better capture the north pole
     particle.attributes.position = randomCoord;
     particle.velocity = float3(0, 0, 0);
     particle.age = 0;

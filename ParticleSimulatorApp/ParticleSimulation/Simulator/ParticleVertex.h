@@ -12,7 +12,7 @@
 #include "../../Utilities/SharedMetalFunctions.h"
 #include <simd/simd.h>
 
-// TODO: FIGURE OUT HOW TO MAKE THIS DYNAMIC (DUNNO IF THIS IS POSSIBLE)
+// TODO: SEE IF THIS CAN BE MADE DYNAMIC
 #define MAX_TRAIL_LENGTH 20
 
 // Vertex attribute data must respect size and alignment requirements in Metal Shading Language.
@@ -55,8 +55,6 @@ struct ParticleAttributes {
     struct ParticlePointAttributes attributes;
     struct ParticleTrailBuffers trailBuffers;
     packed_float3 velocity;
-    
-    // TODO: Re implement particle attributes that are non necessary for rendering
     packed_float3 centre;
     struct CoordSpace coordSpace;
     float age;
@@ -104,11 +102,9 @@ struct ParticleSimulationParams {
     float particleLifeSpan;
     float deltaTime;
     float forceMultiplier;
-    
     float yearFraction;
     
     ParticleVisualisationLayer chosenLayerEnum;
-    
     struct SimulationNormalLayerParams normalLayer;
     struct SimulationHeatMapLayerParams heatMapLayer;
 };

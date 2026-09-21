@@ -394,7 +394,7 @@ struct TestingDataSets {
     
     static let modelTimeDataWMM2025 = SIMD4<Float>(2025.0, 11.0, 13.0, 2024.0)
    
-    struct TestFileDataEntry: StringParseable {
+    struct TestFileDataEntry {
         var timeFraction: Double
         var alt: Double
         var lat: Double

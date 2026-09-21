@@ -18,7 +18,7 @@ extension ParticleMeshGenerator {
     /// Compute pipeline corresponding to the Metal compute kernel `particleBrushPopulate`.
     private static let trailPopulatePipeline: MTLComputePipelineState? = makeComputePipeline(named: AppConstants.Sim.trailPipelineName)
 
-    
+    /// Shader graph material used for the particle trails
     @MainActor
     static func makeTrailMaterial() async -> ShaderGraphMaterial? {
 //        var material = UnlitMaterial()

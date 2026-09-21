@@ -14,6 +14,17 @@ import Testing
 
 @testable import ParticleSimulatorApp
 
+//// Source - https://stackoverflow.com/a/74356845
+//// Posted by Mark A. Donohoe, modified by community. See post 'Timeline' for change history
+//// Retrieved 2026-09-16, License - CC BY-SA 4.0
+//
+
+fileprivate extension [Float] {
+    static func /(lhs: [Float], rhs: [Float]) -> [Float] {
+        return zip(lhs, rhs).map{ $0 / $1 }
+    }
+}
+
 @Suite(.serialized, .initialiseLogger)
 struct ParticleSimulatorAppTests {
     var testAPI: TesterAPI
@@ -187,7 +198,7 @@ struct ParticleSimulatorAppTests {
             
             #expect(testFraction.allSatisfy{ $0 == 1 },
                 """
-                Row \(index) failed with entry: \(entry.toString())
+                Row \(index) failed with entry: \(convertEncodableToString(target: entry as! Encodable) )
                     fraction: \(testFraction)
                 """
             )

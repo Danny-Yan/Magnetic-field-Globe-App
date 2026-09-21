@@ -97,9 +97,9 @@ extension GPUTester {
         let componentsArray = components.toArray()
         
         // Print Out Info
-        printClassEntries(headline: "Magnetic Model", for: model)
-        printClassEntries(headline: "Local Variables", for: internalVar)
-        printClassEntries(headline: "Ouput Field", for: res)
+//        printClassEntries(headline: "Magnetic Model", for: model)
+//        printClassEntries(headline: "Local Variables", for: internalVar)
+//        printClassEntries(headline: "Ouput Field", for: res)
 
         print("Components: \(componentsArray[0]), \(componentsArray[1]), \(componentsArray[2])")
         

@@ -20,16 +20,13 @@ extension GPUTester {
     /// Returns the outputted magnetic model
     mutating func initialiseMagneticModel(chosenModel: MagneticModelVersion) async throws -> (MTLBuffer, UnsafeMutablePointer<MagneticFieldModel>) {
         
-        // TODO: CHECK IF THESE DO ANYTHING
         AppConstants.Spawn.maxSpawnCount = 1
         AppConstants.Spawn.minSpawnCount = 1
         
         AppConstants.Spawn.centre = [-0.5, 1.5, -1]
         AppConstants.Spawn.radius = 0  // Remove Randomness from sphere position
         
-        AppConstants.Particle.initialSpeed = 0
         AppConstants.Particle.size = 0.3
-        
         AppConstants.Earth.showEarth = false
         AppConstants.Sim.skipSplashScreen = true
         AppConstants.Sim.showSim = true

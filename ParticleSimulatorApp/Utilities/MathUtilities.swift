@@ -10,93 +10,157 @@ import simd
 import SwiftUI
 
 /// Call `MagneticFieldType(SIMD4<Float>)`
-extension MagneticFieldTypeScope where typeOf.Storage == SIMD4<Float>{
+extension SIMD4 where Scalar: BinaryFloatingPoint {
     /// Extract the X, Y, and Z components of a SIMD4 as a SIMD3.
-    var xyz: SIMD3<Float> { .init(raw.x, raw.y, raw.z) }
+    var xyz: SIMD3<Scalar> { .init(Scalar(x), Scalar(y), Scalar(z)) }
+
+    /// Convert to float array
+    func toArray() -> [Scalar]{
+        return [x, y, z, w]
+    }
     
     func toColor() -> Color {
-        Color(red: Double(raw.x), green: Double(raw.y), blue: Double(raw.z), opacity: Double(raw.w))
+        Color(red: Double(x), green: Double(y), blue: Double(z), opacity: Double(w))
     }
 }
 
-extension MagneticFieldTypeScope where typeOf.Storage == SIMD3<Float> {
+extension SIMD3 where Scalar: BinaryFloatingPoint {
     /// Reinterpret a vectors X, Y, and Z components as red, green, and blue components of SwiftUI Color, respectively.
     func toColor() -> Color {
-        Color(red: Double(raw.x), green: Double(raw.y), blue: Double(raw.z))
+        Color(red: Double(x), green: Double(y), blue: Double(z))
     }
 }
 
-extension MagneticFieldTypeScope where typeOf.Storage == SIMD3<Float16> {
-    /// Reinterpret a vectors X, Y, and Z components as red, green, and blue components of SwiftUI Color, respectively.
-    func toColor() -> Color {
-        Color(red: Double(raw.x), green: Double(raw.y), blue: Double(raw.z))
+extension MTLPackedFloat3 {
+    /// Convert a `MTLPackedFloat3` to a `SIMD3<Float>`.
+    var simd3: SIMD3<Float> { return .init(x, y, z) }
+   
+    /// Convert to float array
+    func toArray() -> [Float]{
+        return [x, y, z]
     }
 }
 
-//extension MagneticFieldTypeScope where typeOf.Storage == [Float] {
-//    static func /(lhs: [Float], rhs: [Float]) -> [Float] {
-//        return zip(lhs, rhs).map{ $0 / $1 }
-//    }
-//}
+extension SIMD3 where Scalar == Float {
+    /// Convert a `SIMD3<Float>` to a `MTLPackedFloat3`.
+    var packed3: MTLPackedFloat3 { return .init(.init(elements: (x, y, z))) }
+    
+    /// Convert to float array
+    func toArray() -> [Scalar]{
+        return [x, y, z]
+    }
+    
+    /// Convert spherical geographic (R, Lat, Lon) to cartesian (x, y, z)
+    func toCartesian() -> SIMD3<Scalar>{
+        let radius = x
+        let lat = y
+        let lon = z
+        return SIMD3<Scalar>(
+            radius * cos(lat) * cos(lon),
+            radius * cos(lat) * sin(lon),
+            radius * sin(lat)
+        )
+    }
+   
+    /// Convert cartesian (x, y, z) to spherical geographic (R, Lat, Lon)
+    func toGeographic() -> SIMD3<Scalar>{
+        let radius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
+        let lat = asin(z / radius)
+        let lon = atan2(y, x)
+        
+        return SIMD3<Scalar>(radius, lat, lon)
+    }
+    
+    /// Finds the size of the vector
+    func magnitude() -> Scalar{
+        return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2))
+    }
+}
 
-//extension MagneticFieldTypeScope where typeOf.Storage == Color {
-//    /// Converts a vector binding into a color binding.  The X, Y, and Z components of the vector correspond with the
-//    /// red, green and blue channels of the color, respectively.
-//    static func makeBinding(from simdBinding: Binding<MagneticFieldType<SIMD3<Float>>>) -> Binding<Color> {
-//        return Binding<MagneticFieldType<Color>>(get: { simdBinding.wrappedValue.raw.toColor() },
-//                                                 set: { simdBinding.wrappedValue = $0.toSIMD() })
-//    }
-//    
-//    static func makeBinding(from simdBinding: MagneticFieldType<Binding<SIMD4<Float>>>) -> MagneticFieldType<Binding<Color>> {
-//        return MagneticFieldType(Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
-//                              set: { simdBinding.wrappedValue = $0.toSIMD() }))
-//    }
-//    
-//    static func makeBinding(from simdBinding: Binding<SIMD3<Float16>>) -> Binding<Color> {
-//        return Binding<Color>(get: { simdBinding.wrappedValue.raw.toColor() },
-//                              set: { simdBinding.wrappedValue = $0.toSIMD() })
-//    }
-//    
-//    /// Converts a SwiftUI Color to a vector, such that red, green, and blue maps to X, Y, and Z, respectively.
-//    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> MagneticFieldType<SIMD3<Float>> {
-//        let resolved = raw.resolve(in: environment)
-//        return MagneticFieldType(.init(x: resolved.red, y: resolved.green, z: resolved.blue))
-//    }
-//    
-//    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> MagneticFieldType<SIMD4<Float>> {
-//        let resolved = raw.resolve(in: environment)
-//        return MagneticFieldType(.init(x: resolved.red, y: resolved.green, z: resolved.blue, w: resolved.opacity))
-//    }
-//    
-//    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> MagneticFieldType<SIMD3<Float16>> {
-//        let resolved = raw.resolve(in: environment)
-//        return MagneticFieldType(.init(x: Float16(resolved.red),
-//                     y: Float16(resolved.green),
-//                     z: Float16(resolved.blue))
-//        )
-//    }
-//}
+extension SIMD3 where Scalar == Float16 {
+    /// Convert a `SIMD3<Float16>` to a `packed_half3`.
+    var packed3: packed_half3 { return .init(x: x, y: y, z: z) }
+    
+    var toFloat: SIMD3<Float>{
+        return .init(Float(x), Float(y), Float(z))
+    }
+    
+    /// Convert to float array
+    func toArray() -> [Scalar]{
+        return [x, y, z]
+    }
+}
 
-//extension Array where Element: FloatingPoint {
-//    func elementsEqual(_ other: [Element], tolerance: Element) -> Bool {
-//        guard self.count == other.count else { return false }
-//        return self.elementsEqual(other) { abs($0 - $1) <= tolerance }
-//    }
-//}
-//
-///// Equates a binding value with a regular value
-//extension Binding where Value: Equatable {
-//    static func ==(a: Binding<Value>, other: Value) -> Bool {
-//        return a.wrappedValue == other
-//    }
-//}
-//
-//// Source - https://stackoverflow.com/a/74356845
-//// Posted by Mark A. Donohoe, modified by community. See post 'Timeline' for change history
-//// Retrieved 2026-09-16, License - CC BY-SA 4.0
-//
+extension packed_half3 {
+    /// Convert a `packed_half3` to a `SIMD3<Float>`.
+    var simd: SIMD3<Float16> {
+        return .init(x, y, z)
+    }
+}
+
+extension packed_half4 {
+    /// Convert a `packed_half4` to a `SIMD4<Float>`.
+    var simd: SIMD4<Float16> {
+        return .init(x, y, z, w)
+    }
+}
+
+extension Color {
+    /// Converts a vector binding into a color binding.  The X, Y, and Z components of the vector correspond with the
+    /// red, green and blue channels of the color, respectively.
+    static func makeBinding(from simdBinding: Binding<SIMD3<Float>>) -> Binding<Color> {
+        return Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
+                              set: { simdBinding.wrappedValue = $0.toSIMD() })
+    }
+    
+    static func makeBinding(from simdBinding: Binding<SIMD4<Float>>) -> Binding<Color> {
+        return Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
+                              set: { simdBinding.wrappedValue = $0.toSIMD() })
+    }
+    
+    static func makeBinding(from simdBinding: Binding<SIMD3<Float16>>) -> Binding<Color> {
+        return Binding<Color>(get: { simdBinding.wrappedValue.toColor() },
+                              set: { simdBinding.wrappedValue = $0.toSIMD() })
+    }
+    
+    /// Converts a SwiftUI Color to a vector, such that red, green, and blue maps to X, Y, and Z, respectively.
+    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD3<Float> {
+        let resolved = resolve(in: environment)
+        return .init(x: resolved.red, y: resolved.green, z: resolved.blue)
+    }
+    
+    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD4<Float> {
+        let resolved = resolve(in: environment)
+        return .init(x: resolved.red, y: resolved.green, z: resolved.blue, w: resolved.opacity)
+    }
+    
+    func toSIMD(in environment: EnvironmentValues = EnvironmentValues()) -> SIMD3<Float16> {
+        let resolved = resolve(in: environment)
+        return .init(x: Float16(resolved.red),
+                     y: Float16(resolved.green),
+                     z: Float16(resolved.blue)
+        )
+    }
+}
+
+extension Array where Element: FloatingPoint {
+    /// Determines if elements of two arrays are equal given a certain tolerance
+    func elementsEqual(_ other: [Element], tolerance: Element) -> Bool {
+        guard self.count == other.count else { return false }
+        return self.elementsEqual(other) { abs($0 - $1) <= tolerance }
+    }
+}
+
+extension Binding where Value: Equatable {
+    /// Equates a binding value with a regular value
+    static func ==(a: Binding<Value>, other: Value) -> Bool {
+        return a.wrappedValue == other
+    }
+}
+
 extension Binding {
-
+    
+    /// Converts between bindings of integer and floats, used primarily for swift UI slider conversions
     static func convert<TInt, TFloat>(_ intBinding: Binding<TInt>) -> Binding<TFloat>
     where TInt:   BinaryInteger,
           TFloat: BinaryFloatingPoint{
@@ -118,120 +182,40 @@ extension Binding {
     }
 }
 
-extension MagneticFieldFunctionScope {
-    /// Returns true if `value0` and `value1` are equal within the tolerance `epsilon`.
-    static func approximatelyEqual(_ value0: Float, _ value1: Float, epsilon: Float = 0.000_001) -> Bool {
-        return abs(value0 - value1) <= epsilon
-    }
-    
-    /// Returns true if `point0` and `point1` are equal within the tolerance `epsilon`.
-    static func approximatelyEqual(_ point0: SIMD3<Float>, _ point1: SIMD3<Float>, epsilon: Float = 0.000_001) -> Bool {
-        return distance(point0, point1) <= epsilon
-    }
-    
-    /// Returns a rotation matrix that maps the vector `[0, 0, 1]` to `forward`.
-    ///
-    /// The matrix is guaranteed to be ortho-normal (so, all columns are unit length and orthogonal).
-    ///
-    /// - Parameters:
-    ///   - forward: The returned matrix will map `[0, 0, 1]` to this value.  Behavior is undefined if this is `[0, 0, 0]`.
-    ///   - desiredUp: The returned matrix is chosen such that it maps `[0, 1, 0]` to `desiredUp` as closely as
-    ///         possible. Note that if `forward` and `desiredUp` are not perpendicular, the actual mapping may differ.
-    static func orthonormalFrame(forward: SIMD3<Float> = [0, 0, 1], up desiredUp: SIMD3<Float> = [0, 1, 0]) -> simd_float3x3 {
-        assert(all(isnan(forward) .== 0), "forward vector contains NaN")
-        assert(all(isnan(desiredUp) .== 0), "up vector contains NaN")
-        
-        // Detect if either of the input values contains zero, and fall back to cardinal directions if so.
-        let desiredUp = approximatelyEqual(desiredUp, .zero) ? [0, 1, 0] : desiredUp
-        let forward = approximatelyEqual(forward, .zero) ? [0, 0, 1] : forward
-        
-        // Normalize `forward`.
-        let forwardLen = length(forward)
-        let forwardNorm = forward / forwardLen
-        
-        // Attempt to find a vector perpendicular to both forwardNorm and `desiredUp`.
-        var right = cross(forwardNorm, desiredUp)
-        
-        // Determine if `right` has zero length. This happens when `forward` and `desiredUp` are parallel/antiparallel.
-        var rightLength = length(right)
-        if rightLength < 0.01 {
-            right = cross(forwardNorm, SIMD3<Float>(0, 0, 1))
-            rightLength = length(right)
+/// Returns true if `value0` and `value1` are equal within the tolerance `epsilon`.
+func approximatelyEqual(_ value0: Float, _ value1: Float, epsilon: Float = 0.000_001) -> Bool {
+    return abs(value0 - value1) <= epsilon
+}
+
+/// Returns true if `point0` and `point1` are equal within the tolerance `epsilon`.
+func approximatelyEqual(_ point0: SIMD3<Float>, _ point1: SIMD3<Float>, epsilon: Float = 0.000_001) -> Bool {
+    return distance(point0, point1) <= epsilon
+}
+
+/// Returns a uniformly random position within a sphere of radius 1
+func randomUniformDistribute() -> SIMD3<Float> {
+    // Use rejection sampling to guarantee a uniform probability
+    while true {
+        let randomVector = SIMD3<Float>(Float.random(in: -1...1), Float.random(in: -1...1), Float.random(in: -1...1))
+        let randomVectorLength = length(randomVector)
+        if randomVectorLength > 1e-8 && randomVectorLength < 1 {
+            return randomVector
         }
-        
-        // If `right` still has zero length then `forward` is parallel to `desiredUp` and `[0, 0, 1]`.
-        if rightLength < 0.01 {
-            right = cross(forwardNorm, SIMD3<Float>(1, 0, 0))
-            rightLength = length(right)
-        }
-        
-        // It is guaranteed mathematically that `right` has nonzero length at this point.
-        right /= rightLength
-        
-        // Compute the final up vector as perpendicular to `right` and `forward`.
-        // Guaranteed to be normalized as `right` and `forwardNorm` are both normalized and orthogonal.
-        let finalUp = cross(right, forwardNorm)
-        return simd_float3x3(columns: (-right, finalUp, forwardNorm))
-    }
-    
-    /// Creates a 2D circle polyline centered at the origin. Points are listed in counter-clockwise order.
-    ///
-    /// - Parameters:
-    ///   - radius: Radius of the circle.
-    ///   - segmentCount: The number of segments to use for the circle.
-    static func makeCircle(radius: Float, segmentCount: Int) -> [SIMD2<Float>] {
-        var circle: [SIMD2<Float>] = []
-        circle.reserveCapacity(segmentCount)
-        
-        for segmentIndex in 0..<segmentCount {
-            let radians = 2 * Float.pi * (Float(segmentIndex) / Float(segmentCount))
-            circle.append(SIMD2<Float>(cos(radians), sin(radians)) * radius)
-        }
-        
-        return circle
-    }
-    
-    /// Returns a uniformly random direction, in other words a random point on a sphere with radius 1.
-    static func randomDirection() -> SIMD3<Float> {
-        // Use rejection sampling to guarantee a uniform probability over all directions.
-        while true {
-            let randomVector = SIMD3<Float>(Float.random(in: -1...1), Float.random(in: -1...1), Float.random(in: -1...1))
-            let randomVectorLength = length(randomVector)
-            if randomVectorLength > 1e-8 && randomVectorLength < 1 {
-                return randomVector / randomVectorLength
-            }
-        }
-    }
-    
-    /// Returns a uniformly random position within a sphere of radius 1
-    static func randomUniformDistribute() -> SIMD3<Float> {
-        // Use rejection sampling to guarantee a uniform probability
-        while true {
-            let randomVector = SIMD3<Float>(Float.random(in: -1...1), Float.random(in: -1...1), Float.random(in: -1...1))
-            let randomVectorLength = length(randomVector)
-            if randomVectorLength > 1e-8 && randomVectorLength < 1 {
-                return randomVector
-            }
-        }
-    }
-    
-    /// Linearly interpolates between `value0` and `value1` based on the parameter `parameter`.
-    ///
-    /// `parameter = 0` corresponds with `value0` and `parameter = 1` corresponds with `value1`.
-    static func mix(_ value0: Float, _ value1: Float, t parameter: Float) -> Float {
-        return value0 + (value1 - value0) * parameter
-    }
-    
-    /// Clamps `value` to be at least `min` and at most `max`.
-    static func clamp(_ value: Float, min: Float, max: Float) -> Float {
-        return Float.minimum(Float.maximum(value, min), max)
-    }
-    
-    /// Applies a smoothing function to `value` such that `edge0` maps to 0, `edge1` maps to 1, and an easing curve
-    /// is applied to values in between.
-    static func smoothstep (_ value: Float, minEdge edge0: Float, maxEdge edge1: Float) -> Float {
-        // Scale, and clamp x to 0..1 range.
-        let value = clamp((value - edge0) / (edge1 - edge0), min: 0.0, max: 1.0)
-        return value * value * (3.0 - 2.0 * value)
     }
 }
+
+// BELOW FUNCTIONS ONLY USED IN SPLASH SCREEN
+
+/// Clamps `value` to be at least `min` and at most `max`.
+func clamp(_ value: Float, min: Float, max: Float) -> Float {
+    return Float.minimum(Float.maximum(value, min), max)
+}
+
+/// Applies a smoothing function to `value` such that `edge0` maps to 0, `edge1` maps to 1, and an easing curve
+/// is applied to values in between.
+func smoothstep (_ value: Float, minEdge edge0: Float, maxEdge edge1: Float) -> Float {
+    // Scale, and clamp x to 0..1 range.
+    let value = clamp((value - edge0) / (edge1 - edge0), min: 0.0, max: 1.0)
+    return value * value * (3.0 - 2.0 * value)
+}
+

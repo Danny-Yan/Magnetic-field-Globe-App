@@ -9,7 +9,7 @@ import SwiftUI
 import RealityKit
 import Collections
 
-
+/// UI shown when simulation is active
 struct ParticleSystemUI: View {
     
     @Binding var settings: ParticleSystemSettings
@@ -41,8 +41,6 @@ struct ParticleSystemSettingsUI: View {
 
     var body: some View {
         VStack {
-            
-            // Chose Date Picker
             DatePicker("Select Date", selection: $settings.timeOfSimulation)
             
             HStack {
@@ -50,10 +48,9 @@ struct ParticleSystemSettingsUI: View {
                 sliderWithNumbersShown(value: $settings.forceMultipler, in: 0.00...20.00)
             }
 
-            // TODO: FIX SO THIS WORKS
             HStack {
                 Text("Particle Size")
-                sliderWithNumbersShown(value: $settings.particleSize, in: 0.000_15...0.00_35)
+                sliderWithNumbersShown(value: $settings.particleSize, in: 0.000_15...0.00_35, precision: 4)
             }
             
             HStack {

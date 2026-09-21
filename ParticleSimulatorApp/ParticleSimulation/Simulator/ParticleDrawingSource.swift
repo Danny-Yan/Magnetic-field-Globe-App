@@ -39,7 +39,6 @@ private extension Collection where Element: FloatingPoint {
 public struct ParticleDrawingSource {
     private let rootEntity: Entity
     private var particleMeshGen: ParticleMeshGenerator
-    private var inputsOverTime: Deque<(SIMD3<Float>, TimeInterval)> = []
     
     @MainActor
     init(rootEntity: Entity, withSettings: Binding<ParticleSystemSettings>) async {

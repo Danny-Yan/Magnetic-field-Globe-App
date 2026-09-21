@@ -9,6 +9,7 @@
 import SwiftUI
 import RealityKit
 
+/// UI that is shown before the simulation starts
 struct ParticlePreSimulationUI: View {
     
     @Binding var settings: ParticleSystemSettings

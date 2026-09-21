@@ -10,6 +10,7 @@ import SwiftUI
 import RealityKit
 import Collections
 
+/// UI to toggle between colour layers
 struct LayerToggleUI: View {
     
     @Binding var settings: ParticleSystemSettings

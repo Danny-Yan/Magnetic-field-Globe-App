@@ -10,7 +10,7 @@
 // Posted by FPP
 // Retrieved 2026-07-25, License - CC BY-SA 4.0
 
-internal import UniformTypeIdentifiers
+import UniformTypeIdentifiers
 
 /// Print logger for printing outputs to txt files
 final class LogDestination: TextOutputStream {
@@ -40,6 +40,7 @@ final class LogDestination: TextOutputStream {
         }
     }
 }
+
 
 /// prints out every entry in a class (only top level entries)
 func printClassEntries(headline: String = "", for target: Any){

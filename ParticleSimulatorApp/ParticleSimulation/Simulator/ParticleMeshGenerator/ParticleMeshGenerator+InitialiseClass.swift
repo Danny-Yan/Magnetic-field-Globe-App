@@ -12,6 +12,7 @@ extension ParticleMeshGenerator {
     private static let initialisePipeline: MTLComputePipelineState? =
         makeComputePipeline(named: AppConstants.Sim.initialiseMagneticModel)
 
+    /// Instantiates the magnetic model via a single call to the initialise model pipeline
     static func initialiseMagneticModelClass(
         coefficientBuffers: CoefficientBuffers,
         outputModel: MTLBuffer,

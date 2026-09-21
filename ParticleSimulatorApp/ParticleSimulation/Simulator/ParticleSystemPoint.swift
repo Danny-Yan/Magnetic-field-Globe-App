@@ -29,9 +29,10 @@ struct ParticleSystemPoint {
         self.color = color
     }
     
+    /// Converts `ParticleSystemPoint` to `ParticleAttributes` metal struct
     func convertToMetalStruct(spawnPosition: SIMD3<Float>) -> ParticleAttributes{
         
-        // Attributes used for rendering
+        // Attributes used for rendering just particles to the screen
         let polarPosition = spawnPosition.toGeographic()
         let particleAttributes = ParticlePointAttributes(
             position: spawnPosition.packed3,
@@ -54,18 +55,6 @@ struct ParticleSystemPoint {
             particleIdx: 0,
         )
     }
-}
-
-/// Interpolate between two `ParticleSystemPoints` by the blend value `blend`.
-///
-/// - Parameters:
-///   - point0: The first point to interpolate, corresponding with `blend == 0`.
-///   - point1: The second point to interpolate, corresponding with `blend == 1`.
-///   - blend: The blend of the interpolation, typically ranging from 0 to 1.
-func mix(_ point0: ParticleSystemPoint, _ point1: ParticleSystemPoint, t blend: Float) -> ParticleSystemPoint {
-    return ParticleSystemPoint(centre: mix(point0.centre, point1.centre, t: blend),
-                               size: mix(point0.size, point1.size, t: blend),
-                               color: mix(point0.color, point1.color, t: blend))
 }
 
 /// Spawns `ParticleSystemPoints` with some initial speed, size and colour, spawns them at a specified location

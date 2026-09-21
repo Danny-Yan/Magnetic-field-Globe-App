@@ -308,8 +308,7 @@ final class ParticleMeshGenerator {
             particlesToSpawn.removeAll()
         }
 
-        // Populate the `LowLevelMesh` with the result of the particle simulation.
-        // WHERE THE APP UPDATES THE LOW LEVEL MESH WITH PARTICLES
+        // Populate the particle `LowLevelMesh` with the result of the particle simulation.
         try Self.populate(
             input: simulationBuffer!,
             output: lowLevelMesh!,

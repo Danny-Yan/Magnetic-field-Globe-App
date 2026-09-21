@@ -39,13 +39,13 @@ func createDateFromFraction(yearFraction: Float) -> Date? {
     let remaindingYear: Float = Float( currentYear ) - yearFraction
     
     // Create calendar and data components
-    var dateComponents = DateComponents(
+    let dateComponents = DateComponents(
         year: currentYear,
         month: 1,
         day: 1
     )
     let calendar = Calendar(identifier: .gregorian)
-
+    
     // Calculate the target year
     guard let startOfYear = calendar.date(from: dateComponents) else { return nil }
     let yearLength = calendar.range(of: .day, in: .year, for: startOfYear)!.count
@@ -91,7 +91,7 @@ func parseDataFile(path: String, parser: (_ str: [String]) throws -> Void) -> Vo
             }.map{
                 String($0)
             })
-
+            
             try parser(str)
             
         } catch {
@@ -100,26 +100,21 @@ func parseDataFile(path: String, parser: (_ str: [String]) throws -> Void) -> Vo
     }
 }
 
-/// Protocol for converting a struct into a string
-protocol StringParseable: Encodable {}
-
-extension StringParseable {
-    
-    /// Converts encodable structs into string
-    func toString() -> String {
-        var entryString: String = ""
-        do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            
-            let entryData = try encoder.encode(self)
-            if let convertedString = String(data: entryData, encoding: .utf8){
-                entryString = convertedString
-            }
-        } catch {
-            fatalError("Failed to parse struct into string with error: \(error)")
-        }
+/// Converts a given encodable object into a string
+func convertEncodableToString(target: Encodable) -> String {
+    var entryString: String = ""
+    do {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         
-        return entryString
+        let entryData = try encoder.encode(target)
+        if let convertedString = String(data: entryData, encoding: .utf8){
+            entryString = convertedString
+        }
+    } catch {
+        fatalError("Failed to parse struct into string with error: \(error)")
     }
+    
+    return entryString
 }
+

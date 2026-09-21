@@ -14,9 +14,7 @@ struct TrailPopulateLowLevelMeshTests {
     init(){
         testAPI = TesterAPI()
     }
-
     
-//    // TODO: MAKE THIS WORK
 //    @Test func `Polar coord: Default, Date: epoch`() async throws {
 //        
 //        let (positionArray, colorOutputArray): ([[Float]], [[Float16]]) = try! await testAPI.gpu.testTrailPopulateForPosition(alt: 1, lat: 0, lon: 0)

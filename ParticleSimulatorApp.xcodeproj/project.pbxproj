@@ -17,7 +17,6 @@
 		0055E7EA2FE7F75200931CF1 /* ParticleMeshGenerator+InitialiseClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0055E7E92FE7F73600931CF1 /* ParticleMeshGenerator+InitialiseClass.swift */; };
 		00565976304A63D200D2FECB /* OtherFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 00565975304A63CD00D2FECB /* OtherFunctions.metal */; };
 		0058E7EB305B9FD4004315E5 /* MagneticFieldScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0058E7EA305B9FC7004315E5 /* MagneticFieldScope.swift */; };
-		0058E7EF305BB14D004315E5 /* TempMagFieldUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0058E7EE305BB149004315E5 /* TempMagFieldUtilities.swift */; };
 		005EB8BF304A5506007A9FFF /* TrailFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005EB8BE304A54FE007A9FFF /* TrailFunctions.metal */; };
 		005EB8C1304A5521007A9FFF /* ColourFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005EB8C0304A5518007A9FFF /* ColourFunctions.metal */; };
 		005EB8C3304A5590007A9FFF /* RNGFunctions.metal in Sources */ = {isa = PBXBuildFile; fileRef = 005EB8C2304A5587007A9FFF /* RNGFunctions.metal */; };
@@ -38,7 +37,6 @@
 		00680AB430512C9F001D3092 /* WMM2025_TestValues.txt in Resources */ = {isa = PBXBuildFile; fileRef = 00680AB030512C9F001D3092 /* WMM2025_TestValues.txt */; };
 		00680AB530512C9F001D3092 /* README-WMM-COEFS.txt in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAC30512C9F001D3092 /* README-WMM-COEFS.txt */; };
 		00680AB630512C9F001D3092 /* WMM.COF in Resources */ = {isa = PBXBuildFile; fileRef = 00680AAD30512C9F001D3092 /* WMM.COF */; };
-		006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 006A84B23013A783005682B8 /* PrintLogger.swift */; };
 		0070BD1A3058E5C500368538 /* SwiftUIUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0070BD193058E5BC00368538 /* SwiftUIUtilities.swift */; };
 		0070BD1E3058E90600368538 /* LayerToggleUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0070BD1D3058E90200368538 /* LayerToggleUI.swift */; };
 		00A0FE0A3056689E00AD1378 /* ParticleSystemPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A0FE093056689900AD1378 /* ParticleSystemPoint.swift */; };
@@ -55,7 +53,6 @@
 		3A7686E32AB263DA00762DDF /* ParticleSimulatorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7686E22AB263DA00762DDF /* ParticleSimulatorApp.swift */; };
 		3A7686E72AB263DC00762DDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A7686E62AB263DC00762DDF /* Assets.xcassets */; };
 		3A7686EA2AB263DC00762DDF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A7686E92AB263DC00762DDF /* Preview Assets.xcassets */; };
-		3A7B00552BCB51A50068302D /* CurveProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7B00532BCB51A50068302D /* CurveProcessing.swift */; };
 		3AB6DB4D2BF3D2AC00DE837B /* ParticleMeshGenerator+Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB6DB4C2BF3D27C00DE837B /* ParticleMeshGenerator+Simulation.swift */; };
 		3AB6DB4F2BF3F38300DE837B /* ParticleMeshGenerator+LowLevelMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB6DB4E2BF3F37000DE837B /* ParticleMeshGenerator+LowLevelMesh.swift */; };
 		3AB8C7652BE04AD500D7EF6A /* ParticleMeshGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4AEF842BDE19D5005534FE /* ParticleMeshGenerator.swift */; };
@@ -90,7 +87,6 @@
 		00565975304A63CD00D2FECB /* OtherFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = OtherFunctions.metal; sourceTree = "<group>"; };
 		00565977304A63FD00D2FECB /* OtherFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OtherFunctions.h; sourceTree = "<group>"; };
 		0058E7EA305B9FC7004315E5 /* MagneticFieldScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagneticFieldScope.swift; sourceTree = "<group>"; };
-		0058E7EE305BB149004315E5 /* TempMagFieldUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempMagFieldUtilities.swift; sourceTree = "<group>"; };
 		005EB8BE304A54FE007A9FFF /* TrailFunctions.metal */ = {isa = PBXFileReference; explicitFileType = sourcecode.metal; path = TrailFunctions.metal; sourceTree = "<group>"; };
 		005EB8C0304A5518007A9FFF /* ColourFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ColourFunctions.metal; sourceTree = "<group>"; };
 		005EB8C2304A5587007A9FFF /* RNGFunctions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RNGFunctions.metal; sourceTree = "<group>"; };
@@ -115,7 +111,6 @@
 		00680AAE30512C9F001D3092 /* WMM2025.COF */ = {isa = PBXFileReference; lastKnownFileType = text; path = WMM2025.COF; sourceTree = "<group>"; };
 		00680AAF30512C9F001D3092 /* WMM2025_TestValues.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = WMM2025_TestValues.pdf; sourceTree = "<group>"; };
 		00680AB030512C9F001D3092 /* WMM2025_TestValues.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WMM2025_TestValues.txt; sourceTree = "<group>"; };
-		006A84B23013A783005682B8 /* PrintLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLogger.swift; sourceTree = "<group>"; };
 		0070BD193058E5BC00368538 /* SwiftUIUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIUtilities.swift; sourceTree = "<group>"; };
 		0070BD1D3058E90200368538 /* LayerToggleUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerToggleUI.swift; sourceTree = "<group>"; };
 		00A0FE093056689900AD1378 /* ParticleSystemPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleSystemPoint.swift; sourceTree = "<group>"; };
@@ -133,7 +128,6 @@
 		3A7686E62AB263DC00762DDF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A7686E92AB263DC00762DDF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3A7686EB2AB263DC00762DDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3A7B00532BCB51A50068302D /* CurveProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurveProcessing.swift; sourceTree = "<group>"; };
 		3A958F502BFFAC3800D2BF2D /* SharedMetalFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedMetalFunctions.h; sourceTree = "<group>"; };
 		3AA7EB032BE6EC590041F9AF /* DrawingCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingCanvas.swift; sourceTree = "<group>"; };
 		3AB6DB4C2BF3D27C00DE837B /* ParticleMeshGenerator+Simulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParticleMeshGenerator+Simulation.swift"; sourceTree = "<group>"; };
@@ -316,16 +310,13 @@
 		3A0BFF732BE22A0100BF194C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				0058E7EE305BB149004315E5 /* TempMagFieldUtilities.swift */,
 				0058E7EA305B9FC7004315E5 /* MagneticFieldScope.swift */,
 				0070BD193058E5BC00368538 /* SwiftUIUtilities.swift */,
 				004CD5D62FFE86CF00453CAA /* ParsingUtilities.swift */,
 				0052036A2F9E388C002FE1ED /* Error.swift */,
 				3A958F502BFFAC3800D2BF2D /* SharedMetalFunctions.h */,
-				3A7B00532BCB51A50068302D /* CurveProcessing.swift */,
 				3A0BFF742BE22A1E00BF194C /* MetalUtilities.swift */,
 				3ADB78A12AB3026E000BD147 /* MathUtilities.swift */,
-				006A84B23013A783005682B8 /* PrintLogger.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -566,7 +557,6 @@
 				00612E5E302DD93300ECA504 /* ParticleTrailBuffers+Util.swift in Sources */,
 				00612E68302DE58000ECA504 /* ParticleTrailPipeline.metal in Sources */,
 				3A7686E32AB263DA00762DDF /* ParticleSimulatorApp.swift in Sources */,
-				0058E7EF305BB14D004315E5 /* TempMagFieldUtilities.swift in Sources */,
 				3A5192C42C003C7C00EF1D14 /* ParticleVertex+LowLevelMesh.swift in Sources */,
 				004F852F2F9F459C00F90CD7 /* GlobeEntity.swift in Sources */,
 				3AECFF2C2C004C7D00176926 /* SplashScreenBackgroundView.swift in Sources */,
@@ -577,7 +567,6 @@
 				005EB8C1304A5521007A9FFF /* ColourFunctions.metal in Sources */,
 				3A357C942BF1C6F30067B0CB /* ParticleComponent.swift in Sources */,
 				00612E6E302DE85C00ECA504 /* ParticleTrailVertex+LowLevelMesh.swift in Sources */,
-				3A7B00552BCB51A50068302D /* CurveProcessing.swift in Sources */,
 				3A0BFF762BE22A1E00BF194C /* MetalUtilities.swift in Sources */,
 				005EB8C3304A5590007A9FFF /* RNGFunctions.metal in Sources */,
 				0058E7EB305B9FD4004315E5 /* MagneticFieldScope.swift in Sources */,
@@ -592,7 +581,6 @@
 				00612E6B302DE82500ECA504 /* ParticleMeshGenerator+Trail.swift in Sources */,
 				3AECFF322C006F5C00176926 /* DrawingCanvasPlacementView.swift in Sources */,
 				0052034E2F9E342E002FE1ED /* ParticleSystemEntity.swift in Sources */,
-				006A84BC3013AB41005682B8 /* PrintLogger.swift in Sources */,
 				0052036B2F9E388C002FE1ED /* Error.swift in Sources */,
 				005203532F9E3779002FE1ED /* GeomagneticFieldSimulation.metal in Sources */,
 				0070BD1E3058E90600368538 /* LayerToggleUI.swift in Sources */,

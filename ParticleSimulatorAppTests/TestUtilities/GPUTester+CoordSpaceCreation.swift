@@ -47,7 +47,7 @@ extension GPUTester {
         let testPolarCoord = convertGeographicDegToRad(alt: alt, lat: lat, lon: lon)
         let particle = try! await testCoordSpaceCreation(polarCoord: testPolarCoord)
         
-        let coordSpace = particle.attributes.coordSpace
+        let coordSpace = particle.coordSpace
         let coordSpaceComponents = [
             coordSpace.northVector.toArray(),
             coordSpace.eastVector.toArray(),

@@ -55,7 +55,7 @@ struct ExternalTester {
         let testDateTime: Date = createDateFromDMY(day: day, month: month, year: year)!
         let gm = ExternalGeomagnetism(longitude: lon, latitude: lat, altitude: alt, date: testDateTime)
         
-        printClassEntries(headline: "External Variables", for: gm)
+//        printClassEntries(headline: "External Variables", for: gm)
         
         let components = [Float(gm.northIntensity), Float(gm.eastIntensity), Float(gm.verticalIntensity)]
         return components

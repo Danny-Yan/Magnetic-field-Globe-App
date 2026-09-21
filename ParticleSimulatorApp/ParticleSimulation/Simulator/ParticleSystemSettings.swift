@@ -17,7 +17,7 @@ struct ParticleSystemSettings {
     var timeOfSimulation: Date = createDateFromDMY()!
     var boundingBoxSize: Float = AppConstants.Particle.boundingBox.x
     
-    // Static Config (Require restart to change)
+    // Static Config (Require restart to change, APPEND WITH S PREFIX)
     var sChosenVersion: MagneticModelVersion = AppConstants.Sim.chosenDataSet
     var sNumberOfParticles: Int = AppConstants.Spawn.maxSpawnCount
     
@@ -37,7 +37,7 @@ struct ParticleSystemSettings {
     }
     var heatMapLayer: HeatMapLayer = HeatMapLayer()
    
-    /// Function to convert type ParticleSystemSettings to ParticleSimulationParams struct
+    /// Converts `ParticleSystemSettings` to `ParticleSimulationParams` metal struct
     func convertToMetalStruct(
         particleCount: Int,
         deltaTime: Float,
@@ -61,9 +61,7 @@ struct ParticleSystemSettings {
             particleLifeSpan: particleLifeSpan,
             deltaTime: deltaTime,
             forceMultiplier: forceMultipler,
-
             yearFraction: createYearFractionFromDate(date: timeOfSimulation),
-            
             chosenLayerEnum: chosenLayer,
             normalLayer: normalLayer,
             heatMapLayer: heatMapLayer,
@@ -73,7 +71,7 @@ struct ParticleSystemSettings {
     }
 }
 
-// TODO: Hardcoded Array MAYBE MACRO????
+/// Hack to make visualisation layer enum iterable
 extension ParticleVisualisationLayer: CaseIterable {
     public static var allCases: [ParticleVisualisationLayer] {
         return [.normalLayer, .heatMapLayer]

@@ -8,7 +8,6 @@
 */
 import Foundation
 
-// TODO: Slowly phase out
 // System wide defaults for Particle Simulator
 enum AppConstants {
     enum Sim {
@@ -27,8 +26,7 @@ enum AppConstants {
         static var initialiseMagneticModel: String = "initialiseMagneticModel"
         static var trailPipelineName: String = "geoMagneticTrailPopulate"
         
-        // Version of magnetic model used along with the corresponding
-        // file path
+        // Version of magnetic model used along with the corresponding file path
         static var chosenDataSet: MagneticModelVersion = .WMM2025
         
         static var showSim: Bool = true
@@ -42,7 +40,6 @@ enum AppConstants {
         static var maxSpawnCount: Int = 30000
         static var minSpawnCount: Int = 1024
         
-        // TODO: FIX CENTER AND SOUTH POLE PLACEMENT
         static var centre: SIMD3<Float> = [0, 1.5, -1]
         static var radius: Float = 1
         
