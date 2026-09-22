@@ -41,7 +41,7 @@ enum AppConstants {
         static var minSpawnCount: Int = 1024
         
         static var centre: SIMD3<Float> = [0, 1.5, -1]
-        static var radius: Float = 1
+        static var radius: Float = 5
         
         static var randomSpawn: Bool = true
         
@@ -54,7 +54,7 @@ enum AppConstants {
         static var size: Float = 0.002
         
         // Particle will only exist within this bounding box
-        static var boundingBox: SIMD3<Float> = [1, 1, 1] * 5
+        static var boundingBox: SIMD3<Float> = [1, 1, 1] * AppConstants.Spawn.radius
         
         // Lifespan of particles
         // If lifespan = -1 => Infinite lifespan

@@ -171,7 +171,7 @@ final class ParticleMeshGenerator {
         
         // Generate random position within a sphere
         let randPosition: SIMD3<Float> =
-            AppConstants.Spawn.radius * randomUniformDistribute()
+            AppConstants.Spawn.radius * randomUniformDistributeCube()
             + point.centre
     
         // initialise particle and add it to the spawn queue

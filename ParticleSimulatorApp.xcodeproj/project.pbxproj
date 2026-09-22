@@ -417,8 +417,7 @@
 			children = (
 				3A7686DF2AB263DA00762DDF /* RealityKitContent */,
 			);
-			name = Packages;
-			path = ParticleSimulatorApp/Packages;
+			path = Packages;
 			sourceTree = "<group>";
 		};
 		3A7686E82AB263DC00762DDF /* Preview Content */ = {
@@ -835,6 +834,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = ParticleSimulatorApp;
+				INFOPLIST_KEY_NSHandsTrackingUsageDescription = "The drawing app needs hand tracking to detect where you draw.";
+				INFOPLIST_KEY_NSWorldSensingUsageDescription = "The drawing app needs floor plane tracking to detect where to place the drawing canvas.";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danny.ParticleSimulatorApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -865,6 +866,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = ParticleSimulatorApp;
+				INFOPLIST_KEY_NSHandsTrackingUsageDescription = "The drawing app needs hand tracking to detect where you draw.";
+				INFOPLIST_KEY_NSWorldSensingUsageDescription = "The drawing app needs floor plane tracking to detect where to place the drawing canvas.";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danny.ParticleSimulatorApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";

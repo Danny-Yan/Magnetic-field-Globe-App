@@ -193,7 +193,7 @@ func approximatelyEqual(_ point0: SIMD3<Float>, _ point1: SIMD3<Float>, epsilon:
 }
 
 /// Returns a uniformly random position within a sphere of radius 1
-func randomUniformDistribute() -> SIMD3<Float> {
+func randomUniformDistributeSphere() -> SIMD3<Float> {
     // Use rejection sampling to guarantee a uniform probability
     while true {
         let randomVector = SIMD3<Float>(Float.random(in: -1...1), Float.random(in: -1...1), Float.random(in: -1...1))
@@ -202,6 +202,12 @@ func randomUniformDistribute() -> SIMD3<Float> {
             return randomVector
         }
     }
+}
+
+/// Returns a uniformly random position within a 1x1x1 cube
+func randomUniformDistributeCube() -> SIMD3<Float> {
+    let randomVector = SIMD3<Float>(Float.random(in: -1...1), Float.random(in: -1...1), Float.random(in: -1...1))
+    return randomVector
 }
 
 // BELOW FUNCTIONS ONLY USED IN SPLASH SCREEN
