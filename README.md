@@ -16,6 +16,8 @@ a particle's rendering attributes (size, velocity, position, texture coordinates
 - Size of particle objects
 - A multiplier for the intensity of the magnetic field force
 - Particle simulation boundaries
+
+
 Multiple separate colour layers are also configurable,
 namely a solid colour layer which shows only a single solid
 colour, along with a heat map layer which maps particle’s
